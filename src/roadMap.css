@@ -1,0 +1,35 @@
+body {
+   margin: 0;
+}
+
+#roadmap-background {
+  background-image: url("./assets/roadmap/images/background.png");
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.cloud, .character {
+  position: absolute;
+  /* 점프(이동) 애니메이션 */
+  transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
+}
+
+.cloud.unlocked {
+  cursor: pointer;
+  animation: pulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
+}
+
+/* 활성화된 구름에 반짝이는 효과 */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 필요하다면 점프 시 캐릭터 이미지를 바꾸는 로직을 추가할 수도 있습니다. */
+.character.jumping { 
+  /* animation: jump-motion 0.7s; */
+}
