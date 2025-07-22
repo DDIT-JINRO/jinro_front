@@ -1,0 +1,58 @@
+.mission-box-container {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  width: 200px;
+  background-color: rgba(227, 236, 246, 0.9); /* 반투명한 연한 파랑 */
+  border-radius: 12px;
+  padding: 15px 20px;
+}
+
+.mission-box-title {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.mission-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mission-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  color: #555;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mission-item:last-child {
+  border-bottom: none;
+}
+
+.mission-status {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.mission-status.completed {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.mission-status.progress {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+.mission-status.locked {
+  background-color: #f8d7da;
+  color: #842029;
+}

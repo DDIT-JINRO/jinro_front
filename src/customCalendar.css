@@ -1,0 +1,85 @@
+/* 캘린더 전체 컨테이너 위치 및 크기 조정 */
+.calendar-container {
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+  width: 260px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+/* 캘린더 기본 테두리 제거 */
+.react-calendar {
+  border: none;
+  width: 100%; /* 부모 컨테이너에 맞춤 */
+}
+
+/* 상단 네비게이션 (월, 년도, 화살표) 스타일 */
+.react-calendar__navigation {
+  display: flex;
+  margin-bottom: 5px;
+  height: 24px;
+}
+
+.react-calendar__navigation button {
+  min-width: 24px; /* 버튼 크기 조정 */
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+/* 월, 년도 표시 버튼 */
+.react-calendar__navigation__label {
+  flex-grow: 1 !important;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 요일 (월, 화, 수...) 스타일 */
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none; /* 밑줄 제거 */
+  font-weight: 500;
+  color: #888;
+  font-size: 0.7rem;
+}
+
+/* 날짜(타일) 기본 스타일 */
+.react-calendar__tile {
+  background: none;
+  border: none;
+  text-align: center;
+  height: 36px; /* 타일 높이 조정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border-radius: 8px;
+}
+
+/* 오늘 날짜 스타일 */
+.react-calendar__tile--now {
+  background-color: #e6f7ff; /* 연한 하늘색 배경 */
+  color: #1890ff; /* 파란색 텍스트 */
+  font-weight: bold;
+}
+
+/* 선택된 날짜 스타일 */
+.react-calendar__tile--active {
+  background-color: #1890ff;
+  color: white;
+}
+
+/* 마우스 호버 시 스타일 */
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #f0f0f0;
+}
