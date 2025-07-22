@@ -7,7 +7,7 @@ body {
   background-size: cover;
   background-position: center;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 24px);
   position: relative;
 }
 
@@ -16,13 +16,15 @@ body {
   height: 90px;
 }
 
-.cloud {
-  z-index: 2;
+.character {
+  z-index: 10;
+  position: absolute;
+  transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
 }
 
-.cloud, .character {
+.cloud {
+  z-index: 15;
   position: absolute;
-  /* 점프(이동) 애니메이션 */
   transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
 }
 

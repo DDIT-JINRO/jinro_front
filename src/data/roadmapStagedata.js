@@ -1,8 +1,8 @@
 export const STAGE_POSITIONS = [
-  { id: 1, cloud: { top: "85%", left: "42%" }, char: { top: "78%", left: "46%"} },
-  { id: 2, cloud: { top: "70%", left: "22%" }, char: { top: "62%", left: "26%"} },
+  { id: 1, cloud: { top: "85%", left: "42%" }, char: { top: "77%", left: "46%"} },
+  { id: 2, cloud: { top: "70%", left: "25%" }, char: { top: "62%", left: "26%"} },
   { id: 3, cloud: { top: "67.5%", left: "42%" }, char: { top: "59%", left: "46%" } },
-  { id: 4, cloud: { top: "70%", left: "62%" }, char: { top: "62%", left: "67%" } },
+  { id: 4, cloud: { top: "70%", left: "58%" }, char: { top: "62%", left: "67%" } },
   { id: 5, cloud: { top: "50%", left: "15%" }, char: { top: "41%", left: "19%" } },
   { id: 6, cloud: { top: "50%", left: "42%" }, char: { top: "41%", left: "46%" } },
   { id: 7, cloud: { top: "50%", left: "70%" }, char: { top: "41%", left: "74%" } },

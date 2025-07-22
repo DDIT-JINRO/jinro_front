@@ -5,6 +5,8 @@ import Cloud from "../component/cloud";
 import Character from "../component/character";
 import { STAGE_POSITIONS } from "../data/roadmapStagedata";
 import { checkIsLocked } from "../data/roadmapUtils";
+import CalendarView from "../component/calendarView";
+import MissionBox from "../component/missionBox";
 
 function RoadMap() {
   // 현재 캐릭터가 있는 스테이지
@@ -41,25 +43,36 @@ function RoadMap() {
   };
 
   return (
-    <div id="roadmap-background">
-      {STAGE_POSITIONS.map((pos) => {
-        const isLocked = checkIsLocked(pos.id, completedMissions);
-        const isCompleted = completedMissions.some((mission) => mission.rsId === pos.id);
+    <>
+      <div id="roadmap-background">
+        {STAGE_POSITIONS.map((pos) => {
+          const isLocked = checkIsLocked(pos.id, completedMissions);
+          const isCompleted = completedMissions.some((mission) => mission.rsId === pos.id);
 
-        return (
-          <Cloud
-            key={pos.id}
-            stageId={pos.id}
-            position={pos.cloud}
-            isCompleted={isCompleted}
-            isProgress={progressMissions.some((mission) => mission.rsId === pos.id)}
-            isLocked={isLocked}
-            onClick={() => handleCloudClick(pos.id, isLocked, isCompleted)}
-          />);
-      })}
+          return (
+            <Cloud
+              key={pos.id}
+              stageId={pos.id}
+              position={pos.cloud}
+              isCompleted={isCompleted}
+              isProgress={progressMissions.some((mission) => mission.rsId === pos.id)}
+              isLocked={isLocked}
+              onClick={() => handleCloudClick(pos.id, isLocked, isCompleted)}
+            />);
+        })}
 
-      <Character position={STAGE_POSITIONS[charPosition].char} />
-    </div>
+        <Character position={STAGE_POSITIONS[charPosition].char} />
+
+        <MissionBox progressMissions={progressMissions} completedMissions={completedMissions}/>
+
+        <CalendarView/>
+
+      </div>
+      <div className="dont-show-again">
+        <input type="checkbox" id="no-show" />
+        <label htmlFor="no-show">24시간 보지 않기</label>
+      </div>
+    </>
   );
 }
 
