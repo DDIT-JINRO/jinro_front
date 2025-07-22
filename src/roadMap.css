@@ -11,13 +11,22 @@ body {
   position: relative;
 }
 
+.character img {
+  width: 60px;
+  height: 90px;
+}
+
+.cloud {
+  z-index: 2;
+}
+
 .cloud, .character {
   position: absolute;
   /* 점프(이동) 애니메이션 */
   transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
 }
 
-.cloud.unlocked {
+.cloud.unlocked.uncompleted {
   cursor: pointer;
   animation: pulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
 }
