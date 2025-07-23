@@ -3,7 +3,7 @@ import "../roadMap.css";
 
 const prefix = `src/assets/roadmap/images/`;
 
-function Cloud({ stageId, position, isCompleted, isProgress, isLocked, onClick }) {
+function Cloud({ stageId, position, isCompleted, isProgress, isLocked, onClick, isCurrent }) {
   let imgSrc;
 
   if (isLocked) {
@@ -22,7 +22,7 @@ function Cloud({ stageId, position, isCompleted, isProgress, isLocked, onClick }
 
   const { top, left } = position;
 
-  const cloudClass = `cloud ${isLocked ? "locked" : "unlocked"} ${isCompleted ? "completed" : "uncompleted"}`;
+  const cloudClass = `cloud ${isLocked ? "locked" : "unlocked"} ${isCompleted ? "completed" : "uncompleted"} ${isCurrent ? "current" : ""}`;
 
   return (
     <div className={cloudClass} style={{ top: top, left: left }} data-stage={stageId} onClick={onClick}>

@@ -33,6 +33,11 @@ body {
   animation: pulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
 }
 
+.cloud.unlocked.uncompleted.current {
+  cursor: default;
+  animation: none;
+}
+
 /* 활성화된 구름에 반짝이는 효과 */
 @keyframes pulse {
   0% { transform: scale(1); }

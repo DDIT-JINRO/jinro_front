@@ -11,3 +11,18 @@ export const selectMemberRoadmap = async () => {
    const res = await axios.get(`${prefix}/selectMemberRoadmap`);
    return res.data;
 }
+
+export const selectMissionList = async () => {
+   const res = await axios.get(`${prefix}/selectMissionList`);
+   return res.data;
+}
+
+export const updateCompleteMission = async (rsId) => {
+   const res = await axios.post(`${prefix}/updateCompleteMission`, {rsId : rsId});
+   return res.data;
+}
+
+export const insertMission = async (rsId) => {
+   const res = await axios.post(`${prefix}/insertMission`, {rsId : rsId});
+   return res.data;
+}
