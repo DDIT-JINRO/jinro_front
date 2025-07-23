@@ -17,11 +17,13 @@ export const STAGE_POSITIONS = [
 export const MISSION_LIST = [];
 
 export const initData = () => {
-  selectMissionList().then((res) => {
-    MISSION_LIST.push(...res);
-    return MISSION_LIST;
-  }).catch((err) => {
-    console.log("단계 받는 js에서 오류 발생함. : ", err);
-  });
-
+  if(MISSION_LIST.length === 0) {
+    selectMissionList().then((res) => {
+      MISSION_LIST.push(...res);
+      console.log("MISSION_LIST : ", MISSION_LIST);
+      return MISSION_LIST;
+    }).catch((err) => {
+      console.log("단계 받는 js에서 오류 발생함. : ", err);
+    });
+  }
 }
