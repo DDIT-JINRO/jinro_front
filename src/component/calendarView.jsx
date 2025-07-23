@@ -4,7 +4,7 @@ import "react-calendar/dist/Calendar.css"; // 기본 스타일
 import "../customCalendar.css";
 import { formatDate } from "../data/roadmapUtils";
 
-function CalendarView({ completedMissions }) {
+function CalendarView({ completedMissions, isCalendarOpen, toggleCalendar }) {
   const [date, setDate] = useState(new Date());
 
   const completedMissionsByDate = useMemo(() => {
@@ -58,17 +58,28 @@ function CalendarView({ completedMissions }) {
   };
 
   return (
-    <div className="calendar-container">
-      <Calendar
-        onChange={setDate}
-        value={date}
-        formatDay={(locale, date) =>
-          date.toLocaleString("en", { day: "numeric" })
-        }
-        tileContent={addMarkers}
-        tileClassName={getTileClassName}
-        showFixedNumberOfWeeks
-      />
+    <div className={`calendar-slider ${isCalendarOpen ? "open" : ""}`}>
+      <div className="calendar-toggle-button" onClick={toggleCalendar}>
+        {isCalendarOpen ? (
+          <i className="fa-solid fa-chevron-up"></i>
+        ) : (
+          <i className="fa-solid fa-chevron-down"></i>
+        )}
+      </div>
+      <div className="calendar-content">
+        <div className="calendar-container">
+          <Calendar
+            onChange={setDate}
+            value={date}
+            formatDay={(locale, date) =>
+              date.toLocaleString("en", { day: "numeric" })
+            }
+            tileContent={addMarkers}
+            tileClassName={getTileClassName}
+            showFixedNumberOfWeeks
+          />
+        </div>
+      </div>
     </div>
   );
 }
