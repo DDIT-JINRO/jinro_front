@@ -1,39 +1,59 @@
-import React from "react";
-import "../missionBox.css"; // MissionBox 전용 CSS 파일
+import React, { useEffect, useState } from "react";
+import { selectMissionList, updateCompleteMission } from "../api/roadMapApi";
+import { getStageGroup } from "../data/roadmapUtils";
+import "../missionBox.css";
 
-// 미션 데이터의 전체 목록이 필요합니다.
-// (예시: data/roadmapStagedata.js에 MISSION_LIST 추가)
-const MISSION_LIST = [
-  { id: 1, title: "관심사 선택하기" },
-  { id: 2, title: "작업 성향하기" },
-  { id: 3, title: "이력서 작성하기" },
-  // ... 모든 미션의 제목을 여기에 정의합니다.
-];
+function MissionBox({ progressMissions, completedMissions, onUpdate }) {
+  // 전체 미션 리스트 상태 관리
+  const [missionList, setMissionList] = useState([]);
 
-function MissionBox({ progressMissions, completedMissions }) {
+  useEffect(() => {
+    selectMissionList().then((res) => {
+      setMissionList(res);
+    }).catch((err) => {
+      console.error("단계별 데이터를 불러오는 중 오류가 발생했습니다.", err);
+    });
+  }, []);
+
+  const handleCompleteClick = (stageId) => {
+    updateCompleteMission(stageId).then((res) => {
+      if(res === "fail") {
+        alert("완료 되지 않은 미션입니다.");
+        return;
+      }
+      onUpdate();
+    }).catch((err) => {
+      console.error("미션 완료 중 업데이트 중 오류가 발생했습니다.", err);
+    });
+  };
+
   return (
     <div className="mission-box-container">
       <h3 className="mission-box-title">나의 임무</h3>
       <ul className="mission-list">
-        {MISSION_LIST.map((mission) => {
+        {progressMissions.map((progMission) => {
+          console.log(progMission);
           // 이 미션이 완료 목록에 포함되어 있는지 확인
           const isCompleted = completedMissions.some(
-            (compMission) => compMission.rsId === mission.id
-          );
-          // 이 미션이 진행 중 목록에 포함되어 있는지 확인
-          const isProgress = progressMissions.some(
-            (progMission) => progMission.rsId === mission.id
+            (compMission) => compMission.rsId === progMission.rsId
           );
 
+          const currentGroup = getStageGroup(progMission.rsId);
+          
+          // missionList에서 해당 미션 찾기 (더 안전한 방법)
+          const missionInfo = missionList.find(mission => mission.rsId === progMission.rsId);
+          const stepName = missionInfo ? missionInfo.stepName : '알 수 없는 단계';
+
+          // 상황 봐서 전체 테이블 조회해서 자동 완료 띄우는 기능 생각하기
           return (
-            <li key={mission.id} className="mission-item">
-              <span>{`${mission.id}단계 : ${mission.title}`}</span>
+            <li key={progMission.rsId} className="mission-item">
+              <span>{`${currentGroup}단계 : ${stepName}`}</span>
               {isCompleted ? (
-                <span className="mission-status completed">완료</span>
-              ) : isProgress ? (
-                <span className="mission-status progress">진행중</span>
+                <span className="mission-status progress">완료됨</span>
               ) : (
-                <span className="mission-status locked">잠김</span>
+                <span className="mission-status completBtn" onClick={() => handleCompleteClick(progMission.rsId)}>
+                  완료
+                </span>
               )}
             </li>
           );
