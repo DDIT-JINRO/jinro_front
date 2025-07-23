@@ -3,17 +3,7 @@ import { selectMissionList, updateCompleteMission } from "../api/roadMapApi";
 import { getStageGroup } from "../data/roadmapUtils";
 import "../missionBox.css";
 
-function MissionBox({ progressMissions, completedMissions, onUpdate }) {
-  // 전체 미션 리스트 상태 관리
-  const [missionList, setMissionList] = useState([]);
-
-  useEffect(() => {
-    selectMissionList().then((res) => {
-      setMissionList(res);
-    }).catch((err) => {
-      console.error("단계별 데이터를 불러오는 중 오류가 발생했습니다.", err);
-    });
-  }, []);
+function MissionBox({ progressMissions, completedMissions, onUpdate, missionList }) {
 
   const handleCompleteClick = (stageId) => {
     updateCompleteMission(stageId).then((res) => {

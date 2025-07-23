@@ -1,3 +1,5 @@
+import { selectMissionList } from "../api/roadMapApi";
+
 export const STAGE_POSITIONS = [
   { id: 1, cloud: { top: "85%", left: "42%" }, char: { top: "77%", left: "46%"} },
   { id: 2, cloud: { top: "70%", left: "25%" }, char: { top: "62%", left: "26%"} },
@@ -11,3 +13,15 @@ export const STAGE_POSITIONS = [
   { id: 10, cloud: { top: "35%", left: "63%" }, char: { top: "26%", left: "65%" } },
   { id: 11, cloud: { top: "12%", left: "42%" }, char: { top: "6%", left: "48%" } },
 ];
+
+export const MISSION_LIST = [];
+
+export const initData = () => {
+  selectMissionList().then((res) => {
+    MISSION_LIST.push(...res);
+    return MISSION_LIST;
+  }).catch((err) => {
+    console.log("단계 받는 js에서 오류 발생함. : ", err);
+  });
+
+}
