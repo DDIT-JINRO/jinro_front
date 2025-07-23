@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { selectMissionList, updateCompleteMission } from "../api/roadMapApi";
+import { updateCompleteMission } from "../api/roadMapApi";
 import { getStageGroup } from "../data/roadmapUtils";
 import "../missionBox.css";
-import { MISSION_LIST } from "../data/roadmapStagedata";
 
-function MissionBox({ progressMissions, completedMissions, onUpdate }) {
+function MissionBox({ progressMissions, completedMissions, onUpdate, missionList }) {
 
   const handleCompleteClick = (stageId) => {
     updateCompleteMission(stageId).then((res) => {
@@ -34,7 +33,7 @@ function MissionBox({ progressMissions, completedMissions, onUpdate }) {
           const currentGroup = getStageGroup(progMission.rsId);
           
           // missionList에서 해당 미션 찾기 (더 안전한 방법)
-          const missionInfo = MISSION_LIST.find(mission => mission.rsId === progMission.rsId);
+          const missionInfo = missionList.find(mission => mission.rsId === progMission.rsId);
           const stepName = missionInfo ? missionInfo.stepName : '알 수 없는 단계';
 
           // 상황 봐서 전체 테이블 조회해서 자동 완료 띄우는 기능 생각하기
@@ -57,3 +56,4 @@ function MissionBox({ progressMissions, completedMissions, onUpdate }) {
 }
 
 export default MissionBox;
+

@@ -40,9 +40,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 1;
-  /* 👇 오버레이는 투명도만 부드럽게 조절 */
+  opacity: 0; /* 기본적으로 투명하게 */
   transition: opacity 0.5s ease-in-out; 
+}
+
+/* 열릴 때 오버레이 스타일 */
+.modal-overlay.opening {
+  opacity: 1; /* 부드럽게 나타나도록 */
 }
 
 /* 닫힐 때 오버레이 스타일 */
@@ -59,7 +63,9 @@
   width: 90%;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   position: relative;
+}
 
+.modal-overlay.opening .modal-content {
   animation: flyFromTopLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 

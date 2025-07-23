@@ -1,14 +1,14 @@
 import React from "react";
 import "../tutorialModal.css";
 
-function TutorialModal({ onClose, isClosing }) {
+function TutorialModal({ onClose, isClosing, isAnimating }) {
   // 모달 닫히는 것 방지
   const handleContentClick = (e) => {
     e.stopPropagation();
   };
 
   return (
-    <div className={`modal-overlay ${isClosing ? 'closing' : ''}`} onClick={onClose}>
+    <div className={`modal-overlay ${isClosing ? 'closing' : ''} ${isAnimating ? 'opening' : ''}`} onClick={onClose}>
       <div className="modal-content" onClick={handleContentClick}>
         <button className="modal-close-btn" onClick={onClose}>
           <i className="fa-solid fa-xmark"></i>
