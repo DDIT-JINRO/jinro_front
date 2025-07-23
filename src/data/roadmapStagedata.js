@@ -13,17 +13,3 @@ export const STAGE_POSITIONS = [
   { id: 10, cloud: { top: "35%", left: "63%" }, char: { top: "26%", left: "65%" } },
   { id: 11, cloud: { top: "12%", left: "42%" }, char: { top: "6%", left: "48%" } },
 ];
-
-export const MISSION_LIST = [];
-
-export const initData = () => {
-  if(MISSION_LIST.length === 0) {
-    selectMissionList().then((res) => {
-      MISSION_LIST.push(...res);
-      console.log("MISSION_LIST : ", MISSION_LIST);
-      return MISSION_LIST;
-    }).catch((err) => {
-      console.log("단계 받는 js에서 오류 발생함. : ", err);
-    });
-  }
-}

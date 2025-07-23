@@ -1,12 +1,10 @@
 import React from "react";
-import { MISSION_LIST } from "../data/roadmapStagedata";
 
-function TutorialBtn({isTutorialOpen, setIsTutorialOpen}) {
-   console.log(isTutorialOpen)
+function TutorialBtn({ onClick }) {
   return (
     <button
       className="tutorial-icon-btn"
-      onClick={() => setIsTutorialOpen(true)}
+      onClick={onClick}
     >
       <i className="fa-solid fa-question"></i>
     </button>
