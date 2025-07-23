@@ -1,0 +1,16 @@
+.mission-tooltip {
+  position: fixed; /* 화면 전체를 기준으로 위치 고정 */
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 3000; /* 모든 UI 요소 위에 보이도록 */
+  
+  /* 커서 바로 아래가 아닌 살짝 옆으로 이동시켜 가려지지 않게 함 */
+  transform: translate(15px, 15px);
+
+  /* 👇 (매우 중요) 툴팁 자체가 마우스 이벤트를 방해하지 않도록 설정 */
+  pointer-events: none;
+}
