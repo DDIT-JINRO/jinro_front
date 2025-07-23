@@ -1,51 +1,79 @@
-/* 미션 박스 전체 컨테이너 */
+/* 미션 박스 전체 컨테이너 (핵심 수정 영역) */
 .mission-box-container {
   position: absolute;
-  bottom: 20px; /* 화면 하단에서 30px 띄우기 */
-  left: 20px;   /* 화면 왼쪽에서 30px 띄우기 */
-  width: 250px; /* 너비 조정 */
+  bottom: 15px;
+  left: 15px;
   
-  /* --- 👇 Frosted Glass 효과 적용 --- */
+  /* 👇 평소(닫힌) 상태의 크기 */
+  width: 70.33px;
+  height: 26px;
+  
+  /* --- Frosted Glass 효과 --- */
   background-color: rgba(255, 255, 255, 0.65);
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   
   border-radius: 12px;
-  padding: 20px;
+  padding: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  
+  overflow: hidden; /* 👇 내부 요소가 튀어나가지 않도록 숨김 처리 */
+  
+  /* 👇 크기와 배경색 변경에 애니메이션 효과 적용 */
+  transition: all 0.4s ease-in-out;
 }
 
+/* 👇 마우스를 올렸을 때(열린) 상태의 크기 */
 .mission-box-container:hover {
+  width: 250px;
+  height: 230px; /* 제목과 목록을 포함할 수 있는 충분한 높이 */
   z-index: 100;
+  padding: 20px;
 }
 
 /* '나의 임무' 타이틀 */
 .mission-box-title {
-  margin: 0 0 15px 0; /* 하단 여백 추가 */
+  margin: 0; /* 불필요한 마진 제거 */
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  cursor: default;
+  white-space: nowrap;
 }
 
 /* 미션 목록 (스크롤 영역) */
 .mission-list {
   list-style: none;
   padding: 0;
-  margin: 0;
-  max-height: 140px;
+  margin: 0; /* <ul> 태그의 기본 마진 제거 */
+  
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0; /* 👇 평소 높이를 0으로 만들어 빈 공간을 완전히 제거 */
   overflow-y: auto;
-  padding-right: 8px; /* 스크롤바와의 간격 */
+  padding-right: 8px;
+  
+  transition: opacity 0.3s ease, visibility 0.3s ease, max-height 0.4s ease;
+  transition-delay: 0.1s;
 }
+
+/* 👇 마우스를 올렸을 때 목록을 다시 보이게 처리 */
+.mission-box-container:hover .mission-list {
+  opacity: 1;
+  visibility: visible;
+  max-height: 140px; /* 👇 원래 목록의 최대 높이로 복원 */
+  margin-top: 15px; /* 👇 제목과의 간격을 주기 위해 추가 */
+}
+
 
 /* 개별 미션 아이템 */
 .mission-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0; /* 상하 여백 조정 */
+  padding: 8px 0;
   font-size: 14px;
-  color: #444; /* 폰트 색상 살짝 진하게 */
+  color: #444;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -53,21 +81,19 @@
   border-bottom: none;
 }
 
-/* --- 👇 상태 뱃지 스타일 개선 --- */
-
 /* 상태 뱃지 공통 스타일 */
 .mission-status {
   font-size: 11px;
   padding: 4px 10px;
   border-radius: 12px;
   font-weight: 500;
-  flex-shrink: 0; /* 뱃지 크기 줄어들지 않게 */
+  flex-shrink: 0;
   margin-left: 10px;
 }
 
 /* '완료' 버튼 스타일 */
 .mission-status.completBtn {
-  background-color: #5865f2; /* 더 선명한 파랑/보라 */
+  background-color: #5865f2;
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -79,29 +105,22 @@
 
 /* '완료됨' 상태 스타일 */
 .mission-status.completed {
-  background-color: #848efb; /* 이미지와 유사한 보라색 */
+  background-color: #848efb;
   color: #ffffff;
 }
 
-/* --- 👇 스크롤바 디자인 개선 --- */
-
-/* 스크롤바 전체 너비 */
+/* 스크롤바 디자인 */
 .mission-list::-webkit-scrollbar {
   width: 6px;
 }
-
-/* 스크롤바 트랙 */
 .mission-list::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
-
-/* 스크롤바 막대 */
 .mission-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.4);
   border-radius: 10px;
 }
-
 .mission-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
 }

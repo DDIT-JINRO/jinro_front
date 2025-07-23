@@ -9,7 +9,6 @@ import CalendarView from "../component/calendarView";
 import MissionBox from "../component/missionBox";
 
 function RoadMap() {
-  
   // 현재 캐릭터가 있는 스테이지
   const [charPosition, setCharPosition] = useState(0);
   // 현재 수주한 미션들
@@ -36,7 +35,6 @@ function RoadMap() {
   useEffect(() => {
     LoadRoadmapData();
     initData();
-    console.log("미션 리스트 들임", MISSION_LIST);
   }, [LoadRoadmapData]);
 
   // 달력 여닫음
@@ -52,7 +50,6 @@ function RoadMap() {
       alert("이전 단계를 먼저 완료해주세요!");
       return;
     }
-
 
     setCharPosition(stageId - 1);
 
@@ -104,6 +101,7 @@ function RoadMap() {
           onUpdate={LoadRoadmapData}
           missionList={MISSION_LIST}
         />
+        
 
         <div className={`calendar-slider ${isCalendarOpen ? "open" : ""}`}>
           <div className="calendar-toggle-button" onClick={toggleCalendar}>
