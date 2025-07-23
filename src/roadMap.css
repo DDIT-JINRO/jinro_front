@@ -45,7 +45,59 @@ body {
   100% { transform: scale(1); }
 }
 
-/* 필요하다면 점프 시 캐릭터 이미지를 바꾸는 로직을 추가할 수도 있습니다. */
-.character.jumping { 
-  /* animation: jump-motion 0.7s; */
+/* 달력 슬라이더 */
+.calendar-slider {
+  position: fixed; /* 화면에 고정 */
+  top: 0;
+  right: 0;
+  width: 600px; /* 달력을 키우기 위해 너비 확장 */
+  height: 400px;
+  background-color: rgba(255, 255, 255, 0.65); /* 반투명 흰색 */
+  backdrop-filter: blur(10px); /* 블러 효과 */
+
+  border-radius: 0 0 20px 20px;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transform: translateY(-100%); 
+  transition: transform 0.4s ease-in-out;
+}
+
+/* 'open' 클래스가 추가되었을 때 (열린 상태) */
+.calendar-slider.open {
+  transform: translateY(0); 
+}
+
+/* 토글 버튼 */
+.calendar-toggle-button {
+  position: absolute;
+  bottom: -30px; /* 슬라이더 하단에 붙어서 튀어나오도록 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.65); /* 반투명 흰색 */
+  backdrop-filter: blur(10px); /* 블러 효과 */
+  border: 1px solid #eee;
+  border-top: none;
+  border-radius: 0 0 10px 10px; /* 아래쪽 모서리만 둥글게 */
+  cursor: pointer;
+
+  /* 내부 아이콘 스타일 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: #555;
+}
+
+.calendar-toggle-button:hover {
+  background-color: #f8f8f8;
+}
+
+/* 실제 달력이 들어가는 영역 */
+.calendar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto; /* 내용이 길어지면 스크롤 */
 }

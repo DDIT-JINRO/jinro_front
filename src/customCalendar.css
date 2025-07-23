@@ -1,47 +1,48 @@
 /* 캘린더 전체 컨테이너 위치 및 크기 조정 */
 .calendar-container {
-  position: absolute;
-  bottom: 0%;
-  right: 0%;
-  width: 260px;
-  background-color: white;
+  width: 100%;
   border-radius: 12px;
-  padding: 10px;
+  padding: 0;
 }
 
 /* 캘린더 기본 테두리 제거 */
 .react-calendar {
   border: none;
+  background: none;
   width: 100%; /* 부모 컨테이너에 맞춤 */
 }
 
 /* 상단 네비게이션 (월, 년도, 화살표) 스타일 */
 .react-calendar__navigation {
   display: flex;
-  margin-bottom: 5px;
-  height: 24px;
+  margin-bottom: 1em; /* 상하 간격 조정 */
+  height: 20px;
+  align-items: center;
 }
 
 .react-calendar__navigation button {
-  min-width: 24px; /* 버튼 크기 조정 */
+  min-width: 50px;
   background: none;
   border: none;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 }
 
 .react-calendar__navigation button:hover {
-  background-color: #f0f0f0;
   border-radius: 4px;
 }
 
 /* 월, 년도 표시 버튼 */
 .react-calendar__navigation__label {
   flex-grow: 1 !important;
-  font-size: 1rem;
+  color: #000;
   font-weight: bold;
-  color: #333;
+  font-size: 20px;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding-bottom: 0;
 }
 
 /* 요일 (월, 화, 수...) 스타일 */
@@ -49,7 +50,7 @@
   text-decoration: none; /* 밑줄 제거 */
   font-weight: 500;
   color: #888;
-  font-size: 0.7rem;
+  font-size: 12px;
 }
 
 /* 날짜(타일) 기본 스타일 */
@@ -57,25 +58,42 @@
   background: none;
   border: none;
   text-align: center;
-  height: 36px; /* 타일 높이 조정 */
+  height: 50px; /* 타일 높이 증가 */
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 12px; /* 폰트 크기 증가 */
   border-radius: 8px;
+  position: relative; /* 마커 위치 기준점 */
 }
 
-/* 오늘 날짜 스타일 */
+/* 다른 달의 날짜 (흐리게) */
+.react-calendar__tile--neighboringMonth {
+  color: #b0b0b0;
+}
+
+.saturday .react-calendar__tile,
+.react-calendar__month-view__days__day--weekend.saturday {
+  color: #007bff;
+}
+
+.sunday .react-calendar__tile,
+.react-calendar__month-view__days__day--weekend.sunday {
+  color: #d10000;
+}
+
+/* 오늘 날짜 스타일 (선택된 날짜와 동일하게) */
 .react-calendar__tile--now {
-  background-color: #e6f7ff; /* 연한 하늘색 배경 */
-  color: #1890ff; /* 파란색 텍스트 */
+  background-color: #1890ff;
+  color: white !important; /* 주말 색상 덮어쓰기 */
   font-weight: bold;
 }
 
 /* 선택된 날짜 스타일 */
 .react-calendar__tile--active {
   background-color: #1890ff;
-  color: white;
+  color: white !important; /* 주말 색상 덮어쓰기 */
+  font-weight: bold;
 }
 
 /* 마우스 호버 시 스타일 */
@@ -83,3 +101,41 @@
 .react-calendar__tile:enabled:focus {
   background-color: #f0f0f0;
 }
+
+/* --- 마커 스타일 (기존과 동일) --- */
+.mission-markers-container {
+  position: absolute;
+  bottom: 5px; /* 타일 높이가 커져서 간격 조정 */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+}
+
+.mission-marker-item {
+  width: 16px;
+  height: 16px;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  background-color: #bdc3c7; /* 기본 슬레이트 회색 */
+}
+
+.mission-marker-item.stage-1 { background-color: #E74C3C; }
+.mission-marker-item.stage-2 { background-color: #E67E22; }
+.mission-marker-item.stage-3 { background-color: #F1C40F; }
+.mission-marker-item.stage-4 { background-color: #2ECC71; }
+.mission-marker-item.stage-5 { background-color: #1ABC9C; }
+.mission-marker-item.stage-6 { background-color: #3498DB; }
+.mission-marker-item.stage-7 { background-color: #9B59B6; }
+.mission-marker-item.stage-8 { background-color: #E91E63; }
+.mission-marker-item.stage-9 { background-color: #A1887F; }
+.mission-marker-item.stage-10 { background-color: #5D6D7E; }
