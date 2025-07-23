@@ -11,9 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.40.2",
     "axios": "^1.10.0",
     "express": "^5.1.0",
     "html-react-parser": "^5.2.6",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-calendar": "^6.0.0",
     "react-dom": "^19.1.0",

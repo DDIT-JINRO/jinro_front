@@ -7,6 +7,7 @@ import RoadmapResultPage from "./pages/roadmap/roadmapResultPage";
 import RoadmapErrorPage from "./pages/roadmap/roadmapErrorPage";
 import AptiTestPage from "./pages/aptiTest/aptitestPage";
 import AptitestResult from "./components/aptiTest/aptiTestResult";
+import MockInterviewScreen from "./MockInterviewScreen";
 
 const router = createBrowserRouter([
     {
