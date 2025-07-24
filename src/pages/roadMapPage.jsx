@@ -2,7 +2,7 @@ import "../css/roadmap/roadMap.css";
 import Cloud from "../component/cloud";
 import Character from "../component/character";
 import { STAGE_POSITIONS } from "../data/roadmapStagedata";
-import { checkIsLocked } from "../data/roadmapUtils";
+import { getCloudState, CLOUD_STATE } from "../data/roadmapUtils";
 import CalendarView from "../component/calendarView";
 import MissionBox from "../component/missionBox";
 import TutorialBtn from "../component/tutorialBtn";
@@ -24,13 +24,13 @@ function RoadMap() {
     progressMissions,
     completedMissions,
     isLoading,
-    reloadRoadmapData,
+    refreshMissionData, // 이름 변경
   } = useRoadmapData();
 
   // 2. 모달 관리 훅
   const { tutorialModal, acceptMissionModal } = useModalManager(
     missionList,
-    reloadRoadmapData,
+    refreshMissionData, // 변경된 함수 전달
     setCharPosition
   );
 
@@ -49,10 +49,7 @@ function RoadMap() {
         <TutorialBtn onClick={tutorialModal.open} />
 
         {STAGE_POSITIONS.map((pos) => {
-          const isLocked = checkIsLocked(pos.id, completedMissions);
-          const isCompleted = completedMissions.some(
-            (mission) => mission.rsId === pos.id
-          );
+          const state = getCloudState(pos.id, progressMissions, completedMissions);
           const isCurrent = charPosition === pos.id - 1;
 
           return (
@@ -60,17 +57,17 @@ function RoadMap() {
               key={pos.id}
               stageId={pos.id}
               position={pos.cloud}
-              isCompleted={isCompleted}
-              isProgress={progressMissions.some(
-                (mission) => mission.rsId === pos.id
-              )}
-              isLocked={isLocked}
-              onClick={
-                isCurrent || isLocked || isCompleted
-                  ? null
-                  : () => acceptMissionModal.open(pos.id)
-              }
+              state={state} // 상태를 prop으로 전달
               isCurrent={isCurrent}
+              onClick={() => {
+                if (state === CLOUD_STATE.LOCKED) {
+                  acceptMissionModal.open(pos.id, true); // 잠금 모드로 열기
+                } else if (state === CLOUD_STATE.UNLOCKED) {
+                  acceptMissionModal.open(pos.id, false); // 수락 모드로 열기
+                } else {
+                  setCharPosition(pos.id - 1);
+                }
+              }}
               onMouseEnter={() => eventHandlers.onCloudEnter(pos.id)}
               onMouseLeave={eventHandlers.onCloudLeave}
             />
@@ -82,7 +79,7 @@ function RoadMap() {
         <MissionBox
           progressMissions={progressMissions}
           completedMissions={completedMissions}
-          onUpdate={reloadRoadmapData}
+          onUpdate={refreshMissionData} // 변경된 함수 전달
           missionList={missionList}
         />
 
@@ -102,6 +99,7 @@ function RoadMap() {
           mission={acceptMissionModal.mission}
           onAccept={acceptMissionModal.accept}
           onClose={acceptMissionModal.close}
+          isLocked={acceptMissionModal.isLocked}
         />
       )}
 
