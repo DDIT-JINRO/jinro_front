@@ -39,6 +39,7 @@ export const useModalManager = (missionList, refreshMissionData, setCharPosition
     setIsLockedMode(isLocked);
 
     const missionInfo = missionList.find(m => m.rsId === stageId);
+
     if (missionInfo) {
       setSelectedMission(missionInfo);
     } else {
