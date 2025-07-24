@@ -5,16 +5,17 @@
   align-items: center;
   justify-content: center;
   z-index: 1; /* Lowest z-index */
+  width: 6%; /* 표지판 div의 너비 (이전 이미지 비율) */
 }
 
 .wood-sign-image {
-  width: 80px; /* Adjust size as needed */
+  width: 100%; /* 부모 div의 100% */
   height: auto;
 }
 
 .wood-sign-text {
   position: absolute;
-  font-size: 11px; /* Adjust font size as needed */
+  font-size: clamp(8px, 0.7vw, 14px); /* 최소 8px, 뷰포트 너비의 0.7%, 최대 14px */
   font-weight: bold;
   color: #ffffff; /* Adjust color as needed */
   text-align: center;
