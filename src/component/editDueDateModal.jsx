@@ -22,7 +22,7 @@ function EditDueDateModal({ isOpen, onClose, onSave, currentDueDate }) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (new Date(dueDate) < today) {
+    if (new Date(selectedDate) < today) {
       alert("과거 날짜는 선택할 수 없습니다.");
       return;
     }

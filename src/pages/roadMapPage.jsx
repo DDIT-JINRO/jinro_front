@@ -11,13 +11,13 @@ import AcceptMissionModal from "../component/acceptMissionModal";
 import MissionTooltip from "../component/missionTooltip";
 import EditDueDateModal from "../component/editDueDateModal"; // Import the new modal
 import WoodSign from "../component/woodSign"; // Import WoodSign
-import { updateDueDate } from "../api/roadMapApi"; // Import the new API function
+import { updateDueDate, updateCompleteMission } from "../api/roadMapApi"; // Import the new API function
 
 // 커스텀 훅 임포트
 import { useRoadmapData } from "../hooks/useRoadmapData";
 import { useModalManager } from "../hooks/useModalManager";
 import { useRoadmapInteraction } from "../hooks/useRoadmapInteraction";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 function RoadMap() {
   // 1. 데이터 관리 훅
@@ -42,9 +42,28 @@ function RoadMap() {
   const { calendar, tooltip, eventHandlers } =
     useRoadmapInteraction(missionList);
 
+  // 캐릭터 방향
+  const [chracterDirection, setChracterDirection] = useState('left');
+
   // 날짜 관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [missionToEdit, setMissionToEdit] = useState(null);
+  const [isMoving, setIsMoving] = useState(false);
+
+  const handleSetCharPosition = (newPosition, onCompleteCallback = null) => {
+    const isCurrent = charPosition === newPosition;
+    if (isCurrent) return;
+
+    setIsMoving(true);
+    setCharPosition(newPosition);
+
+    setTimeout(() => {
+      setIsMoving(false);
+      if (onCompleteCallback) {
+        onCompleteCallback();
+      }
+    }, 700);
+  };
 
   const handleEditDueDate = (rsId, currentDueDate) => {
     const mission = progressMissions.find(m => m.rsId === rsId);
@@ -72,6 +91,22 @@ function RoadMap() {
     setMissionToEdit(null);
   };
 
+  const handleCompleteFinalMission = async (stageId) => {
+    try {
+      const res = await updateCompleteMission(stageId);
+      if (res === "fail") {
+        alert("미션 완료에 실패했습니다."); // Or a more specific message
+        return;
+      }
+      if (res === "complete") {
+        alert("로드맵 완성입니다.");
+      }
+      refreshMissionData();
+    } catch (err) {
+      console.error("최종 미션 완료 중 오류가 발생했습니다.", err);
+    }
+  };
+
   // 로딩 중일 때 표시할 UI (옵션)
   if (isLoading) {
     return <div>로딩 중...</div>;
@@ -95,16 +130,29 @@ function RoadMap() {
               state={state}
               isCurrent={isCurrent}
               onClick={() => {
-                if (state === CLOUD_STATE.LOCKED) {
+                const currentPos = STAGE_POSITIONS[charPosition];
+                const nextPos = pos; // pos는 map에서 넘어온 다음 스테이지의 위치 정보
+
+                // 1. x좌표(left)를 비교하여 방향 결정
+                if (nextPos.cloud.left > currentPos.cloud.left) {
+                  setChracterDirection('right');
+                } else if (nextPos.cloud.left < currentPos.cloud.left) {
+                  setChracterDirection('left');
+                }
+                
+                if (pos.id === 11 && (state === CLOUD_STATE.UNLOCKED || state === CLOUD_STATE.PROGRESS)) {
+                  handleSetCharPosition(pos.id - 1, () => handleCompleteFinalMission(pos.id));
+                } else if (state === CLOUD_STATE.LOCKED) {
                   acceptMissionModal.open(pos.id, true);
                 } else if (state === CLOUD_STATE.UNLOCKED) {
                   acceptMissionModal.open(pos.id, false);
                 } else {
-                  setCharPosition(pos.id - 1);
+                  handleSetCharPosition(pos.id - 1);
                 }
               }}
               onMouseEnter={() => eventHandlers.onCloudEnter(pos.id)}
               onMouseLeave={eventHandlers.onCloudLeave}
+              isCharacterMoving={isMoving} // Pass isMoving prop
             />
           );
         })}
@@ -140,7 +188,7 @@ function RoadMap() {
         })}
 
         {/* 캐릭터 위치 */}
-        <Character position={STAGE_POSITIONS[charPosition].char} />
+        <Character position={STAGE_POSITIONS[charPosition].char} isMoving={isMoving} chracterDirection={chracterDirection} />
 
         {/* 진행 중 미션, 완료 미션, 미션 새로고침, 미션 리스트, 날짜 수정 */}
         <MissionBox
