@@ -129,6 +129,9 @@
   background-color: #bdc3c7; /* 기본 슬레이트 회색 */
 }
 
+.mission-marker-item.completed { background-color: #2ECC71; } /* Completed missions */
+.mission-marker-item.progress { background-color: #5c5b5a; } /* In-progress missions (due date) */
+
 .mission-marker-item.stage-1 { background-color: #E74C3C; }
 .mission-marker-item.stage-2 { background-color: #E67E22; }
 .mission-marker-item.stage-3 { background-color: #F1C40F; }

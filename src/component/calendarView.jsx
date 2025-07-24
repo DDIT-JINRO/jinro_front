@@ -4,7 +4,7 @@ import "react-calendar/dist/Calendar.css"; // 기본 스타일
 import "../css/roadmap/customCalendar.css";
 import { formatDate } from "../data/roadmapUtils";
 
-function CalendarView({ completedMissions, isCalendarOpen, toggleCalendar }) {
+function CalendarView({ completedMissions, progressMissions, isCalendarOpen, toggleCalendar }) {
   const [date, setDate] = useState(new Date());
 
   const completedMissionsByDate = useMemo(() => {
@@ -22,6 +22,24 @@ function CalendarView({ completedMissions, isCalendarOpen, toggleCalendar }) {
 
     return missionsMap;
   }, [completedMissions]);
+
+  const progressMissionsByDate = useMemo(() => {
+    const missionsMap = new Map();
+
+    progressMissions.forEach((mission) => {
+      if (mission.dueDate) {
+        const dateKey = formatDate(new Date(mission.dueDate));
+
+        if (!missionsMap.has(dateKey)) {
+          missionsMap.set(dateKey, []);
+        }
+
+        missionsMap.get(dateKey).push(mission.rsId);
+      }
+    });
+
+    return missionsMap;
+  }, [progressMissions]);
 
   const getTileClassName = ({ date, view }) => {
     if (view === "month") {
@@ -41,18 +59,32 @@ function CalendarView({ completedMissions, isCalendarOpen, toggleCalendar }) {
 
     const dateKey = formatDate(date);
     const completedDay = completedMissionsByDate.get(dateKey);
+    const progressDay = progressMissionsByDate.get(dateKey);
 
-    // 해당 날짜에 완료된 미션이 있으면
+    const markers = [];
+
     if (completedDay && completedDay.length > 0) {
-      return (
-        <div className="mission-markers-container">
-          {completedDay.map((rsId, index) => (
-            <div key={index} className={`mission-marker-item stage-${rsId}`}>
-              {rsId}
-            </div>
-          ))}
-        </div>
-      );
+      completedDay.forEach((rsId) => {
+        markers.push(
+          <div key={`completed-${rsId}`} className={`mission-marker-item completed stage-${rsId}`}>
+            {rsId}
+          </div>
+        );
+      });
+    }
+
+    if (progressDay && progressDay.length > 0) {
+      progressDay.forEach((rsId) => {
+        markers.push(
+          <div key={`progress-${rsId}`} className={"mission-marker-item progress"}>
+            {rsId}
+          </div>
+        );
+      });
+    }
+
+    if (markers.length > 0) {
+      return <div className="mission-markers-container">{markers}</div>;
     }
     return null;
   };

@@ -1,4 +1,4 @@
-.accept-modal-overlay {
+.edit-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,61 +12,41 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
-.accept-modal-content {
+.edit-modal-content {
   background-color: white;
   padding: 30px 40px;
   border-radius: 15px;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 5px B20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: scaleUp 0.3s ease-in-out forwards;
 }
 
-.accept-mission-title {
+.edit-modal-content h2 {
   font-size: 22px;
   font-weight: bold;
-  margin: 0 0 10px;
-}
-
-.mission-title span {
-  background: linear-gradient(to top, #cce0ff 40%, transparent 40%);
-  padding: 0 5px;
-}
-
-.mission-prompt {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 20px;
-}
-
-.due-date-selection {
   margin-bottom: 20px;
+  color: #333;
 }
 
-.due-date-selection label {
-  display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.due-date-selection input[type="date"] {
+.edit-modal-content input[type="date"] {
   width: calc(100% - 20px);
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
-.accept-modal-actions {
+.edit-modal-actions {
   display: flex;
   justify-content: center;
   gap: 15px;
 }
 
-.action-btn {
+.edit-modal-actions button {
   border: none;
   border-radius: 8px;
   padding: 10px 0;
@@ -77,19 +57,19 @@
   transition: all 0.2s ease;
 }
 
-.action-btn:hover {
+.edit-modal-actions button:hover {
   transform: translateY(-2px);
 }
 
-.decline-btn {
+.save-btn {
+  background-color: #5865f2;
+  color: white;
+}
+
+.cancel-btn {
   background-color: #f0f0f0;
   color: #555;
   border: 1px solid #ddd;
-}
-
-.accept-btn {
-  background-color: #5865f2;
-  color: white;
 }
 
 @keyframes fadeIn {

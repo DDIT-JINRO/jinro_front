@@ -21,8 +21,13 @@ export const updateCompleteMission = async (rsId) => {
    const res = await axios.post(`${prefix}/updateCompleteMission`, {rsId : rsId});
    return res.data;
 }
+ 
+export const insertMission = async (rsId, dueDate) => {
+   const res = await axios.post(`${prefix}/insertMission`, {rsId : rsId, dueDate : dueDate});
+   return res.data;
+}
 
-export const insertMission = async (rsId) => {
-   const res = await axios.post(`${prefix}/insertMission`, {rsId : rsId});
+export const updateDueDate = async (rsId, newDueDate) => {
+   const res = await axios.post(`${prefix}/updateDueDate`, {rsId : rsId, dueDate : newDueDate});
    return res.data;
 }
