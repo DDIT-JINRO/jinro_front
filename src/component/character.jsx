@@ -1,6 +1,6 @@
 // Character.js
 import React from 'react';
-import "../roadMap.css";
+import "../css/roadmap/roadMap.css";
 
 function Character({ position }) {
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { updateCompleteMission } from "../api/roadMapApi";
 import { getStageGroup } from "../data/roadmapUtils";
-import "../missionBox.css";
+import "../css/roadmap/missionBox.css";
 
 function MissionBox({ progressMissions, completedMissions, onUpdate, missionList }) {
 

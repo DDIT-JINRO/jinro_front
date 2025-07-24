@@ -1,5 +1,5 @@
 import React from "react";
-import "../roadMap.css";
+import '../css/roadmap/roadmap.css';
 
 const prefix = `src/assets/roadmap/images/`;
 

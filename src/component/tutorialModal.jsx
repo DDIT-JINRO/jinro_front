@@ -1,5 +1,5 @@
 import React from "react";
-import "../tutorialModal.css";
+import "../css/roadmap/tutorialModal.css";
 
 function TutorialModal({ onClose, isClosing, isAnimating }) {
   // 모달 닫히는 것 방지
