@@ -8,24 +8,42 @@ body {
   background-position: center;
   width: 100vw;
   height: calc(100vh - 24px);
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #b4e3ff; /* 배경 이미지 바깥 영역 색상 */
+  position: relative; /* MissionBox 같은 자식 요소의 기준점 역할 */
 }
 
-.character img {
-  width: 60px;
-  height: 90px;
+.roadmap-content-wrapper {
+  max-width: 1084px; /* 배경 이미지의 원본 너비 */
+  height: 0;
+  padding-bottom: 62.64%; /* (679 / 1084) * 100 = 62.638... */
 }
 
 .character {
   z-index: 1;
   position: absolute;
   transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
+  width: 5%; /* 사용자 요청: 캐릭터 div의 너비 */
+}
+
+.character img {
+  width: 100%; /* 부모 div의 100% */
+  height: auto;  /* 가로세로 비율 유지 */
 }
 
 .cloud {
   z-index: 5;
   position: absolute;
   transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
+  width: 15%; /* 구름 div의 너비 (이전 이미지 비율) */
+}
+
+.cloud img {
+  width: 100%; /* 부모 div의 100% */
+  height: auto; /* 가로세로 비율 유지 */
 }
 
 .wood-sign-container {
@@ -40,22 +58,7 @@ body {
   justify-content: center;
 }
 
-.wood-sign-image {
-  width: 80px; /* Adjust size as needed */
-  height: auto;
-}
-
-.wood-sign-text {
-  position: absolute;
-  font-size: 11px; /* Adjust font size as needed */
-  font-weight: bold;
-  color: #ffffff; /* Adjust color as needed */
-  text-align: center;
-  top: 32%; /* Center text vertically on the sign */
-  left: 48%; /* Center text horizontally on the sign */
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-}
+/* wood-sign-image와 wood-sign-text는 woodSign.css에서 관리 */
 
 .cloud.progress, .cloud.unlocked {
   cursor: pointer;
