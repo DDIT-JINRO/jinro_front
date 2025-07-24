@@ -1,0 +1,25 @@
+.wood-sign-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Lowest z-index */
+}
+
+.wood-sign-image {
+  width: 80px; /* Adjust size as needed */
+  height: auto;
+}
+
+.wood-sign-text {
+  position: absolute;
+  font-size: 11px; /* Adjust font size as needed */
+  font-weight: bold;
+  color: #ffffff; /* Adjust color as needed */
+  text-align: center;
+  top: 32%; /* Center text vertically on the sign */
+  left: 48%; /* Center text horizontally on the sign */
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}

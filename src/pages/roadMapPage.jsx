@@ -10,6 +10,7 @@ import TutorialModal from "../component/tutorialModal";
 import AcceptMissionModal from "../component/acceptMissionModal";
 import MissionTooltip from "../component/missionTooltip";
 import EditDueDateModal from "../component/editDueDateModal"; // Import the new modal
+import WoodSign from "../component/woodSign"; // Import WoodSign
 import { updateDueDate } from "../api/roadMapApi"; // Import the new API function
 
 // 커스텀 훅 임포트
@@ -41,7 +42,7 @@ function RoadMap() {
   const { calendar, tooltip, eventHandlers } =
     useRoadmapInteraction(missionList);
 
-  // State for EditDueDateModal
+  // 날짜 관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [missionToEdit, setMissionToEdit] = useState(null);
 
@@ -86,17 +87,18 @@ function RoadMap() {
           const isCurrent = charPosition === pos.id - 1;
 
           return (
+            // 키, 임무번호, 위치, 잠김상태, 현재위치여부, 클릭 핸들러, 호버 핸들러, 탈출 핸들러
             <Cloud
               key={pos.id}
               stageId={pos.id}
               position={pos.cloud}
-              state={state} // 상태를 prop으로 전달
+              state={state}
               isCurrent={isCurrent}
               onClick={() => {
                 if (state === CLOUD_STATE.LOCKED) {
-                  acceptMissionModal.open(pos.id, true); // 잠금 모드로 열기
+                  acceptMissionModal.open(pos.id, true);
                 } else if (state === CLOUD_STATE.UNLOCKED) {
-                  acceptMissionModal.open(pos.id, false); // 수락 모드로 열기
+                  acceptMissionModal.open(pos.id, false);
                 } else {
                   setCharPosition(pos.id - 1);
                 }
@@ -107,16 +109,49 @@ function RoadMap() {
           );
         })}
 
+        {/* Render WoodSigns */}
+        {STAGE_POSITIONS.map((pos) => {
+          const state = getCloudState(pos.id, progressMissions, completedMissions);
+          const completedMission = completedMissions.find(m => m.rsId === pos.id);
+          let signText = "";
+          let showSign = false;
+
+          if (pos.id === 1) {
+            if (state === CLOUD_STATE.COMPLETED && completedMission) {
+              signText = new Date(completedMission.completeAt).toLocaleDateString();
+            } else {
+              signText = "Start!";
+            }
+            showSign = true;
+          } else if (state === CLOUD_STATE.COMPLETED && completedMission) {
+            signText = new Date(completedMission.completeAt).toLocaleDateString();
+            showSign = true;
+          }
+
+          return (
+            showSign && (
+              <WoodSign
+                key={`sign-${pos.id}`}
+                position={pos.sign} // Assuming pos.sign exists for sign position
+                text={signText}
+              />
+            )
+          );
+        })}
+
+        {/* 캐릭터 위치 */}
         <Character position={STAGE_POSITIONS[charPosition].char} />
 
+        {/* 진행 중 미션, 완료 미션, 미션 새로고침, 미션 리스트, 날짜 수정 */}
         <MissionBox
           progressMissions={progressMissions}
           completedMissions={completedMissions}
-          onUpdate={refreshMissionData} // 변경된 함수 전달
+          onUpdate={refreshMissionData}
           missionList={missionList}
-          onEditDueDate={handleEditDueDate} // Pass the new handler
+          onEditDueDate={handleEditDueDate}
         />
 
+        {/* 진행 중 미션, 완료 미션, 캘린더 열림 여부, 캘린더 토글 */}
         <CalendarView
           progressMissions={progressMissions}
           completedMissions={completedMissions}
@@ -130,6 +165,7 @@ function RoadMap() {
       </div>
 
       {acceptMissionModal.isOpen && (
+        // 미션 명, 수락 핸들러, 닫기 핸들러, 잠김 여부
         <AcceptMissionModal
           mission={acceptMissionModal.mission}
           onAccept={acceptMissionModal.accept}
@@ -139,6 +175,7 @@ function RoadMap() {
       )}
 
       {tutorialModal.isOpen && (
+        // 닫기 핸들러, 닫히는 중 상태 값(바로 사라짐 방지), 애니메이션 중 상태 값
         <TutorialModal
           onClose={tutorialModal.close}
           isClosing={tutorialModal.isClosing}
@@ -147,10 +184,12 @@ function RoadMap() {
       )}
 
       {tooltip.mission && (
+        // 미션 명, 위치
         <MissionTooltip mission={tooltip.mission} position={tooltip.position} />
       )}
 
       {isEditModalOpen && missionToEdit && (
+        // 열림 여부, 닫기 핸들러, 저장 핸들러, 완료 예정 날짜
         <EditDueDateModal
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
