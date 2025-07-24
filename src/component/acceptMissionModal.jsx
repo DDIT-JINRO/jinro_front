@@ -1,5 +1,5 @@
 import React from "react";
-import "../acceptMissionModal.css"; // 2단계에서 만들 CSS 파일
+import "../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS 파일
 
 function AcceptMissionModal({ mission, onAccept, onClose }) {
   if (!mission) return null;
@@ -9,15 +9,15 @@ function AcceptMissionModal({ mission, onAccept, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={handleContentClick}>
-        <div className="modal-body">
+    <div className="accept-modal-overlay" onClick={onClose}>
+      <div className="accept-modal-content" onClick={handleContentClick}>
+        <div className="accept-modal-body">
           <h2 className="mission-title">
             <span>{mission.stepName}</span>
           </h2>
           <p className="mission-prompt">해당 미션을 수락하시겠습니까?</p>
         </div>
-        <div className="modal-actions">
+        <div className="accept-modal-actions">
           <button className="action-btn accept-btn" onClick={onAccept}>
             수락
           </button>

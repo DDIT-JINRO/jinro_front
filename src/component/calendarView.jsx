@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // 기본 스타일
-import "../customCalendar.css";
+import "../css/roadmap/customCalendar.css";
 import { formatDate } from "../data/roadmapUtils";
 
 function CalendarView({ completedMissions, isCalendarOpen, toggleCalendar }) {

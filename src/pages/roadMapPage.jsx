@@ -1,4 +1,4 @@
-import "../roadMap.css";
+import "../css/roadmap/roadMap.css";
 import Cloud from "../component/cloud";
 import Character from "../component/character";
 import { STAGE_POSITIONS } from "../data/roadmapStagedata";

@@ -1,4 +1,4 @@
-.modal-overlay {
+.accept-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
-.modal-content {
+.accept-modal-content {
   background-color: white;
   padding: 30px 40px;
   border-radius: 15px;
@@ -23,7 +23,7 @@
   animation: scaleUp 0.3s ease-in-out forwards;
 }
 
-.mission-title {
+.accept-mission-title {
   font-size: 22px;
   font-weight: bold;
   margin: 0 0 10px;
@@ -40,7 +40,7 @@
   margin: 0 0 30px;
 }
 
-.modal-actions {
+.accept-modal-actions {
   display: flex;
   justify-content: center;
   gap: 15px;

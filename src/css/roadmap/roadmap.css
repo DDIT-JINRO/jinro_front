@@ -3,7 +3,7 @@ body {
 }
 
 #roadmap-background {
-  background-image: url("./assets/roadmap/images/background.png");
+  background-image: url("../../assets/roadmap/images/background.png");
   background-size: cover;
   background-position: center;
   width: 100vw;
