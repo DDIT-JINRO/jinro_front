@@ -53,11 +53,11 @@ export const useModalManager = (missionList, refreshMissionData, setCharPosition
     setSelectedMission(null);
   };
 
-  const handleAcceptMission = () => {
+  const handleAcceptMission = (dueDate) => {
     if (!selectedMission) return;
 
     setCharPosition(selectedMission.rsId - 1);
-    insertMission(selectedMission.rsId)
+    insertMission(selectedMission.rsId, dueDate) // dueDate 전달
       .then((res) => {
         if (res === "fail") return;
         refreshMissionData(); // 데이터 새로고침

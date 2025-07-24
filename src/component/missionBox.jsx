@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { updateCompleteMission } from "../api/roadMapApi";
-import { getStageGroup } from "../data/roadmapUtils";
+import { formatDate, getStageGroup } from "../data/roadmapUtils";
 import "../css/roadmap/missionBox.css";
 
-function MissionBox({ progressMissions, completedMissions, onUpdate, missionList }) {
+function MissionBox({ progressMissions, completedMissions, onUpdate, missionList, onEditDueDate }) {
 
   const handleCompleteClick = (stageId) => {
     updateCompleteMission(stageId).then((res) => {
@@ -22,7 +22,7 @@ function MissionBox({ progressMissions, completedMissions, onUpdate, missionList
 
   return (
     <div className="mission-box-container">
-      <h3 className="mission-box-title">나의 임무</h3>
+      <h3 className="mission-box-title">나의 미션</h3>
       <ul className="mission-list">
         {progressMissions.map((progMission) => {
           // 이 미션이 완료 목록에 포함되어 있는지 확인
@@ -35,17 +35,34 @@ function MissionBox({ progressMissions, completedMissions, onUpdate, missionList
           // missionList에서 해당 미션 찾기 (더 안전한 방법)
           const missionInfo = missionList.find(mission => mission.rsId === progMission.rsId);
           const stepName = missionInfo ? missionInfo.stepName : '알 수 없는 단계';
+          
+          const date = new Date(progMission.dueDate);
 
           // 상황 봐서 전체 테이블 조회해서 자동 완료 띄우는 기능 생각하기
           return (
             <li key={progMission.rsId} className="mission-item">
+              <div>
               <span>{`${currentGroup}단계 : ${stepName}`}</span>
+                {progMission.dueDate && (
+                  <p className="mission-due-date">
+                    예정: {formatDate(date)}
+                    {!isCompleted && (
+                      <button 
+                        className="edit-date-btn"
+                        onClick={() => onEditDueDate(progMission.rsId, progMission.dueDate)}
+                      >
+                        수정
+                      </button>
+                    )}
+                  </p>
+                )}
+              </div>
               {isCompleted ? (
-                <span className="mission-status progress">완료됨</span>
+                <div className="mission-status progress">완료됨</div>
               ) : (
-                <span className="mission-status completBtn" onClick={() => handleCompleteClick(progMission.rsId)}>
+                <div className="mission-status completBtn" onClick={() => handleCompleteClick(progMission.rsId)}>
                   완료
-                </span>
+                </div>
               )}
             </li>
           );

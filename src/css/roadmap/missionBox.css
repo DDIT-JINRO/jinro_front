@@ -69,26 +69,45 @@
 /* 개별 미션 아이템 */
 .mission-item {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  align-items: center;
   padding: 8px 0;
   font-size: 14px;
   color: #444;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.mission-item:last-child {
-  border-bottom: none;
+.mission-item > span:first-child {
+  margin-bottom: 5px; /* Add some space between mission name and due date */
 }
 
-/* 상태 뱃지 공통 스타일 */
+.mission-due-date {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex; /* Make it a flex container */
+  align-items: center; /* Align items vertically */
+  gap: 5px; /* Space between text and button */
+}
+
+.edit-date-btn {
+  background-color: #6c757d; /* A neutral color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-date-btn:hover {
+  background-color: #5a6268;
+}
+
 .mission-status {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 500;
-  flex-shrink: 0;
-  margin-left: 10px;
+  align-self: flex-end; /* Align status to the end */
 }
 
 /* '완료' 버튼 스타일 */
@@ -97,6 +116,10 @@
   color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s;
+  border-radius: 15%;
+  width: 40px;
+  padding: 1px;
+  text-align: center;
 }
 
 .mission-status.completBtn:hover {
