@@ -13,6 +13,18 @@ function AcceptMissionModal({ mission, onAccept, onClose, isLocked }) {
   };
 
   const handleAcceptClick = () => {
+    if(!dueDate) {
+      alert("완료 예정 날짜를 입력해주세요.");
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(dueDate) < today) {
+      alert("과거 날짜는 선택할 수 없습니다.");
+      return;
+    }
+
     onAccept(dueDate); // 완료 예정 날짜를 onAccept 콜백으로 전달
   };
 
