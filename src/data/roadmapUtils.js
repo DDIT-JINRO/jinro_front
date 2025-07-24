@@ -1,3 +1,31 @@
+// 구름 상태 상수
+export const CLOUD_STATE = {
+  LOCKED: 'locked',
+  UNLOCKED: 'unlocked',
+  PROGRESS: 'progress',
+  COMPLETED: 'completed',
+};
+
+// 구름 상태 결정 로직
+export const getCloudState = (stageId, progressMissions, completedMissions) => {
+  const isCompleted = completedMissions.some(m => m.rsId === stageId);
+  if (isCompleted) {
+    return CLOUD_STATE.COMPLETED;
+  }
+
+  const isProgress = progressMissions.some(m => m.rsId === stageId);
+  if (isProgress) {
+    return CLOUD_STATE.PROGRESS;
+  }
+
+  const isLocked = checkIsLocked(stageId, completedMissions);
+  if (isLocked) {
+    return CLOUD_STATE.LOCKED;
+  }
+
+  return CLOUD_STATE.UNLOCKED;
+};
+
 // 단계를 나눔
 const STAGE_GROUPS = {
   1: [1],
