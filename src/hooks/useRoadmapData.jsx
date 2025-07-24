@@ -13,9 +13,9 @@ export const useRoadmapData = () => {
   // 로딩 중인지
   const [isLoading, setIsLoading] = useState(true);
 
-  // 로드맵 데이터 로딩 함수
-  const loadRoadmapData = useCallback(async () => {
-    setIsLoading(true);
+  // 초기 로드맵 데이터 로딩 함수
+  const loadRoadmapData = useCallback(async (showLoading = true) => {
+    if (showLoading) setIsLoading(true);
     try {
       const [missions, roadmapData] = await Promise.all([
         selectMissionList(),
@@ -28,14 +28,29 @@ export const useRoadmapData = () => {
     } catch (error) {
       console.error("로드맵 데이터 로딩 중 오류 발생", error);
     } finally {
-      setIsLoading(false);
+      if (showLoading) setIsLoading(false);
+    }
+  }, []);
+
+  // 미션 데이터 새로고침 함수
+  const refreshMissionData = useCallback(async () => {
+    try {
+      const [missions, roadmapData] = await Promise.all([
+        selectMissionList(),
+        selectMemberRoadmap(),
+      ]);
+      setMissionList(missions);
+      setCompletedMissions(roadmapData.completedMissions);
+      setProgressMissions(roadmapData.progressMissions);
+    } catch (error) {
+      console.error("미션 데이터 새로고침 중 오류 발생", error);
     }
   }, []);
 
   // onload 로드맵 데이터 로딩
   useEffect(() => {
     loadRoadmapData();
-  }, [loadRoadmapData]);
+  }, []);
 
   return {
     missionList,
@@ -44,6 +59,6 @@ export const useRoadmapData = () => {
     progressMissions,
     completedMissions,
     isLoading,
-    reloadRoadmapData: loadRoadmapData,
+    refreshMissionData, // 새로운 함수 추가
   };
 };

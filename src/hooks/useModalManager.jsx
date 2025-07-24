@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { insertMission } from '../api/roadMapApi';
 
-export const useModalManager = (missionList, reloadRoadmapData, setCharPosition) => {
+export const useModalManager = (missionList, refreshMissionData, setCharPosition) => {
   // 튜토리얼 모달
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -10,6 +10,7 @@ export const useModalManager = (missionList, reloadRoadmapData, setCharPosition)
   // 미션 수락 모달
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
+  const [isLockedMode, setIsLockedMode] = useState(false);
 
   // 튜토리얼 모달 핸들러
   const openTutorialModal = () => setIsTutorialOpen(true);
@@ -34,12 +35,17 @@ export const useModalManager = (missionList, reloadRoadmapData, setCharPosition)
 
 
   // 미션 수락 모달 핸들러
-  const openAcceptModal = (stageId) => {
+  const openAcceptModal = (stageId, isLocked = false) => {
+    setIsLockedMode(isLocked);
+
     const missionInfo = missionList.find(m => m.rsId === stageId);
     if (missionInfo) {
       setSelectedMission(missionInfo);
-      setIsAcceptModalOpen(true);
+    } else {
+      return;
     }
+
+    setIsAcceptModalOpen(true);
   };
 
   const closeAcceptModal = () => {
@@ -54,7 +60,7 @@ export const useModalManager = (missionList, reloadRoadmapData, setCharPosition)
     insertMission(selectedMission.rsId)
       .then((res) => {
         if (res === "fail") return;
-        reloadRoadmapData(); // 데이터 새로고침
+        refreshMissionData(); // 데이터 새로고침
       })
       .catch((err) => {
         console.error("미션 수주 중 오류가 발생했습니다.", err);
@@ -74,6 +80,7 @@ export const useModalManager = (missionList, reloadRoadmapData, setCharPosition)
     acceptMissionModal: {
       isOpen: isAcceptModalOpen,
       mission: selectedMission,
+      isLocked: isLockedMode,
       open: openAcceptModal,
       close: closeAcceptModal,
       accept: handleAcceptMission,
