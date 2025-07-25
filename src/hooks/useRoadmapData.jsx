@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
 import { selectMemberRoadmap, selectMissionList } from '../api/roadMapApi';
-import { useParams } from 'react-router-dom';
 
 export const useRoadmapData = () => {
   // 전체 미션 리스트
@@ -54,7 +53,7 @@ export const useRoadmapData = () => {
   // onload 로드맵 데이터 로딩
   useEffect(() => {
     loadRoadmapData();
-  }, []);
+  }, [loadRoadmapData]);
 
   return {
     missionList,
