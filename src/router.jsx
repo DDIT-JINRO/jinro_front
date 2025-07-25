@@ -3,6 +3,7 @@ import WorldcupPage from "./pages/WorldcupPage";
 import ResultPage from "./pages/ResultPage";
 import Tournament from "./components/Tournament.jsx";
 import RoadMap from "./pages/roadMapPage";
+import ResultPage from "./pages/ResultPage";
 
 const router = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     {
         path: "/roadmap",
         element: <RoadMap />,
+    },
+    {
+        path: "/roadmap/results",
+        element: <ResultPage />,
     },
 ]);
 

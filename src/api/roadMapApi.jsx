@@ -31,3 +31,8 @@ export const updateDueDate = async (rsId, newDueDate) => {
    const res = await axios.post(`${prefix}/updateDueDate`, {rsId : rsId, dueDate : newDueDate});
    return res.data;
 }
+
+export const selectResultData = async () => {
+   const res = await axios.get(`${prefix}/selectResultData`);
+   return res.data;
+}

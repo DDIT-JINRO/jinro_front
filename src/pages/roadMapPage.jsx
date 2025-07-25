@@ -18,6 +18,8 @@ import { useRoadmapData } from "../hooks/useRoadmapData";
 import { useModalManager } from "../hooks/useModalManager";
 import { useRoadmapInteraction } from "../hooks/useRoadmapInteraction";
 import { useState, useRef } from "react";
+import RoadmapCompleteModal from "../component/roadmapCompleteModal";
+import ResultBtn from "../component/resultMoveBtn";
 
 function RoadMap() {
   // 1. 데이터 관리 훅
@@ -29,7 +31,7 @@ function RoadMap() {
     completedMissions,
     isLoading,
     refreshMissionData,
-    dueDate,
+    isCompleted,
   } = useRoadmapData();
 
   // 2. 모달 관리 훅
@@ -194,7 +196,7 @@ function RoadMap() {
         })}
 
         {/* 캐릭터 위치 */}
-        <Character position={STAGE_POSITIONS[charPosition].char} isMoving={isMoving} chracterDirection={chracterDirection} />
+        <Character position={STAGE_POSITIONS[charPosition].char} isMoving={isMoving} chracterDirection={character.chracterDirection} />
 
         {/* 진행 중 미션, 완료 미션, 미션 새로고침, 미션 리스트, 날짜 수정 */}
         <MissionBox
@@ -257,6 +259,10 @@ function RoadMap() {
           isOpen={isRoadmapCompleteModalOpen}
           onClose={() => setIsRoadmapCompleteModalOpen(false)}
         />
+      )}
+
+      {isCompleted && (
+        <ResultBtn/>
       )}
     </>
   );
