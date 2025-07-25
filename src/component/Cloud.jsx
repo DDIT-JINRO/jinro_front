@@ -2,7 +2,7 @@ import React from "react";
 import { CLOUD_STATE } from "../data/roadmapUtils";
 import '../css/roadmap/roadmap.css';
 
-const prefix = `src/assets/roadmap/images/`;
+const prefix = `/src/assets/roadmap/images/`;
 
 function Cloud({
   stageId,
