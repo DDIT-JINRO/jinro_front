@@ -20,6 +20,7 @@ const MockInterviewScreen = () => {
   // 질문 데이터 상태
   const [questions, setQuestions] = useState([]);
   const [questionsLoaded, setQuestionsLoaded] = useState(false);
+  const [totalAvailableQuestions, setTotalAvailableQuestions] = useState(0);
   
   // 녹화 관련 상태
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -35,6 +36,34 @@ const MockInterviewScreen = () => {
   
   // 질문 로드 상태 추적 (React Strict Mode 대응)
   const questionsInitialized = useRef(false);
+
+  // 랜덤 질문 선택 함수
+  const selectRandomQuestions = (questionsArray, count = 3) => {
+    console.log(`🎲 전체 ${questionsArray.length}개 질문 중 랜덤으로 ${count}개 선택`);
+    
+    // 만약 전체 질문 수가 요청한 개수보다 적다면 모든 질문 반환
+    if (questionsArray.length <= count) {
+      console.log(`⚠️ 전체 질문 수(${questionsArray.length})가 요청 개수(${count})보다 적어서 모든 질문 사용`);
+      return questionsArray;
+    }
+    
+    // Fisher-Yates 셔플 알고리즘으로 배열 섞기
+    const shuffled = [...questionsArray];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // 처음 count개만 선택
+    const selected = shuffled.slice(0, count);
+    
+    console.log('🎯 선택된 질문들:');
+    selected.forEach((question, index) => {
+      console.log(`   ${index + 1}. ${question}`);
+    });
+    
+    return selected;
+  };
 
   // URL 파라미터에서 면접 설정 정보를 읽어와서 서버에서 질문 데이터 로드
   const loadQuestionsFromServer = async () => {
@@ -95,14 +124,20 @@ const MockInterviewScreen = () => {
         console.log('📊 질문 개수:', data.questions.length);
         
         // iqContent 값들만 추출
-        const questionTexts = data.questions.map((item, index) => {
+        const allQuestionTexts = data.questions.map((item, index) => {
           console.log(`📝 서버 질문 ${index + 1}:`, item.iqContent);
           return item.iqContent || `질문 ${index + 1}을 불러올 수 없습니다.`;
         });
+
+        // 전체 질문 수 저장
+        setTotalAvailableQuestions(allQuestionTexts.length);
         
-        setQuestions(questionTexts);
+        // 랜덤으로 3개 선택
+        const selectedQuestions = selectRandomQuestions(allQuestionTexts, 3);
+        
+        setQuestions(selectedQuestions);
         setQuestionsLoaded(true);
-        console.log('✅ 질문 로드 완료:', questionTexts);
+        console.log('✅ 질문 로드 완료:', selectedQuestions);
         
         return true; // 성공 반환
         
