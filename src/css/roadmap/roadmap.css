@@ -7,7 +7,7 @@ body {
   background-size: cover;
   background-position: center;
   width: 100vw;
-  height: calc(100vh - 24px);
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,6 +30,7 @@ body {
 }
 
 .character img {
+  user-select: none; 
   width: 100%; /* 부모 div의 100% */
   height: auto;  /* 가로세로 비율 유지 */
 }
@@ -47,11 +48,13 @@ body {
 }
 
 .cloud img {
+  user-select: none; 
   width: 100%; /* 부모 div의 100% */
   height: auto; /* 가로세로 비율 유지 */
 }
 
 .wood-sign-container {
+  user-select: none; 
   position: absolute;
   top: 15%;
   left: 30%; /* Adjust to be slightly left of center */
@@ -141,4 +144,72 @@ body {
   padding: 20px;
   height: 100%;
   overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
+
+/* 전체 컨테이너 스타일 */
+.dont-show-again {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+
+  display: flex;
+  align-items: center;
+}
+
+/* display:none 대신 이 방법을 사용해야 키보드 접근성이 유지됩니다. */
+.dont-show-again input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 라벨 텍스트 스타일 */
+.dont-show-again label {
+  color: #333; /* 텍스트 색상 */
+  font-size: 15px; /* 폰트 크기 */
+  font-weight: 500; /* 폰트 굵기 */
+  user-select: none; 
+  cursor: pointer; 
+}
+
+/* 우리가 직접 디자인할 커스텀 체크박스 (기본 상태) */
+.dont-show-again label::before {
+  content: ''; /* 가상 요소는 content 속성이 필수입니다 */
+  display: inline-block; /* 텍스트 옆에 오도록 설정 */
+  width: 18px;   /* 너비 */
+  height: 18px;  /* 높이 */
+  background-color: #fff; /* 배경색 */
+  border: 2px solid #ddd;  /* 테두리 */
+  border-radius: 5px;   /* 모서리를 둥글게 */
+  margin-right: 8px;    /* 텍스트와의 간격 */
+  
+  /* 부드러운 전환 효과 */
+  transition: background-color 0.2s ease-in-out;
+  
+  /* 수직 정렬을 위해 추가 */
+  vertical-align: middle; 
+}
+
+/* 체크박스가 '선택됐을 때' 커스텀 체크박스 스타일 */
+.dont-show-again input[type="checkbox"]:checked + label::before {
+  background-color: #FF8A00; 
+  border-color: #FF8A00;
+}
+
+/* 체크박스가 '선택됐을 때' 나타날 체크 표시 (V) 아이콘 */
+.dont-show-again input[type="checkbox"]:checked + label::after {
+  content: '';
+  position: absolute;
+  left: 7px; /* 체크 표시 위치 (가로) */
+  top: 4px;  /* 체크 표시 위치 (세로) */
+  
+  width: 5px;
+  height: 10px;
+  
+  border: solid white; /* 체크 표시 색상 */
+  border-width: 0 3px 3px 0;
+  
+  /* 45도 회전해서 V 모양 만들기 */
+  transform: rotate(45deg);
 }

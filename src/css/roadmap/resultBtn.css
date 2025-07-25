@@ -1,8 +1,8 @@
 /* --- 결과 화면 다시보기 버튼 --- */
 .move-result-btn {
-  position: fixed;
-  bottom: 35px;
-  right: 10px;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
   width: fit-content;
   height: 30px;
   padding: 10px;

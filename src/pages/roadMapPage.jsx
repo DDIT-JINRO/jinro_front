@@ -20,6 +20,7 @@ import { useRoadmapInteraction } from "../hooks/useRoadmapInteraction";
 import { useEffect, useState } from "react";
 import RoadmapCompleteModal from "../component/roadmapCompleteModal";
 import ResultBtn from "../component/resultMoveBtn";
+import { useCookie } from "../hooks/useCookie";
 
 function RoadMap() {
   // 1. 데이터 관리 훅
@@ -45,9 +46,28 @@ function RoadMap() {
   const { calendar, tooltip, eventHandlers, character } =
     useRoadmapInteraction(missionList);
 
+  const { setCookie, removeCookie, getCookie } = useCookie();
+  
   useEffect(() => {
-    window.resizeTo(1084, 736); 
+    if(getCookie('popup')) {
+      setIsNoShow(true);
+    };
+    window.resizeTo(1084, 736);
   }, []);
+  
+  // 보지 않기 설정값
+  const [isNoShow, setIsNoShow] = useState(false);
+
+  const handleCheckboxChange = (event) => {
+    const flag_check = event.target.checked;
+    setIsNoShow(flag_check);
+
+    if(flag_check) {
+      setCookie('popup', 'done', 1);
+    } else {
+      removeCookie('popup');
+    }
+  };
 
   // 날짜 관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -72,7 +92,7 @@ function RoadMap() {
   };
 
   const handleEditDueDate = (rsId, currentDueDate) => {
-    const mission = progressMissions.find(m => m.rsId === rsId);
+    const mission = progressMissions.find((m) => m.rsId === rsId);
     if (mission) {
       setMissionToEdit({ ...mission, currentDueDate });
       setIsEditModalOpen(true);
@@ -124,7 +144,11 @@ function RoadMap() {
         <TutorialBtn onClick={tutorialModal.open} />
 
         {STAGE_POSITIONS.map((pos) => {
-          const state = getCloudState(pos.id, progressMissions, completedMissions);
+          const state = getCloudState(
+            pos.id,
+            progressMissions,
+            completedMissions
+          );
           const isCurrent = charPosition === pos.id - 1;
 
           return (
@@ -171,20 +195,30 @@ function RoadMap() {
 
         {/* Render WoodSigns */}
         {STAGE_POSITIONS.map((pos) => {
-          const state = getCloudState(pos.id, progressMissions, completedMissions);
-          const completedMission = completedMissions.find(m => m.rsId === pos.id);
+          const state = getCloudState(
+            pos.id,
+            progressMissions,
+            completedMissions
+          );
+          const completedMission = completedMissions.find(
+            (m) => m.rsId === pos.id
+          );
           let signText = "";
           let showSign = false;
 
           if (pos.id === 1) {
             if (state === CLOUD_STATE.COMPLETED && completedMission) {
-              signText = new Date(completedMission.completeAt).toLocaleDateString();
+              signText = new Date(
+                completedMission.completeAt
+              ).toLocaleDateString();
             } else {
               signText = "Start!";
             }
             showSign = true;
           } else if (state === CLOUD_STATE.COMPLETED && completedMission) {
-            signText = new Date(completedMission.completeAt).toLocaleDateString();
+            signText = new Date(
+              completedMission.completeAt
+            ).toLocaleDateString();
             showSign = true;
           }
 
@@ -200,7 +234,11 @@ function RoadMap() {
         })}
 
         {/* 캐릭터 위치 */}
-        <Character position={STAGE_POSITIONS[charPosition].char} isMoving={isMoving} chracterDirection={character.chracterDirection} />
+        <Character
+          position={STAGE_POSITIONS[charPosition].char}
+          isMoving={isMoving}
+          chracterDirection={character.chracterDirection}
+        />
 
         {/* 진행 중 미션, 완료 미션, 미션 새로고침, 미션 리스트, 날짜 수정 */}
         <MissionBox
@@ -211,6 +249,8 @@ function RoadMap() {
           onEditDueDate={handleEditDueDate}
         />
 
+        {isCompleted && <ResultBtn />}
+
         {/* 진행 중 미션, 완료 미션, 캘린더 열림 여부, 캘린더 토글 */}
         <CalendarView
           progressMissions={progressMissions}
@@ -219,9 +259,17 @@ function RoadMap() {
           toggleCalendar={calendar.toggle}
         />
       </div>
-      <div className="dont-show-again">
-        <input type="checkbox" id="no-show" />
-        <label htmlFor="no-show">24시간 보지 않기</label>
+
+      <div>
+        <div className="dont-show-again">
+          <input
+            type="checkbox"
+            id="no-show"
+            checked={isNoShow}
+            onChange={handleCheckboxChange}
+          />
+          <label htmlFor="no-show">오늘 하루 안보기</label>
+        </div>
       </div>
 
       {acceptMissionModal.isOpen && (
@@ -263,10 +311,6 @@ function RoadMap() {
           isOpen={isRoadmapCompleteModalOpen}
           onClose={() => setIsRoadmapCompleteModalOpen(false)}
         />
-      )}
-
-      {isCompleted && (
-        <ResultBtn/>
       )}
     </>
   );
