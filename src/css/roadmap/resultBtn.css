@@ -1,0 +1,28 @@
+/* --- 결과 화면 다시보기 버튼 --- */
+.move-result-btn {
+  position: fixed;
+  bottom: 35px;
+  right: 10px;
+  width: fit-content;
+  height: 30px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: #555;
+  transition: all 0.2s ease;
+  gap: 10px;
+}
+
+.move-result-btn:hover {
+  transform: scale(1.1);
+  background-color: white;
+}

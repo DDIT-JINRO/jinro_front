@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { selectMemberRoadmap, selectMissionList } from '../api/roadMapApi';
+import { useParams } from 'react-router-dom';
 
 export const useRoadmapData = () => {
   // 전체 미션 리스트
@@ -12,6 +13,8 @@ export const useRoadmapData = () => {
   const [completedMissions, setCompletedMissions] = useState([]);
   // 로딩 중인지
   const [isLoading, setIsLoading] = useState(true);
+  // 로드맵 완성인지
+  const [isCompleted, setIsCompleted] = useState(false);
 
   // 초기 로드맵 데이터 로딩 함수
   const loadRoadmapData = useCallback(async (showLoading = true) => {
@@ -25,6 +28,7 @@ export const useRoadmapData = () => {
       setCharPosition(roadmapData.currentCharPosition > 0 ? roadmapData.currentCharPosition - 1 : 0);
       setCompletedMissions(roadmapData.completedMissions);
       setProgressMissions(roadmapData.progressMissions);
+      setIsCompleted(roadmapData.completedMissions.some(m => m.rsId === 11));
     } catch (error) {
       console.error("로드맵 데이터 로딩 중 오류 발생", error);
     } finally {
@@ -60,5 +64,6 @@ export const useRoadmapData = () => {
     completedMissions,
     isLoading,
     refreshMissionData, // 새로운 함수 추가
+    isCompleted
   };
 };
