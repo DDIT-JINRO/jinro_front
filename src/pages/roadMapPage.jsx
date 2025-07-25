@@ -17,7 +17,7 @@ import { updateDueDate, updateCompleteMission } from "../api/roadMapApi"; // Imp
 import { useRoadmapData } from "../hooks/useRoadmapData";
 import { useModalManager } from "../hooks/useModalManager";
 import { useRoadmapInteraction } from "../hooks/useRoadmapInteraction";
-import { useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import RoadmapCompleteModal from "../component/roadmapCompleteModal";
 import ResultBtn from "../component/resultMoveBtn";
 
@@ -44,6 +44,10 @@ function RoadMap() {
   // 3. UI 상호작용 훅
   const { calendar, tooltip, eventHandlers, character } =
     useRoadmapInteraction(missionList);
+
+  useEffect(() => {
+    window.resizeTo(1084, 736); 
+  }, []);
 
   // 날짜 관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

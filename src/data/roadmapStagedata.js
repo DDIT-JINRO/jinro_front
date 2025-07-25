@@ -1,5 +1,3 @@
-import { selectMissionList } from "../api/roadMapApi";
-
 export const STAGE_POSITIONS = [
   {
     id: 1,
@@ -68,3 +66,16 @@ export const STAGE_POSITIONS = [
     sign: { top: "14%", left: "48%" },
   },
 ];
+
+export const SHORT_CUT_URL = [
+  "http://localhost:8080/mpg/mif/inq/selectMyInquiryView.do",
+  "http://localhost:8080/pse/cat/careerAptitudeTest.do",
+  "http://localhost:8080/",
+  "http://localhost:8080/pse/cr/crl/selectCareerList.do",
+  "http://localhost:8080/prg/std/stdGroupList.do",
+  "http://localhost:8080/cnslt/off/offlineReservation.do",
+  "http://localhost:8080/comm/peer/teen/teenList.do",
+  "http://localhost:8080/rsm/rsm",
+  "http://localhost:8080/sint/qestnlst",
+  "http://localhost:8080/imtintrvw/aiimtintrvw"
+]
