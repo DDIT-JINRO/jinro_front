@@ -1,7 +1,7 @@
 import React from "react";
 import "../css/roadmap/woodSign.css";
 
-const prefix = `src/assets/roadmap/images/`;
+const prefix = `/src/assets/roadmap/images/`;
 const signImgSrc = `${prefix}wood_sign.png`;
 
 function WoodSign({ position, text }) {

@@ -1,11 +1,9 @@
-// Character.js
-import React from 'react';
 import "../css/roadmap/roadMap.css";
 
 function Character({ position, isMoving, chracterDirection }) {
   const imgSrc = isMoving 
-    ? "src/assets/roadmap/images/character_airplane.png" 
-    : "src/assets/roadmap/images/character_stand.png";
+    ? "/src/assets/roadmap/images/character_airplane.png" 
+    : "/src/assets/roadmap/images/character_stand.png";
 
   const style = {
     top: position.top,
