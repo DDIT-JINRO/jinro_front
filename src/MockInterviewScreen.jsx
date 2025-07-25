@@ -18,14 +18,8 @@ const MockInterviewScreen = () => {
   const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
   
   // 질문 데이터 상태
-  const [questions, setQuestions] = useState([
-    "자기소개를 해주세요.",
-    "지원 동기를 말씀해 주세요.",
-    "본인의 장점과 단점은 무엇인가요?",
-    "5년 후 본인의 모습을 어떻게 그리고 있나요?",
-    "마지막으로 하고 싶은 말씀이 있으신가요?"
-  ]);
-  const [questionsLoaded, setQuestionsLoaded] = useState(true);
+  const [questions, setQuestions] = useState([]);
+  const [questionsLoaded, setQuestionsLoaded] = useState(false);
   
   // 녹화 관련 상태
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -38,6 +32,206 @@ const MockInterviewScreen = () => {
   const timerRef = useRef(null);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
+  
+  // 질문 로드 상태 추적 (React Strict Mode 대응)
+  const questionsInitialized = useRef(false);
+
+  // URL 파라미터에서 면접 설정 정보를 읽어와서 서버에서 질문 데이터 로드
+  const loadQuestionsFromServer = async () => {
+    console.log('🌐 서버에서 질문 데이터 로드 시작...');
+    
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const type = urlParams.get('type');
+      const questionListId = urlParams.get('questionListId');
+      const industryCode = urlParams.get('industryCode');
+      const questionCount = urlParams.get('questionCount') || '10';
+      
+      console.log('📄 URL 파라미터:', { type, questionListId, industryCode, questionCount });
+      
+      if (!type) {
+        console.error('❌ 면접 타입이 없습니다');
+        return false; // 실패 반환
+      }
+      
+      // API 파라미터 구성
+      const apiParams = new URLSearchParams({
+        type: type
+      });
+      
+      if (type === 'saved' && questionListId) {
+        apiParams.append('questionListId', questionListId);
+      } else if (type === 'random' && industryCode) {
+        apiParams.append('industryCode', industryCode);
+        apiParams.append('questionCount', questionCount);
+      } else {
+        console.error('❌ 필수 파라미터 누락:', { type, questionListId, industryCode });
+        return false; // 실패 반환
+      }
+      
+      // Spring Boot 서버에 API 요청
+      const apiUrl = `http://localhost:8080/imtintrvw/aiimtintrvw/api/getInterviewQuestions?${apiParams.toString()}`;
+      console.log('🌐 API 요청 URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include' // CORS 인증 정보 포함
+      });
+      
+      console.log('📡 API 응답 상태:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📦 서버 응답 데이터:', data);
+      
+      if (data.success && data.questions && Array.isArray(data.questions)) {
+        console.log('✅ 서버에서 질문 데이터 수신 성공');
+        console.log('📊 질문 개수:', data.questions.length);
+        
+        // iqContent 값들만 추출
+        const questionTexts = data.questions.map((item, index) => {
+          console.log(`📝 서버 질문 ${index + 1}:`, item.iqContent);
+          return item.iqContent || `질문 ${index + 1}을 불러올 수 없습니다.`;
+        });
+        
+        setQuestions(questionTexts);
+        setQuestionsLoaded(true);
+        console.log('✅ 질문 로드 완료:', questionTexts);
+        
+        return true; // 성공 반환
+        
+      } else {
+        console.error('❌ 서버 응답 오류:', data);
+        throw new Error(data.message || '질문 데이터가 없습니다.');
+      }
+      
+    } catch (error) {
+      console.error('❌ 서버에서 질문 로드 실패:', error);
+      console.error('❌ 오류 상세:', error.message);
+      
+      // CORS 오류인 경우 안내
+      if (error.message.includes('CORS') || error.message.includes('fetch')) {
+        console.error('🚫 CORS 오류일 수 있습니다. 서버 설정을 확인하세요.');
+      }
+      
+      return false; // 실패 반환
+    }
+  };
+
+  // PostMessage 리스너 설정 (iframe 환경에서 사용)
+  const setupPostMessageListener = () => {
+    console.log('📬 PostMessage 리스너 설정');
+    
+    const handleMessage = (event) => {
+      console.log('📬 PostMessage 수신:', event);
+      
+      // 이미 질문이 로드되었으면 무시
+      if (questionsLoaded && questions.length > 0) {
+        console.log('✅ 질문이 이미 로드되어 있어 PostMessage 무시');
+        return;
+      }
+      
+      // Origin 검증
+      if (event.origin !== 'http://localhost:8080') {
+        console.warn('⚠️ 허용되지 않은 Origin:', event.origin);
+        return;
+      }
+      
+      if (event.data && event.data.type === 'INTERVIEW_QUESTIONS_DATA') {
+        console.log('✅ 면접 질문 데이터 수신:', event.data.questions);
+        
+        if (Array.isArray(event.data.questions) && event.data.questions.length > 0) {
+          const questionTexts = event.data.questions.map((item, index) => {
+            console.log(`📝 PostMessage 질문 ${index + 1}:`, item.iqContent);
+            return item.iqContent || `질문 ${index + 1}을 불러올 수 없습니다.`;
+          });
+          
+          setQuestions(questionTexts);
+          setQuestionsLoaded(true);
+          console.log('✅ PostMessage로 질문 로드 성공:', questionTexts);
+          
+          // 리스너 제거
+          window.removeEventListener('message', handleMessage);
+        }
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    // 타임아웃 설정 (5초 후에도 데이터가 오지 않으면 기본 질문 사용)
+    const timeoutId = setTimeout(() => {
+      // 이미 질문이 로드되었으면 타임아웃 실행하지 않음
+      if (questionsLoaded && questions.length > 0) {
+        console.log('✅ 이미 질문이 로드되어 있어 PostMessage 타임아웃 취소');
+        window.removeEventListener('message', handleMessage);
+        return;
+      }
+      
+      console.warn('⚠️ PostMessage 타임아웃 - 기본 질문 사용');
+      window.removeEventListener('message', handleMessage);
+      setFallbackQuestions();
+    }, 5000);
+    
+    // cleanup 함수를 위해 타임아웃 ID 반환
+    return () => {
+      console.log('🧹 PostMessage 리스너 및 타임아웃 정리');
+      clearTimeout(timeoutId);
+      window.removeEventListener('message', handleMessage);
+    };
+  };
+
+  // 통합 질문 로드 함수 (서버 API 우선, PostMessage 대체)
+  const loadQuestions = async () => {
+    // 이미 질문이 로드되었거나 초기화 중이면 다시 로드하지 않음 (React Strict Mode 대응)
+    if (questionsInitialized.current || (questionsLoaded && questions.length > 0)) {
+      console.log('✅ 질문이 이미 로드되어 있음, 재로드 생략');
+      return null; // cleanup 함수 없음
+    }
+    
+    questionsInitialized.current = true; // 초기화 시작 표시
+    console.log('🎯 질문 데이터 로드 시작...');
+    
+    try {
+      // 1. 서버 API에서 직접 로드 시도
+      const serverLoadSuccess = await loadQuestionsFromServer();
+      
+      // 서버 로드 성공시 완료
+      if (serverLoadSuccess) {
+        console.log('✅ 서버에서 질문 로드 성공, PostMessage 시도 생략');
+        return null; // cleanup 함수 없음
+      }
+      
+      // 서버 로드 실패시 PostMessage 시도
+      console.log('🔄 서버 로드 실패, PostMessage 시도...');
+      return setupPostMessageListener(); // cleanup 함수 반환
+      
+    } catch (error) {
+      console.error('❌ 모든 로드 방법 실패, 폴백 실행:', error);
+      setFallbackQuestions();
+      return null; // cleanup 함수 없음
+    }
+  };
+  
+  // 대체 질문 설정 (데이터 로드 실패시)
+  const setFallbackQuestions = () => {
+    const fallbackQuestions = [
+      "자기소개를 해주세요.",
+      "지원 동기를 말씀해 주세요.",
+      "본인의 장점과 단점은 무엇인가요?",
+      "팀 프로젝트에서 어려움을 겪었던 경험과 해결 방법을 알려주세요.",
+      "5년 후 본인의 모습을 어떻게 그리고 있나요?",
+      "마지막으로 하고 싶은 말씀이 있으신가요?"
+    ];
+    setQuestions(fallbackQuestions);
+    setQuestionsLoaded(true);
+    console.log('🔄 기본 질문으로 대체:', fallbackQuestions);
+  };
   
   const totalQuestions = questions.length;
   const progressPercentage = totalQuestions > 0 ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
@@ -464,13 +658,36 @@ const MockInterviewScreen = () => {
     };
   }, [isTimerRunning, timeLeft]);
 
-  // 컴포넌트 마운트 시 카메라 시작
+  // 컴포넌트 마운트 시 질문 로드 및 카메라 시작
   useEffect(() => {
     console.log('🚀 MockInterviewScreen 컴포넌트 마운트');
+    
+    // PostMessage cleanup 함수를 저장할 변수
+    let postMessageCleanup = null;
+    
+    // 질문 데이터 먼저 로드
+    const initializeQuestions = async () => {
+      try {
+        postMessageCleanup = await loadQuestions();
+      } catch (error) {
+        console.error('❌ 질문 초기화 실패:', error);
+        setFallbackQuestions();
+      }
+    };
+    
+    initializeQuestions();
+    
+    // 카메라는 병렬로 시작
     startCamera();
     
     return () => {
       console.log('🔄 MockInterviewScreen 컴포넌트 언마운트');
+      
+      // PostMessage cleanup 실행
+      if (postMessageCleanup && typeof postMessageCleanup === 'function') {
+        console.log('🧹 PostMessage 리스너 정리');
+        postMessageCleanup();
+      }
       
       if (mediaStream) {
         mediaStream.getTracks().forEach(track => track.stop());
@@ -541,6 +758,40 @@ const MockInterviewScreen = () => {
     });
   }, [isMicOn, mediaStream, audioInitialized, analyser, audioContext]);
 
+  // 질문이 로드되지 않은 경우 로딩 화면 표시
+  if (!questionsLoaded) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        backgroundColor: '#f3f4f6', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            border: '4px solid #e5e7eb', 
+            borderTop: '4px solid #3b82f6', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px'
+          }}></div>
+          <h2 style={{ color: '#1f2937', marginBottom: '8px' }}>면접 질문을 불러오는 중...</h2>
+          <p style={{ color: '#6b7280', marginBottom: '4px' }}>Spring Boot API에서 데이터 로드 중</p>
+          <p style={{ color: '#9d9d9d', fontSize: '12px' }}>잠시만 기다려주세요...</p>
+        </div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' }}>
       {/* 상단 진행 상태바 */}
@@ -564,7 +815,7 @@ const MockInterviewScreen = () => {
                   animation: 'pulse 2s infinite'
                 }}></div>
               )}
-              모의면접 진행 중 {isRecording ? '(🔴 녹화 중)' : ''} ({questions.length}개 질문)
+              모의면접 진행 중 {isRecording ? '(🔴 녹화 중)' : ''} ({questions.length}개 질문 로드됨)
             </h2>
             <button
               onClick={endInterview}
@@ -734,7 +985,24 @@ const MockInterviewScreen = () => {
               boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', 
               padding: '24px' 
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>현재 질문</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>현재 질문</h3>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  fontSize: '12px',
+                  color: '#10b981'
+                }}>
+                  <div style={{ 
+                    width: '6px', 
+                    height: '6px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#10b981'
+                  }}></div>
+                  서버 로드 완료
+                </div>
+              </div>
               <div style={{ 
                 backgroundColor: '#dbeafe', 
                 borderRadius: '8px', 
@@ -745,7 +1013,10 @@ const MockInterviewScreen = () => {
                   {questions[currentQuestion] || '질문을 불러오는 중...'}
                 </p>
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                  💡 총 {questions.length}개 질문 중 {currentQuestion + 1}번째
+                </div>
                 {currentQuestion < totalQuestions - 1 && (
                   <button
                     onClick={nextQuestion}
@@ -1123,6 +1394,10 @@ const MockInterviewScreen = () => {
           50% {
             opacity: .5;
           }
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </div>
