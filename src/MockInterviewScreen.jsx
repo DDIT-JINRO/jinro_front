@@ -4,7 +4,7 @@ import { Camera, Mic, MicOff, CameraOff, Play, Pause, SkipForward, X } from 'luc
 const MockInterviewScreen = () => {
   // 상태 관리
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(120); // 2분 = 120초
+  const [timeLeft, setTimeLeft] = useState(120);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
@@ -12,6 +12,20 @@ const MockInterviewScreen = () => {
   const [audioContext, setAudioContext] = useState(null);
   const [analyser, setAnalyser] = useState(null);
   const [dataArray, setDataArray] = useState(null);
+  
+  // 새로 추가: 오디오 초기화 상태 추적
+  const [audioInitialized, setAudioInitialized] = useState(false);
+  const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
+  
+  // 질문 데이터 상태
+  const [questions, setQuestions] = useState([
+    "자기소개를 해주세요.",
+    "지원 동기를 말씀해 주세요.",
+    "본인의 장점과 단점은 무엇인가요?",
+    "5년 후 본인의 모습을 어떻게 그리고 있나요?",
+    "마지막으로 하고 싶은 말씀이 있으신가요?"
+  ]);
+  const [questionsLoaded, setQuestionsLoaded] = useState(true);
   
   // 녹화 관련 상태
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -25,42 +39,71 @@ const MockInterviewScreen = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   
-  // 샘플 질문 데이터
-  const questions = [
-    "자기소개를 해주세요.",
-    "지원 동기를 말씀해 주세요.",
-    "본인의 장점과 단점은 무엇인가요?",
-    "5년 후 본인의 모습을 어떻게 그리고 있나요?",
-    "마지막으로 하고 싶은 말씀이 있으신가요?"
-  ];
-  
   const totalQuestions = questions.length;
-  const progressPercentage = ((currentQuestion + 1) / totalQuestions) * 100;
+  const progressPercentage = totalQuestions > 0 ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
   
   // 타이머 원형 프로그레스 계산
   const initialTime = 120;
   const timerProgress = ((initialTime - timeLeft) / initialTime) * 100;
-  const circumference = 2 * Math.PI * 45; // 반지름 45px
+  const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (timerProgress / 100) * circumference;
 
-  // 웹캠 및 오디오 분석 시작
+  // 웹캠 및 오디오 시작 (수정된 버전)
   const startCamera = async () => {
     try {
+      console.log('🎥 카메라 및 마이크 권한 요청 중...');
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       });
+      
+      console.log('✅ 미디어 스트림 획득 성공');
       setMediaStream(stream);
+      setCameraPermissionGranted(true);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
-      // 오디오 분석 설정
+      // 오디오 분석 설정 (개선된 버전)
+      await setupAudioAnalysis(stream);
+      
+      // MediaRecorder 설정
+      setupMediaRecorder(stream);
+      
+    } catch (error) {
+      console.error('❌ 카메라 접근 오류:', error);
+      setCameraPermissionGranted(false);
+      alert('카메라와 마이크 접근 권한이 필요합니다.');
+    }
+  };
+
+  // 오디오 분석 설정 (별도 함수로 분리)
+  const setupAudioAnalysis = async (stream) => {
+    try {
+      console.log('🔊 오디오 분석기 설정 시작...');
+      
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // AudioContext가 suspended 상태일 경우 resume
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+      
       const source = audioCtx.createMediaStreamSource(stream);
       const analyserNode = audioCtx.createAnalyser();
       
-      analyserNode.fftSize = 256;
+      // 더 나은 오디오 분석을 위한 설정
+      analyserNode.fftSize = 512; // 256에서 512로 증가
+      analyserNode.smoothingTimeConstant = 0.8;
+      analyserNode.minDecibels = -90;
+      analyserNode.maxDecibels = -10;
+      
       const bufferLength = analyserNode.frequencyBinCount;
       const dataArr = new Uint8Array(bufferLength);
       
@@ -69,15 +112,17 @@ const MockInterviewScreen = () => {
       setAudioContext(audioCtx);
       setAnalyser(analyserNode);
       setDataArray(dataArr);
+      setAudioInitialized(true);
       
-      console.log('오디오 컨텍스트 초기화 완료:', { bufferLength, audioCtx });
-      
-      // MediaRecorder 설정
-      setupMediaRecorder(stream);
+      console.log('✅ 오디오 분석기 설정 완료:', { 
+        bufferLength, 
+        contextState: audioCtx.state,
+        fftSize: analyserNode.fftSize 
+      });
       
     } catch (error) {
-      console.error('카메라 접근 오류:', error);
-      alert('카메라와 마이크 접근 권한이 필요합니다.');
+      console.error('❌ 오디오 분석 설정 실패:', error);
+      setAudioInitialized(false);
     }
   };
 
@@ -85,12 +130,11 @@ const MockInterviewScreen = () => {
   const setupMediaRecorder = (stream) => {
     try {
       const options = {
-        mimeType: 'video/webm;codecs=vp9,opus', // 최고 품질
-        videoBitsPerSecond: 2500000, // 2.5 Mbps
-        audioBitsPerSecond: 128000   // 128 kbps
+        mimeType: 'video/webm;codecs=vp9,opus',
+        videoBitsPerSecond: 2500000,
+        audioBitsPerSecond: 128000
       };
       
-      // 지원되지 않는 경우 대안 사용
       if (!MediaRecorder.isTypeSupported(options.mimeType)) {
         options.mimeType = 'video/webm;codecs=vp8,opus';
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -105,65 +149,49 @@ const MockInterviewScreen = () => {
       recorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
           chunks.push(event.data);
-          console.log('📹 녹화 데이터 청크 추가:', event.data.size, 'bytes');
         }
       };
       
       recorder.onstop = () => {
-        console.log('📹 녹화 완료, 총', chunks.length, '개 청크');
         const blob = new Blob(chunks, { type: recorder.mimeType });
         const url = URL.createObjectURL(blob);
         setRecordedVideoURL(url);
         setRecordedChunks(chunks);
-        console.log('🎥 녹화 파일 생성 완료:', blob.size, 'bytes');
       };
       
       recorder.onstart = () => {
-        console.log('🔴 녹화 시작');
-        chunks.length = 0; // 청크 배열 초기화
+        chunks.length = 0;
       };
       
       recorder.onerror = (error) => {
         console.error('❌ 녹화 오류:', error);
-        alert('녹화 중 오류가 발생했습니다.');
       };
       
       setMediaRecorder(recorder);
-      console.log('📹 MediaRecorder 설정 완료:', options.mimeType);
       
     } catch (error) {
       console.error('MediaRecorder 설정 실패:', error);
     }
   };
 
-  // 녹화 시작/정지
+  // 녹화 토글
   const toggleRecording = () => {
-    if (!mediaRecorder) {
-      alert('녹화 준비가 완료되지 않았습니다.');
-      return;
-    }
+    if (!mediaRecorder) return;
 
     if (isRecording) {
-      // 녹화 정지
       mediaRecorder.stop();
       setIsRecording(false);
-      console.log('⏹️ 녹화 정지 요청');
     } else {
-      // 녹화 시작
       if (mediaRecorder.state === 'inactive') {
-        mediaRecorder.start(1000); // 1초마다 데이터 청크 생성
+        mediaRecorder.start(1000);
         setIsRecording(true);
-        console.log('▶️ 녹화 시작 요청');
       }
     }
   };
 
   // 녹화 파일 다운로드
   const downloadRecording = () => {
-    if (!recordedVideoURL) {
-      alert('다운로드할 녹화 파일이 없습니다.');
-      return;
-    }
+    if (!recordedVideoURL) return;
 
     const currentDate = new Date();
     const dateString = currentDate.toISOString().slice(0, 19).replace(/:/g, '-');
@@ -175,8 +203,6 @@ const MockInterviewScreen = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
-    console.log('💾 파일 다운로드:', fileName);
   };
 
   // 녹화 파일 삭제
@@ -185,7 +211,6 @@ const MockInterviewScreen = () => {
       URL.revokeObjectURL(recordedVideoURL);
       setRecordedVideoURL(null);
       setRecordedChunks([]);
-      console.log('🗑️ 녹화 파일 삭제');
     }
   };
 
@@ -196,27 +221,27 @@ const MockInterviewScreen = () => {
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         setIsCameraOn(videoTrack.enabled);
-        console.log('카메라 상태 변경:', videoTrack.enabled ? 'ON' : 'OFF');
       }
     }
   };
 
-  const toggleMic = () => {
+  const toggleMic = async () => {
     if (mediaStream) {
       const audioTrack = mediaStream.getAudioTracks()[0];
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         setIsMicOn(audioTrack.enabled);
-        console.log('마이크 상태 변경:', audioTrack.enabled ? 'ON' : 'OFF');
-        console.log('오디오 트랙 정보:', {
-          kind: audioTrack.kind,
-          label: audioTrack.label,
-          enabled: audioTrack.enabled,
-          readyState: audioTrack.readyState
-        });
+        
+        // 마이크를 다시 켤 때 AudioContext 재활성화
+        if (audioTrack.enabled && audioContext && audioContext.state === 'suspended') {
+          try {
+            await audioContext.resume();
+            console.log('🔊 AudioContext 재활성화됨');
+          } catch (error) {
+            console.error('AudioContext 재활성화 실패:', error);
+          }
+        }
       }
-    } else {
-      console.log('미디어 스트림이 없습니다');
     }
   };
 
@@ -227,14 +252,8 @@ const MockInterviewScreen = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startTimer = () => {
-    setIsTimerRunning(true);
-  };
-
-  const pauseTimer = () => {
-    setIsTimerRunning(false);
-  };
-
+  const startTimer = () => setIsTimerRunning(true);
+  const pauseTimer = () => setIsTimerRunning(false);
   const resetTimer = () => {
     setTimeLeft(120);
     setIsTimerRunning(false);
@@ -253,7 +272,6 @@ const MockInterviewScreen = () => {
   const endInterview = () => {
     setIsTimerRunning(false);
     
-    // 녹화 중이면 정지
     if (isRecording && mediaRecorder) {
       mediaRecorder.stop();
       setIsRecording(false);
@@ -269,7 +287,6 @@ const MockInterviewScreen = () => {
       cancelAnimationFrame(animationRef.current);
     }
     
-    // 녹화된 파일이 있으면 다운로드 안내
     if (recordedVideoURL) {
       const shouldDownload = confirm('녹화된 면접 영상이 있습니다. 다운로드하시겠습니까?');
       if (shouldDownload) {
@@ -277,22 +294,16 @@ const MockInterviewScreen = () => {
       }
     }
     
-    alert('면접이 종료되었습니다. AI 분석 결과를 확인해보세요!');
+    alert('면접이 종료되었습니다!');
   };
 
-  // 오디오 비주얼라이저
+  // 개선된 오디오 비주얼라이저
   const startVisualization = () => {
     const canvas = canvasRef.current;
-    if (!canvas) {
-      console.log('Canvas가 없습니다');
-      return;
-    }
+    if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.log('Canvas context를 가져올 수 없습니다');
-      return;
-    }
+    if (!ctx) return;
     
     let animationId;
     
@@ -304,21 +315,44 @@ const MockInterviewScreen = () => {
       ctx.fillStyle = '#1f2937';
       ctx.fillRect(0, 0, width, height);
       
-      // 마이크가 꺼져있거나 미디어 스트림이 없으면 정적 상태 표시
-      if (!isMicOn || !mediaStream) {
-        ctx.fillStyle = '#6b7280';
+      // 상태별 처리
+      if (!cameraPermissionGranted) {
+        ctx.fillStyle = '#ef4444';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(
-          !mediaStream ? '마이크 연결 중...' : '마이크가 꺼져있습니다', 
-          width / 2, 
-          height / 2
-        );
+        ctx.fillText('카메라/마이크 권한이 필요합니다', width / 2, height / 2);
         animationId = requestAnimationFrame(draw);
         return;
       }
       
-      // 실제 마이크 트랙 상태 확인
+      if (!mediaStream) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('미디어 스트림 연결 중...', width / 2, height / 2);
+        animationId = requestAnimationFrame(draw);
+        return;
+      }
+      
+      if (!audioInitialized) {
+        ctx.fillStyle = '#3b82f6';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('오디오 분석기 초기화 중...', width / 2, height / 2);
+        animationId = requestAnimationFrame(draw);
+        return;
+      }
+      
+      if (!isMicOn) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('마이크가 꺼져있습니다', width / 2, height / 2);
+        animationId = requestAnimationFrame(draw);
+        return;
+      }
+      
+      // 오디오 트랙 확인
       const audioTrack = mediaStream.getAudioTracks()[0];
       if (!audioTrack || !audioTrack.enabled) {
         ctx.fillStyle = '#6b7280';
@@ -329,64 +363,85 @@ const MockInterviewScreen = () => {
         return;
       }
       
-      // 오디오 분석기가 있으면 실제 데이터 사용
+      // 실제 오디오 데이터 분석 및 비주얼라이제이션
       if (analyser && dataArray) {
-        analyser.getByteFrequencyData(dataArray);
-        
-        // 전체 볼륨 레벨 계산 (실제 음성 감지)
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
-        }
-        const average = sum / dataArray.length;
-        
-        // 음성이 감지되지 않으면 조용한 상태 표시
-        if (average < 1) {
-          ctx.fillStyle = '#374151';
-          ctx.font = '12px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('조용한 상태 - 말씀해 보세요', width / 2, height / 2);
-          animationId = requestAnimationFrame(draw);
-          return;
-        }
-        
-        // 실제 오디오 데이터로 파형 그리기
-        const barWidth = (width / dataArray.length) * 2.5;
-        let x = 0;
-        
-        for (let i = 0; i < dataArray.length; i++) {
-          const barHeight = (dataArray[i] / 255) * height * 0.8;
+        try {
+          analyser.getByteFrequencyData(dataArray);
           
-          if (barHeight > 1) {
-            // 그라디언트 생성
-            const gradient = ctx.createLinearGradient(0, height, 0, height - barHeight);
-            gradient.addColorStop(0, '#3b82f6');
-            gradient.addColorStop(0.5, '#06b6d4');
-            gradient.addColorStop(1, '#10b981');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+          // 오디오 레벨 계산
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            sum += dataArray[i];
+          }
+          const average = sum / dataArray.length;
+          
+          if (average < 2) {
+            ctx.fillStyle = '#374151';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎤 말씀해 주세요 (음성 감지 대기 중)', width / 2, height / 2);
+            animationId = requestAnimationFrame(draw);
+            return;
           }
           
-          x += barWidth + 1;
+          // 주파수 바 그리기
+          const barWidth = (width / dataArray.length) * 2.5;
+          let x = 0;
+          
+          for (let i = 0; i < dataArray.length; i++) {
+            const barHeight = (dataArray[i] / 255) * height * 0.9;
+            
+            if (barHeight > 2) {
+              // 그라데이션 생성
+              const gradient = ctx.createLinearGradient(0, height, 0, height - barHeight);
+              
+              if (dataArray[i] > 100) {
+                gradient.addColorStop(0, '#ef4444');
+                gradient.addColorStop(0.5, '#f59e0b');
+                gradient.addColorStop(1, '#eab308');
+              } else if (dataArray[i] > 50) {
+                gradient.addColorStop(0, '#3b82f6');
+                gradient.addColorStop(0.5, '#06b6d4');
+                gradient.addColorStop(1, '#10b981');
+              } else {
+                gradient.addColorStop(0, '#10b981');
+                gradient.addColorStop(1, '#34d399');
+              }
+              
+              ctx.fillStyle = gradient;
+              ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+            }
+            
+            x += barWidth + 1;
+          }
+          
+          // 볼륨 레벨 표시
+          ctx.fillStyle = '#f3f4f6';
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(`🔊 ${Math.round(average)}`, width - 5, 15);
+          
+        } catch (error) {
+          console.error('비주얼라이저 오류:', error);
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('오디오 분석 오류 발생', width / 2, height / 2);
         }
       } else {
-        // 분석기가 없으면 준비 중 표시
-        ctx.fillStyle = '#6b7280';
+        ctx.fillStyle = '#f59e0b';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('오디오 분석기 초기화 중...', width / 2, height / 2);
+        ctx.fillText('오디오 분석기 연결 중...', width / 2, height / 2);
       }
       
       animationId = requestAnimationFrame(draw);
     };
     
-    // 기존 애니메이션 정리
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
     
-    console.log('비주얼라이저 시작됨');
     draw();
     animationRef.current = animationId;
   };
@@ -411,10 +466,12 @@ const MockInterviewScreen = () => {
 
   // 컴포넌트 마운트 시 카메라 시작
   useEffect(() => {
+    console.log('🚀 MockInterviewScreen 컴포넌트 마운트');
     startCamera();
     
     return () => {
-      // 정리 작업
+      console.log('🔄 MockInterviewScreen 컴포넌트 언마운트');
+      
       if (mediaStream) {
         mediaStream.getTracks().forEach(track => track.stop());
       }
@@ -450,41 +507,39 @@ const MockInterviewScreen = () => {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#1f2937';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        console.log('Canvas 초기화됨:', { width: canvas.width, height: canvas.height });
       }
     };
 
-    setTimeout(initCanvas, 100);
+    const timer = setTimeout(initCanvas, 100);
     window.addEventListener('resize', initCanvas);
     
-    return () => window.removeEventListener('resize', initCanvas);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', initCanvas);
+    };
   }, []);
 
-  // 비주얼라이저 시작
+  // 비주얼라이저 시작 (조건부 실행)
   useEffect(() => {
-    if (canvasRef.current) {
-      setTimeout(() => {
+    if (canvasRef.current && (mediaStream || cameraPermissionGranted !== null)) {
+      const timer = setTimeout(() => {
         startVisualization();
-      }, 500);
+      }, 200); // 500ms에서 200ms로 단축
+      
+      return () => clearTimeout(timer);
     }
-  }, [canvasRef.current]);
+  }, [canvasRef.current, mediaStream, audioInitialized, cameraPermissionGranted]);
 
-  // 마이크 상태 변화 추적
+  // 오디오 상태 변화 추적
   useEffect(() => {
-    console.log('🎙️ React 상태 - 마이크 상태 변경:', isMicOn ? 'ON' : 'OFF');
-    if (mediaStream) {
-      const audioTrack = mediaStream.getAudioTracks()[0];
-      if (audioTrack) {
-        console.log('🎵 실제 오디오 트랙 상태:', {
-          enabled: audioTrack.enabled,
-          readyState: audioTrack.readyState,
-          kind: audioTrack.kind,
-          label: audioTrack.label || '기본 마이크'
-        });
-      }
-    }
-  }, [isMicOn, mediaStream]);
+    console.log('🎙️ 오디오 상태 변경:', {
+      isMicOn,
+      audioInitialized,
+      hasMediaStream: !!mediaStream,
+      hasAnalyser: !!analyser,
+      audioContextState: audioContext?.state
+    });
+  }, [isMicOn, mediaStream, audioInitialized, analyser, audioContext]);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' }}>
@@ -509,7 +564,7 @@ const MockInterviewScreen = () => {
                   animation: 'pulse 2s infinite'
                 }}></div>
               )}
-              모의면접 진행 중 {isRecording ? '(🔴 녹화 중)' : ''}
+              모의면접 진행 중 {isRecording ? '(🔴 녹화 중)' : ''} ({questions.length}개 질문)
             </h2>
             <button
               onClick={endInterview}
@@ -577,10 +632,8 @@ const MockInterviewScreen = () => {
             }}>
               <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '24px' }}>답변 시간</h3>
               
-              {/* SVG 원형 프로그레스 바 */}
               <div style={{ position: 'relative', display: 'inline-block', marginBottom: '24px' }}>
                 <svg width="120" height="120" style={{ transform: 'rotate(-90deg)' }}>
-                  {/* 배경 원 */}
                   <circle
                     cx="60"
                     cy="60"
@@ -589,7 +642,6 @@ const MockInterviewScreen = () => {
                     strokeWidth="8"
                     fill="transparent"
                   />
-                  {/* 프로그레스 원 */}
                   <circle
                     cx="60"
                     cy="60"
@@ -605,7 +657,6 @@ const MockInterviewScreen = () => {
                     }}
                   />
                 </svg>
-                {/* 중앙 시간 텍스트 */}
                 <div style={{
                   position: 'absolute',
                   top: '50%',
@@ -635,8 +686,6 @@ const MockInterviewScreen = () => {
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#059669'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#10b981'}
                   >
                     <Play size={16} />
                     시작
@@ -656,8 +705,6 @@ const MockInterviewScreen = () => {
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#d97706'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#f59e0b'}
                   >
                     <Pause size={16} />
                     일시정지
@@ -674,8 +721,6 @@ const MockInterviewScreen = () => {
                     cursor: 'pointer',
                     transition: 'background-color 0.2s'
                   }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#4b5563'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#6b7280'}
                 >
                   리셋
                 </button>
@@ -697,7 +742,7 @@ const MockInterviewScreen = () => {
                 marginBottom: '16px' 
               }}>
                 <p style={{ color: '#1f2937', lineHeight: '1.6', margin: 0 }}>
-                  {questions[currentQuestion]}
+                  {questions[currentQuestion] || '질문을 불러오는 중...'}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -716,8 +761,6 @@ const MockInterviewScreen = () => {
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
                   >
                     <SkipForward size={16} />
                     다음 질문
@@ -752,8 +795,6 @@ const MockInterviewScreen = () => {
                       color: 'white',
                       position: 'relative'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = isRecording ? '#dc2626' : '#059669'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = isRecording ? '#ef4444' : '#10b981'}
                     title={isRecording ? '녹화 정지' : '녹화 시작'}
                   >
                     {isRecording ? (
@@ -781,8 +822,6 @@ const MockInterviewScreen = () => {
                       backgroundColor: isCameraOn ? '#3b82f6' : '#ef4444',
                       color: 'white'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = isCameraOn ? '#2563eb' : '#dc2626'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = isCameraOn ? '#3b82f6' : '#ef4444'}
                   >
                     {isCameraOn ? <Camera size={20} /> : <CameraOff size={20} />}
                   </button>
@@ -797,8 +836,6 @@ const MockInterviewScreen = () => {
                       backgroundColor: isMicOn ? '#3b82f6' : '#ef4444',
                       color: 'white'
                     }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = isMicOn ? '#2563eb' : '#dc2626'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = isMicOn ? '#3b82f6' : '#ef4444'}
                   >
                     {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
                   </button>
@@ -870,14 +907,14 @@ const MockInterviewScreen = () => {
                   <div style={{ 
                     padding: '8px', 
                     borderRadius: '50%', 
-                    backgroundColor: isMicOn ? '#10b981' : '#ef4444' 
+                    backgroundColor: isMicOn && audioInitialized ? '#10b981' : '#ef4444' 
                   }}>
                     {isMicOn ? <Mic size={16} style={{ color: 'white' }} /> : <MicOff size={16} style={{ color: 'white' }} />}
                   </div>
                 </div>
               </div>
               
-              {/* 오디오 비주얼라이저 */}
+              {/* 개선된 오디오 비주얼라이저 */}
               <div>
                 <div style={{ 
                   display: 'flex', 
@@ -886,12 +923,12 @@ const MockInterviewScreen = () => {
                   marginBottom: '8px' 
                 }}>
                   <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
-                    음성 레벨
+                    음성 레벨 분석
                   </h4>
                   <div style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '4px',
+                    gap: '8px',
                     fontSize: '12px',
                     color: '#6b7280'
                   }}>
@@ -899,9 +936,18 @@ const MockInterviewScreen = () => {
                       width: '6px', 
                       height: '6px', 
                       borderRadius: '50%', 
-                      backgroundColor: isMicOn ? '#10b981' : '#ef4444' 
+                      backgroundColor: 
+                        !cameraPermissionGranted ? '#ef4444' :
+                        !mediaStream ? '#f59e0b' :
+                        !audioInitialized ? '#3b82f6' :
+                        isMicOn ? '#10b981' : '#6b7280'
                     }}></div>
-                    {isMicOn ? '마이크 ON' : '마이크 OFF'}
+                    <span>
+                      {!cameraPermissionGranted ? '권한 필요' :
+                       !mediaStream ? '연결 중' :
+                       !audioInitialized ? '초기화 중' :
+                       isMicOn ? '마이크 ON' : '마이크 OFF'}
+                    </span>
                   </div>
                 </div>
                 <div style={{ 
@@ -919,19 +965,22 @@ const MockInterviewScreen = () => {
                     }}
                   />
                 </div>
-                {!isMicOn && (
-                  <p style={{ 
-                    fontSize: '12px', 
-                    color: '#6b7280', 
-                    textAlign: 'center', 
-                    margin: '8px 0 0 0' 
-                  }}>
-                    마이크를 켜면 음성 파형을 확인할 수 있습니다
-                  </p>
-                )}
+                <div style={{ 
+                  fontSize: '11px', 
+                  color: '#6b7280', 
+                  textAlign: 'center', 
+                  margin: '8px 0 0 0',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '16px'
+                }}>
+                  <span>🟢 정상 (0-50)</span>
+                  <span>🔵 보통 (50-100)</span>
+                  <span>🟡 크게 (100+)</span>
+                </div>
               </div>
               
-              {/* 녹화 상태 및 다운로드 */}
+              {/* 녹화 관리 */}
               <div style={{ marginTop: '16px' }}>
                 <div style={{ 
                   display: 'flex', 
@@ -960,12 +1009,7 @@ const MockInterviewScreen = () => {
                   </div>
                 </div>
                 
-                {/* 녹화 컨트롤 */}
-                <div style={{
-                  display: 'flex',
-                  gap: '8px',
-                  marginBottom: '12px'
-                }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                   <button
                     onClick={toggleRecording}
                     disabled={!mediaRecorder}
@@ -981,16 +1025,6 @@ const MockInterviewScreen = () => {
                       fontWeight: '600',
                       opacity: mediaRecorder ? 1 : 0.5,
                       transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => {
-                      if (mediaRecorder) {
-                        e.target.style.backgroundColor = isRecording ? '#dc2626' : '#059669';
-                      }
-                    }}
-                    onMouseOut={(e) => {
-                      if (mediaRecorder) {
-                        e.target.style.backgroundColor = isRecording ? '#ef4444' : '#10b981';
-                      }
                     }}
                   >
                     {isRecording ? '⏹️ 녹화 정지' : '▶️ 녹화 시작'}
@@ -1009,15 +1043,12 @@ const MockInterviewScreen = () => {
                         fontSize: '12px',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#4b5563'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = '#6b7280'}
                     >
                       🗑️
                     </button>
                   )}
                 </div>
                 
-                {/* 다운로드 영역 */}
                 {recordedVideoURL && (
                   <div style={{
                     backgroundColor: '#f0fdf4',
@@ -1060,24 +1091,12 @@ const MockInterviewScreen = () => {
                         fontWeight: '600',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#047857'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = '#059669'}
                     >
                       💾 면접 영상 다운로드 (.webm)
                     </button>
-                    
-                    <p style={{
-                      fontSize: '10px',
-                      color: '#059669',
-                      margin: '8px 0 0 0',
-                      textAlign: 'center'
-                    }}>
-                      파일명: 모의면접_{new Date().toISOString().slice(0, 10)}.webm
-                    </p>
                   </div>
                 )}
                 
-                {/* 녹화 안내 */}
                 {!recordedVideoURL && !isRecording && (
                   <div style={{
                     backgroundColor: '#fef3c7',
