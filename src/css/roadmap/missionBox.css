@@ -1,7 +1,7 @@
 /* 미션 박스 전체 컨테이너 (핵심 수정 영역) */
 .mission-box-container {
   position: absolute;
-  bottom: 15px;
+  bottom: 45px;
   left: 15px;
 
   /* 👇 평소(닫힌) 상태의 크기 */
