@@ -28,27 +28,27 @@ function RoadMap() {
     progressMissions,
     completedMissions,
     isLoading,
-    refreshMissionData, // 이름 변경
+    refreshMissionData,
+    dueDate,
   } = useRoadmapData();
 
   // 2. 모달 관리 훅
   const { tutorialModal, acceptMissionModal } = useModalManager(
     missionList,
-    refreshMissionData, // 변경된 함수 전달
+    refreshMissionData,
     setCharPosition
   );
 
   // 3. UI 상호작용 훅
-  const { calendar, tooltip, eventHandlers } =
+  const { calendar, tooltip, eventHandlers, character } =
     useRoadmapInteraction(missionList);
-
-  // 캐릭터 방향
-  const [chracterDirection, setChracterDirection] = useState('left');
 
   // 날짜 관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [missionToEdit, setMissionToEdit] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
+  const [isRoadmapCompleteModalOpen, setIsRoadmapCompleteModalOpen] =
+    useState(false);
 
   const handleSetCharPosition = (newPosition, onCompleteCallback = null) => {
     const isCurrent = charPosition === newPosition;
@@ -81,7 +81,7 @@ function RoadMap() {
         setIsEditModalOpen(false);
         setMissionToEdit(null);
       } catch (error) {
-        console.error("Failed to update due date:", error);
+        console.error("미션 완료 예정 날짜 수정 오류:", error);
       }
     }
   };
@@ -99,7 +99,7 @@ function RoadMap() {
         return;
       }
       if (res === "complete") {
-        alert("로드맵 완성입니다.");
+        setIsRoadmapCompleteModalOpen(true);
       }
       refreshMissionData();
     } catch (err) {
@@ -135,13 +135,19 @@ function RoadMap() {
 
                 // 1. x좌표(left)를 비교하여 방향 결정
                 if (nextPos.cloud.left > currentPos.cloud.left) {
-                  setChracterDirection('right');
+                  character.setChracterDirection("right");
                 } else if (nextPos.cloud.left < currentPos.cloud.left) {
-                  setChracterDirection('left');
+                  character.setChracterDirection("left");
                 }
-                
-                if (pos.id === 11 && (state === CLOUD_STATE.UNLOCKED || state === CLOUD_STATE.PROGRESS)) {
-                  handleSetCharPosition(pos.id - 1, () => handleCompleteFinalMission(pos.id));
+
+                if (
+                  pos.id === 11 &&
+                  (state === CLOUD_STATE.UNLOCKED ||
+                    state === CLOUD_STATE.PROGRESS)
+                ) {
+                  handleSetCharPosition(pos.id - 1, () =>
+                    handleCompleteFinalMission(pos.id)
+                  );
                 } else if (state === CLOUD_STATE.LOCKED) {
                   acceptMissionModal.open(pos.id, true);
                 } else if (state === CLOUD_STATE.UNLOCKED) {
@@ -243,6 +249,13 @@ function RoadMap() {
           onClose={handleCloseEditModal}
           onSave={handleSaveEditedDueDate}
           currentDueDate={missionToEdit.dueDate}
+        />
+      )}
+
+      {isRoadmapCompleteModalOpen && (
+        <RoadmapCompleteModal
+          isOpen={isRoadmapCompleteModalOpen}
+          onClose={() => setIsRoadmapCompleteModalOpen(false)}
         />
       )}
     </>

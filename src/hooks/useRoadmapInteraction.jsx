@@ -8,6 +8,9 @@ export const useRoadmapInteraction = (missionList) => {
   const [hoveredMission, setHoveredMission] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
+  // 캐릭터 방향
+  const [chracterDirection, setChracterDirection] = useState('left');
+
   // 달력 여닫음
   const toggleCalendar = () => {
     setIsCalendarOpen(prev => !prev);
@@ -45,5 +48,9 @@ export const useRoadmapInteraction = (missionList) => {
       onCloudEnter: handleCloudMouseEnter,
       onCloudLeave: handleCloudMouseLeave,
     },
+    character: {
+      chracterDirection: chracterDirection,
+      setChracterDirection: setChracterDirection,
+    }
   };
 };
