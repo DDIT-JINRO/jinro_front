@@ -3,6 +3,7 @@ body {
 }
 
 #roadmap-background {
+  /* background-image: url("../../assets/roadmap/images/loop-background.gif"); */
   background-image: url("../../assets/roadmap/images/background.png");
   background-size: cover;
   background-position: center;

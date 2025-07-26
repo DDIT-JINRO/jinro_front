@@ -44,7 +44,7 @@ function MissionBox({
     }
 
     if(window.opener) {
-      window.opener.postMessage(message, 'http://localhost:8080');
+      window.opener.postMessage(message, 'http://192.168.145.28:8080');
       window.close();
     } else {
       console.log("부모 창을 찾을 수 없습니다.");
