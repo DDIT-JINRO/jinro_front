@@ -5,6 +5,7 @@ import Tournament from "./components/worldcup/Tournament";
 import RoadmapPage from "./pages/roadmap/roadMapPage";
 import RoadmapResultPage from "./pages/roadmap/roadmapResultPage";
 import RoadmapErrorPage from "./pages/roadmap/roadmapErrorPage";
+import AptiTestPage from "./pages/aptitestPage";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
         path: "/roadmap/error",
         element: <RoadmapErrorPage />,
     },
+    {
+        path: "/aptiTest/:qno",
+        element: <AptiTestPage />
+    }
 ]);
 
 export default router;
