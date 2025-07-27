@@ -1,17 +1,17 @@
 import { useState, useCallback } from 'react';
 
 export const useRoadmapInteraction = (missionList) => {
-  // 달력
+  // 달력 여닫음 여부 상태관리
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   
-  // 툴팁 (호버)
+  // 마우스 이동, 구름 진입/이탈 등 상태 관리
   const [hoveredMission, setHoveredMission] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-  // 캐릭터 방향
+  // 이동 시 캐릭터가 바라보는 방향 상태 관리
   const [chracterDirection, setChracterDirection] = useState('left');
 
-  // 달력 여닫음
+  // 달력 열고 닫는 함수
   const toggleCalendar = () => {
     setIsCalendarOpen(prev => !prev);
   };
@@ -21,7 +21,7 @@ export const useRoadmapInteraction = (missionList) => {
     setCursorPosition({ x: e.clientX, y: e.clientY });
   }, []);
 
-  // 구름에 마우스 들어갔을 때
+  // 구름 진입 시 메시지 세팅 핸들러
   const handleCloudMouseEnter = useCallback((stageId) => {
     const missionInfo = missionList.find(m => m.rsId === stageId);
     if (missionInfo) {
@@ -29,7 +29,7 @@ export const useRoadmapInteraction = (missionList) => {
     }
   }, [missionList]);
 
-  // 구름에서 마우스 나갔을 때
+  // 구름 이탈 시 메시지 삭제 핸들러
   const handleCloudMouseLeave = useCallback(() => {
     setHoveredMission(null);
   }, []);

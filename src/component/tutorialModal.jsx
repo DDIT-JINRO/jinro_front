@@ -1,14 +1,20 @@
-import React from "react";
 import "../css/roadmap/tutorialModal.css";
 
-function TutorialModal({ onClose, isClosing, isAnimating }) {
+/**
+ * 튜토리얼 모달 컴포넌트
+ * @param {function} onClose - 모달을 닫을 때 호출되는 함수
+ * @param {boolean} isClosing - 모달이 닫히는 중인지 여부 (애니메이션용)
+ * @param {boolean} isOpening - 모달이 열리는 중인지 여부 (애니메이션용)
+ */
+function TutorialModal({ onClose, isClosing, isOpening }) {
+  
   // 모달 닫히는 것 방지
   const handleContentClick = (e) => {
     e.stopPropagation();
   };
 
   return (
-    <div className={`modal-overlay ${isClosing ? 'closing' : ''} ${isAnimating ? 'opening' : ''}`} onClick={onClose}>
+    <div className={`modal-overlay ${isClosing ? 'closing' : ''} ${isOpening ? 'opening' : ''}`} onClick={onClose}>
       <div className="modal-content" onClick={handleContentClick}>
         <button className="modal-close-btn" onClick={onClose}>
           <i className="fa-solid fa-xmark"></i>

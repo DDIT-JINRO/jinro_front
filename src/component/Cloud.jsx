@@ -1,45 +1,40 @@
-import React from "react";
-import { CLOUD_STATE } from "../data/roadmapUtils";
-import '../css/roadmap/roadmap.css';
+import "../css/roadmap/roadmapPage.css";
+import { CLOUD_STATE } from "../data/roadmapStagedata";
 
 const prefix = `/src/assets/roadmap/images/`;
 
-function Cloud({
-  stageId,
-  position,
-  state,
-  onClick,
-  isCurrent,
-  onMouseEnter,
-  onMouseLeave,
-}) {
+/**
+ * 로드맵의 각 단계를 나타내는 구름 컴포넌트 (미션 상태에 따라 다른 이미지 표시)
+ * @param {number} stageId - 현재 구름의 단계 ID
+ * @param {object} position - 구름의 위치 (top, left)
+ * @param {string} state - 구름의 현재 상태
+ * @param {function} onClick - 구름 클릭 시 실행될 함수
+ * @param {boolean} isCurrent - 현재 캐릭터가 이 구름에 위치하는지 여부
+ * @param {function} onMouseEnter - 마우스가 구름 진입 시 실행될 함수
+ * @param {function} onMouseLeave - 마우스가 구름 이탈 시 실행될 함수
+ */
+function Cloud({stageId, position, state, onClick, isCurrent, onMouseEnter, onMouseLeave,}) {
+  // 이미지 링크
   let imgSrc;
 
-  // state에 따라 이미지 선택
-  switch (state) {
-    case CLOUD_STATE.LOCKED:
-      imgSrc = stageId >= 11 ? "cloud_finishi_lock.png" : "cloud1_lock.png";
-      break;
-    case CLOUD_STATE.COMPLETED:
-    case CLOUD_STATE.PROGRESS:
-      if (stageId === 1) {
-        imgSrc = "cloud_start.png";
-      } else if (stageId === 11) {
-        imgSrc = "cloud_finish_unlock.png";
-      } else {
-        imgSrc = "cloud1_unlock.png";
-      }
-      break;
-    case CLOUD_STATE.UNLOCKED:
-    default:
-      if (stageId === 1) {
-        imgSrc = "cloud_start.png";
-      } else if (stageId === 11) {
-        imgSrc = "cloud_finishi_lock.png"; // 완료되지 않은 마지막 단계
-      } else {
-        imgSrc = "cloud1_lock.png"; // 아직 시작 안 한 미션
-      }
-      break;
+  // 스테이지 ID와 상태에 따라 이미지 선택
+  if (stageId === 1) {
+    // 시작 구름은 항상 동일한 이미지
+    imgSrc = "cloud_start.png";
+  } else if (stageId === 11) {
+    // 마지막 구름은 완료 여부에 따라 이미지 변경
+    if (state === CLOUD_STATE.COMPLETED) {
+      imgSrc = "cloud_finish_unlock.png";
+    } else {
+      imgSrc = "cloud_finishi_lock.png";
+    }
+  } else {
+    // 그 외 일반 구름은 완료/진행 중 여부에 따라 이미지 변경
+    if (state === CLOUD_STATE.COMPLETED || state === CLOUD_STATE.PROGRESS) {
+      imgSrc = "cloud1_unlock.png";
+    } else {
+      imgSrc = "cloud1_lock.png";
+    }
   }
 
   const { top, left } = position;

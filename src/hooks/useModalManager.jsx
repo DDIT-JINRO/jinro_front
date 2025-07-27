@@ -1,44 +1,35 @@
-import { useState, useEffect } from 'react';
-import { insertMission } from '../api/roadMapApi';
+import { useState, useEffect } from "react";
+import { insertMission } from "../api/roadMapApi";
 
-export const useModalManager = (missionList, refreshMissionData, setCharPosition) => {
-  // 튜토리얼 모달
+export const useModalManager = ( missionList, refreshMissionData, setCharPosition) => {
+  // 튜토리얼 모달 상태 관리
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
 
-  // 미션 수락 모달
+  // 미션 수락 모달 상태 관리
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [isLockedMode, setIsLockedMode] = useState(false);
 
-  // 튜토리얼 모달 핸들러
+  // 튜토리얼 모달 열기 핸들러
   const openTutorialModal = () => setIsTutorialOpen(true);
-  
+
+  // 튜토리얼 모달 닫기 핸들러
   const closeTutorialModal = () => {
     setIsClosing(true);
-    setIsAnimating(false);
+    setIsOpening(false);
     setTimeout(() => {
       setIsTutorialOpen(false);
       setIsClosing(false);
-    }, 500);
+    }, 500); // 닫히는 애니메이션 500ms
   };
 
-  useEffect(() => {
-    if (isTutorialOpen) {
-      const timer = setTimeout(() => {
-        setIsAnimating(true);
-      }, 10);
-      return () => clearTimeout(timer);
-    }
-  }, [isTutorialOpen]);
-
-
-  // 미션 수락 모달 핸들러
+  // 미션 수락 모달 열기 핸들러 (기본값 잠김)
   const openAcceptModal = (stageId, isLocked = false) => {
     setIsLockedMode(isLocked);
 
-    const missionInfo = missionList.find(m => m.rsId === stageId);
+    const missionInfo = missionList.find((m) => m.rsId === stageId);
 
     if (missionInfo) {
       setSelectedMission(missionInfo);
@@ -49,32 +40,44 @@ export const useModalManager = (missionList, refreshMissionData, setCharPosition
     setIsAcceptModalOpen(true);
   };
 
+  // 미션 수락 모달 닫기 핸들러
   const closeAcceptModal = () => {
     setIsAcceptModalOpen(false);
     setSelectedMission(null);
   };
 
-  const handleAcceptMission = (dueDate) => {
+  // 미션 수락 핸들럭
+  const handleAcceptMission = async (dueDate) => {
     if (!selectedMission) return;
 
     setCharPosition(selectedMission.rsId - 1);
-    insertMission(selectedMission.rsId, dueDate) // dueDate 전달
-      .then((res) => {
-        if (res === "fail") return;
-        refreshMissionData(); // 데이터 새로고침
-      })
-      .catch((err) => {
-        console.error("미션 수주 중 오류가 발생했습니다.", err);
-      });
+    try {
+      const res = await insertMission(selectedMission.rsId, dueDate);
+      if (res === "fail") return;
+      refreshMissionData();
+    } catch (error) {
+      console.error("미션 수락 중 오류가 발생했습니다.", error);
+      alert("미션 수락 중 오류가 발생했습니다.");
+    }
 
     closeAcceptModal();
   };
+
+  // 튜토리얼 모달이 열릴 때 애니메이션 관리를 위한 코드
+  useEffect(() => {
+    if (isTutorialOpen) {
+      const timer = setTimeout(() => {
+        setIsOpening(true);
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isTutorialOpen]);
 
   return {
     tutorialModal: {
       isOpen: isTutorialOpen,
       isClosing,
-      isAnimating,
+      isOpening: isOpening,
       open: openTutorialModal,
       close: closeTutorialModal,
     },

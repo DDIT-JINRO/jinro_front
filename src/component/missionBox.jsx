@@ -1,40 +1,44 @@
-import React, { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { updateCompleteMission } from "../api/roadMapApi";
-import { formatDate, getStageGroup } from "../data/roadmapUtils";
 import "../css/roadmap/missionBox.css";
 import { SHORT_CUT_URL } from "../data/roadmapStagedata";
+import { formatDate, getStageGroup } from "../data/roadmapUtils";
 
-function MissionBox({
-  progressMissions,
-  completedMissions,
-  onUpdate,
-  missionList,
-  onEditDueDate,
-}) {
+/**
+ * 사용자의 현재 미션 목록(진행 중, 완료)을 보여주는 박스 컴포넌트
+ * @param {Array} missionList - 전체 미션 목록
+ * @param {Array} progressMissions - 진행 중인 미션 목록
+ * @param {Array} completedMissions - 완료된 미션 목록
+ * @param {function} onUpdate - 새로고침하는 함수
+ * @param {function} onEditDueDate - 완료 예정일 수정 모달을 여는 함수
+ */
+function MissionBox({ missionList, progressMissions, completedMissions, onUpdate, onEditDueDate,}) {
+  // 미션 박스 컴포넌트 상태 관리
   const [isOpen, setIsOpen] = useState(false);
 
+  // 미션 박스 열고 닫는 함수
   const toggleMissionBox = () => {
     setIsOpen(true);
   };
-
   const closeMissionBox = () => {
     setIsOpen(false);
   };
 
-  const handleCompleteClick = (stageId) => {
-    updateCompleteMission(stageId)
-      .then((res) => {
-        if (res === "fail") {
-          alert("완료 되지 않은 미션입니다.");
-          return;
-        }
-        onUpdate();
-      })
-      .catch((err) => {
-        console.error("미션 완료 중 업데이트 중 오류가 발생했습니다.", err);
-      });
+  // 미션 완료 클릭 핸들러
+  const handleCompleteClick = async (stageId) => {
+    try {
+      const res = await updateCompleteMission(stageId);
+      if (res === "fail") {
+        alert("완료 되지 않은 미션입니다.");
+        return;
+      }
+      onUpdate();
+    } catch (err) {
+      console.error("미션 완료 중 업데이트 중 오류가 발생했습니다.", err);
+    }
   };
 
+  // 바로가기 클릭 핸들러
   const handleShortCutClick = (stageId) => {
     const targetUrl = SHORT_CUT_URL[stageId-1];
 
@@ -44,13 +48,15 @@ function MissionBox({
     }
 
     if(window.opener) {
-      window.opener.postMessage(message, 'http://192.168.145.28:8080');
+      // window.opener.postMessage(message, 'http://192.168.145.28:8080');
+      window.opener.postMessage(message, 'http://localhost:8080');
       window.close();
     } else {
       console.log("부모 창을 찾을 수 없습니다.");
     }
   }
 
+  // 미션 완료, 진행중 상태에 따라 정렬하는 함수
   const displayMissions = useMemo(() => {
     const uniqueMissions = new Map();
 
@@ -75,28 +81,32 @@ function MissionBox({
 
   return (
     <div className={`mission-box-container ${isOpen ? "open" : ""}`}>
-      <h3
-        className={`mission-box-title ${isOpen ? "open" : ""}`}
-        onClick={toggleMissionBox}
-      >
+
+      <h3 className={`mission-box-title ${isOpen ? "open" : ""}`} onClick={toggleMissionBox}>
         나의 미션
       </h3>
+
       {isOpen && (
         <button className="mission-box-close-btn" onClick={closeMissionBox}>
           <i className="fa-solid fa-xmark"></i>
         </button>
       )}
+
       <ul className="mission-list">
         {displayMissions.map((mission) => {
+          // 각 미션 완료 상태 여부
           const isCompleted = mission.status === "completed";
+
+          // 각 미션의 단계
           const currentGroup = getStageGroup(mission.rsId);
 
-          // missionList에서 해당 미션 찾기 (더 안전한 방법)
+          // missionList에서 해당 미션 찾기
           const missionInfo = missionList.find((m) => m.rsId === mission.rsId);
-          const stepName = missionInfo
-            ? missionInfo.stepName
-            : "알 수 없는 단계";
 
+          // 미션 정보
+          const stepName = missionInfo ? missionInfo.stepName : "알 수 없는 단계";
+
+          // 완료 예정일
           const dueDate = mission.dueDate ? new Date(mission.dueDate) : null;
 
           return (
@@ -104,37 +114,25 @@ function MissionBox({
               <div>
                 <div className="mission-name">
                   <span>{`${currentGroup}단계 : ${stepName}`}</span>
-                  {isCompleted ? (
-                    <div className="mission-status completed">완료됨</div>
-                  ) : (
-                    <div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>
-                  )}
+                  {isCompleted
+                    ? (<div className="mission-status completed">완료됨</div>)
+                    : (<div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>)}
                 </div>
-
+                
+                {/* 완료 예정일이 있고, 완료되지 않은 미션일 경우 */}
                 {dueDate && !isCompleted && (
                   <p className="mission-due-date">
                     예정: {formatDate(dueDate)}
-                    <button
-                      className="edit-date-btn"
-                      onClick={() =>
-                        onEditDueDate(mission.rsId, mission.dueDate)
-                      }
-                    >
+                    <button className="edit-date-btn" onClick={() => onEditDueDate(mission.rsId, mission.dueDate)}>
                       수정
                     </button>
                   </p>
                 )}
               </div>
-              {isCompleted ? (
-                <div className="mission-status-progress">진행중</div>
-              ) : (
-                <div
-                  className="mission-status completBtn"
-                  onClick={() => handleCompleteClick(mission.rsId)}
-                >
-                  완료
-                </div>
-              )}
+
+              {isCompleted
+                ? (<div className="mission-status-progress">진행중</div>)
+                : (<div className="mission-status completBtn" onClick={() => handleCompleteClick(mission.rsId)}>완료</div>)}
             </li>
           );
         })}

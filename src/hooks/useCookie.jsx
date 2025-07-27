@@ -1,4 +1,6 @@
 export const useCookie = () => {
+
+  // 쿠키 조회 함수
   const getCookie = (name) => {
     const nameOfCookie = name + "="
     const cookieArray = document.cookie.split('; ');
@@ -12,6 +14,7 @@ export const useCookie = () => {
     return null;
   };
 
+  // 쿠키 생성 함수
   const setCookie = (name, value, expiredays) => {
     var todayDate = new Date();
     todayDate = new Date(
@@ -33,6 +36,7 @@ export const useCookie = () => {
       ";";
   };
 
+  // 쿠키 삭제 함수
   const removeCookie = (name) => {
     document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
   }

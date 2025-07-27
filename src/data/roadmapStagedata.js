@@ -1,3 +1,27 @@
+/**
+ * 구름의 상태를 나타내는 상수 객체
+ * - LOCKED: 미션이 잠겨 있어 접근할 수 없는 상태.
+ * - UNLOCKED: 미션이 해금되어 수락할 수 있는 상태.
+ * - PROGRESS: 미션이 수락되어 진행 중인 상태.
+ * - COMPLETED: 미션이 완료된 상태.
+ */
+export const CLOUD_STATE = {
+  LOCKED: 'locked',
+  UNLOCKED: 'unlocked',
+  PROGRESS: 'progress',
+  COMPLETED: 'completed',
+};
+
+// 로드맵의 단계를 그룹화한 상수 데이터
+export const STAGE_GROUPS = {
+  1: [1],
+  2: [2, 3, 4],
+  3: [5, 6, 7],
+  4: [8, 9, 10],
+  5: [11],
+};
+
+// 스테이지별 컴포넌트 위치 상수 데이터
 export const STAGE_POSITIONS = [
   {
     id: 1,
@@ -67,15 +91,26 @@ export const STAGE_POSITIONS = [
   },
 ];
 
+// 바로가기 URL 상수 데이터
 export const SHORT_CUT_URL = [
-  "http://192.168.145.28:8080/mpg/mif/inq/selectMyInquiryView.do",
-  "http://192.168.145.28:8080/pse/cat/careerAptitudeTest.do",
-  "http://192.168.145.28:8080/",
-  "http://192.168.145.28:8080/pse/cr/crl/selectCareerList.do",
-  "http://192.168.145.28:8080/prg/std/stdGroupList.do",
-  "http://192.168.145.28:8080/cnslt/off/offlineReservation.do",
-  "http://192.168.145.28:8080/comm/peer/teen/teenList.do",
-  "http://192.168.145.28:8080/rsm/rsm",
-  "http://192.168.145.28:8080/sint/qestnlst",
-  "http://192.168.145.28:8080/imtintrvw/aiimtintrvw"
+  // "http://192.168.145.28:8080/mpg/mif/inq/selectMyInquiryView.do",
+  // "http://192.168.145.28:8080/pse/cat/careerAptitudeTest.do",
+  // "http://192.168.145.28:8080/",
+  // "http://192.168.145.28:8080/pse/cr/crl/selectCareerList.do",
+  // "http://192.168.145.28:8080/prg/std/stdGroupList.do",
+  // "http://192.168.145.28:8080/cnslt/off/offlineReservation.do",
+  // "http://192.168.145.28:8080/comm/peer/teen/teenList.do",
+  // "http://192.168.145.28:8080/rsm/rsm",
+  // "http://192.168.145.28:8080/sint/qestnlst",
+  // "http://192.168.145.28:8080/imtintrvw/aiimtintrvw"
+  "http://localhost:8080/mpg/mif/inq/selectMyInquiryView.do",
+  "http://localhost:8080/pse/cat/careerAptitudeTest.do",
+  "http://localhost:8080/",
+  "http://localhost:8080/pse/cr/crl/selectCareerList.do",
+  "http://localhost:8080/prg/std/stdGroupList.do",
+  "http://localhost:8080/cnslt/off/offlineReservation.do",
+  "http://localhost:8080/comm/peer/teen/teenList.do",
+  "http://localhost:8080/rsm/rsm",
+  "http://localhost:8080/sint/qestnlst",
+  "http://localhost:8080/imtintrvw/aiimtintrvw"
 ]
