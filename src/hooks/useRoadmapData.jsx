@@ -20,6 +20,9 @@ export const useRoadmapData = () => {
   // 로드맵 완성 여부 상태 관리
   const [isCompleted, setIsCompleted] = useState(false);
 
+  // 첫 로드맵 입장 여부 상태 관리
+  const [isFirst, setIsFirst] = useState(false);
+
   // 초기 로드맵 데이터 로딩 함수 (기본값 로딩 중)
   const loadRoadmapData = useCallback(async (showLoading = true) => {
     if (showLoading) setIsLoading(true);
@@ -34,6 +37,7 @@ export const useRoadmapData = () => {
       setCompletedMissions(roadmapData.completedMissions);
       setProgressMissions(roadmapData.progressMissions);
       setIsCompleted(roadmapData.completedMissions.some(m => m.rsId === 11));
+      setIsFirst(roadmapData.isFirst);
     } catch (error) {
       console.error("로드맵 정보를 불러오는 중 오류가 발생하였습니다.", error);
       alert("로드맵 정보를 불러오는 중 오류가 발생하였습니다.");
@@ -51,6 +55,7 @@ export const useRoadmapData = () => {
       setCompletedMissions(roadmapData.completedMissions);
       setProgressMissions(roadmapData.progressMissions);
       setIsCompleted(roadmapData.completedMissions.some(m => m.rsId === 11));
+      setIsFirst(roadmapData.isFirst);
     } catch (error) {
       console.error("미션 데이터 새로고침 중 오류 발생", error);
     }
@@ -69,6 +74,8 @@ export const useRoadmapData = () => {
     completedMissions,
     isLoading,
     refreshMissionData, // 새로운 함수 추가
-    isCompleted
+    isCompleted,
+    isFirst,
+    setIsFirst
   };
 };

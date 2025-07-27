@@ -26,8 +26,10 @@ export const useRoadmap = () => {
     progressMissions,
     completedMissions,
     isLoading,
-    isCompleted,
     refreshMissionData,
+    isCompleted,
+    isFirst,
+    setIsFirst
   } = useRoadmapData();
 
   /**
@@ -191,9 +193,12 @@ export const useRoadmap = () => {
   useEffect(() => {
     if (getCookie('popup')) {
       setIsNoShow(true);
+    } else if (isFirst) {
+      tutorialModal.open();
+      setIsFirst(false);
     }
     window.resizeTo(1084, 736);
-  }, [getCookie]);
+  }, [getCookie, isFirst]);
 
   return {
     missionList,
