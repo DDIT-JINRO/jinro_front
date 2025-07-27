@@ -142,7 +142,7 @@
   cursor: pointer;
 }
 
-.mission-status-progress {
+.mission-status.progress {
   background-color: #faa321;
   color: #ffffff;
   border-radius: 5px;
@@ -156,7 +156,7 @@
 }
 
 /* '완료' 버튼 스타일 */
-.mission-status.completBtn {
+.mission-status.completeBtn {
   background-color: #5865f2;
   color: #ffffff;
   cursor: pointer;
@@ -167,7 +167,7 @@
   font-size: 11px;
 }
 
-.mission-status.completBtn:hover {
+.mission-status.completeBtn:hover {
   background-color: #4752c4;
 }
 

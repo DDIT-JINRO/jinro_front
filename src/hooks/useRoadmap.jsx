@@ -8,6 +8,8 @@ import { CLOUD_STATE, STAGE_POSITIONS } from '../data/roadmapStagedata';
 import { getCloudState } from '../data/roadmapUtils';
 
 export const useRoadmap = () => {
+  console.log("페이지 로딩임");
+
   /**
    * 로드맵 데이터 이용을 위한 커스텀 훅 사용
    * @property {Array} missionList - 전체 미션 목록
@@ -189,6 +191,10 @@ export const useRoadmap = () => {
     }
   };
 
+  const intervalId = setInterval(() => {
+    refreshMissionData();
+  }, 1000);
+
   // 페이지 로딩 시 오늘 하루 보지 않기 체크박스 상태 로딩 및 화면 크기 조정
   useEffect(() => {
     if (getCookie('popup')) {
@@ -197,8 +203,11 @@ export const useRoadmap = () => {
       tutorialModal.open();
       setIsFirst(false);
     }
+
     window.resizeTo(1084, 736);
-  }, [getCookie, isFirst]);
+
+    return () => clearInterval(intervalId);
+  }, [getCookie, isFirst, refreshMissionData]);
 
   return {
     missionList,

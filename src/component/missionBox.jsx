@@ -94,6 +94,7 @@ function MissionBox({ missionList, progressMissions, completedMissions, onUpdate
 
       <ul className="mission-list">
         {displayMissions.map((mission) => {
+          console.log(mission);
           // 각 미션 완료 상태 여부
           const isCompleted = mission.status === "completed";
 
@@ -114,9 +115,9 @@ function MissionBox({ missionList, progressMissions, completedMissions, onUpdate
               <div>
                 <div className="mission-name">
                   <span>{`${currentGroup}단계 : ${stepName}`}</span>
-                  {isCompleted
-                    ? (<div className="mission-status completed">완료됨</div>)
-                    : (<div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>)}
+                  {!isCompleted && (
+                    <div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>
+                  )}
                 </div>
                 
                 {/* 완료 예정일이 있고, 완료되지 않은 미션일 경우 */}
@@ -130,9 +131,14 @@ function MissionBox({ missionList, progressMissions, completedMissions, onUpdate
                 )}
               </div>
 
-              {isCompleted
-                ? (<div className="mission-status-progress">진행중</div>)
-                : (<div className="mission-status completBtn" onClick={() => handleCompleteClick(mission.rsId)}>완료</div>)}
+              {
+              isCompleted
+                ? (<div className="mission-status completed ">완료됨</div>)
+                : (
+                  mission.complete
+                    ? (<div className="mission-status completeBtn" onClick={() => handleCompleteClick(mission.rsId)}>완료</div>)
+                    : (<div className="mission-status progress">진행중</div>)
+              )}
             </li>
           );
         })}
