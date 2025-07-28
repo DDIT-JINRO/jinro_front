@@ -4,6 +4,7 @@ import ResultPage from "./pages/ResultPage";
 import RoadMap from "./pages/roadMapPage";
 import ResultPage from "./pages/ResultPage";
 import RoadmapResultPage from "./pages/roadmapResultPage";
+import RoadmapErrorPage from "./pages/roadmapErrorPage";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
     {
         path: "/roadmap/results",
         element: <RoadmapResultPage />,
+    },
+    {
+        path: "/roadmap/error",
+        element: <RoadmapErrorPage />,
     },
 ]);
 

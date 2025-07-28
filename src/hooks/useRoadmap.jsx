@@ -6,9 +6,10 @@ import { useCookie } from './useCookie';
 import { updateDueDate, updateCompleteMission } from '../api/roadMapApi';
 import { CLOUD_STATE, STAGE_POSITIONS } from '../data/roadmapStagedata';
 import { getCloudState } from '../data/roadmapUtils';
+import { useNavigate } from 'react-router-dom';
 
 export const useRoadmap = () => {
-  console.log("페이지 로딩임");
+  const navigate = useNavigate();
 
   /**
    * 로드맵 데이터 이용을 위한 커스텀 훅 사용
@@ -112,12 +113,25 @@ export const useRoadmap = () => {
   const handleSaveEditedDueDate = async (newDueDate) => {
     if (missionToEdit) {
       try {
-        await updateDueDate(missionToEdit.rsId, newDueDate);
+        const res = await updateDueDate(missionToEdit.rsId, newDueDate);
+        if (!res) {
+          throw new Error("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
+        }
+
+        if (res == "fail") {
+          alert("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
+          return;
+        }
+
         refreshMissionData();
         setIsEditModalOpen(false);
         setMissionToEdit(null);
       } catch (error) {
-        console.error("미션 완료 예정 날짜 수정 오류:", error);
+        navigate("/roadmap/error", {
+          state: {
+            message: error.message,
+          },
+        });
       }
     }
   };
@@ -132,6 +146,10 @@ export const useRoadmap = () => {
   const handleCompleteFinalMission = async (stageId) => {
     try {
       const res = await updateCompleteMission(stageId);
+      if (!res) {
+        throw new Error("최종 미션 완료 중 오류가 발생했습니다.");
+      }
+
       if (res === "fail") {
         alert("미션을 완료하지 않았습니다.");
         return;
@@ -141,8 +159,11 @@ export const useRoadmap = () => {
       }
       refreshMissionData();
     } catch (error) {
-      console.error("최종 미션 완료 중 오류가 발생했습니다.", error);
-      alert("최종 미션 완료 중 오류가 발생했습니다.");
+      navigate("/roadmap/error", {
+        state: {
+          message: error.message,
+        },
+      });
     }
   };
 

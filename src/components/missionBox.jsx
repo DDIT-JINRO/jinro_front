@@ -3,6 +3,7 @@ import { updateCompleteMission } from "../api/roadMapApi";
 import "../css/roadmap/missionBox.css";
 import { SHORT_CUT_URL } from "../data/roadmapStagedata";
 import { formatDate, getStageGroup } from "../data/roadmapUtils";
+import { useNavigate } from "react-router-dom";
 
 const backUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,6 +16,8 @@ const backUrl = import.meta.env.VITE_BACK_END_URL;
  * @param {function} onEditDueDate - 완료 예정일 수정 모달을 여는 함수
  */
 function MissionBox({ missionList, progressMissions, completedMissions, refresh, onEditDueDate, setCharPosition, setIsCompleteMoving }) {
+  const navigate = useNavigate();
+
   // 미션 박스 컴포넌트 상태 관리
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,6 +33,10 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
   const handleCompleteClick = async (stageId) => {
     try {
       const res = await updateCompleteMission(stageId);
+      if (!res) {
+        throw new Error("미션 완료 중 오류가 발생하였습니다.");
+      }
+
       if (res === "fail") {
         alert("완료 되지 않은 미션입니다.");
         return;
@@ -37,8 +44,12 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
       setCharPosition(stageId - 1);
       setIsCompleteMoving(true);
       refresh();
-    } catch (err) {
-      console.error("미션 완료 중 업데이트 중 오류가 발생했습니다.", err);
+    } catch (error) {
+      navigate("/roadmap/error", {
+        state: {
+          message: error.message,
+        },
+      });
     }
   };
 

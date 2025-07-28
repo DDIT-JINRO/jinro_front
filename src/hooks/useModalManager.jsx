@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { insertMission } from "../api/roadMapApi";
+import { useNavigate } from "react-router-dom";
 
 export const useModalManager = ( missionList, refreshMissionData, setCharPosition) => {
+  const navigate = useNavigate();
+
   // 튜토리얼 모달 상태 관리
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -53,11 +56,14 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
     setCharPosition(selectedMission.rsId - 1);
     try {
       const res = await insertMission(selectedMission.rsId, dueDate);
-      if (res === "fail") return;
+      if (!res || res === "fail") throw new Error("미션 수락 중 오류가 발생했습니다.");
       refreshMissionData();
     } catch (error) {
-      console.error("미션 수락 중 오류가 발생했습니다.", error);
-      alert("미션 수락 중 오류가 발생했습니다.");
+      navigate("/roadmap/error", {
+        state: {
+          message: error.message,
+        },
+      });
     }
 
     closeAcceptModal();

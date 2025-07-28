@@ -14,11 +14,18 @@ function RoadmapResultPage() {
   // 결과 데이터 조회 API 호출 함수
   const fetchData = async () => {
     try {
-      const res = await selectResultData()
+      const res = await selectResultData();
+      if (!res) {
+        throw new Error("결과 데이터를 불러오는 중 오류가 발생했습니다.");
+      }
+
       setResultData(res);
     } catch (error) {
-      console.error("결과 데이터를 불러오는 중 오류가 발생했습니다.", error);
-      alert("결과 데이터를 불러오는 중 오류가 발생했습니다.");
+      navigate("/roadmap/error", {
+        state: {
+          message: error.message,
+        },
+      });
     }
   }
 
