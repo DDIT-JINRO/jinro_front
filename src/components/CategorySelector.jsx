@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCategories, selectJobsByCategory } from "../api/worldcupApi";
-import '../CategorySelector.css';
+import '../css/CategorySelector.css';
 
 export default function CategorySelector() {
     const [categories, setCategories] = useState([]);
