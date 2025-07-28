@@ -68,15 +68,26 @@ body {
 
 /* 관련 직업 목록 */
 ul {
-    list-style-type: disc;
-    padding-left: 20px;
-    text-align: left;
+    display: flex; /* 가로로 나열하기 위해 Flexbox 사용 */
+    flex-wrap: wrap; /* 내용이 길어지면 다음 줄로 넘겨지도록 설정 */
+    padding-left: 0; /* 기본 padding 제거 */
+    margin: 0; /* 기본 margin 제거 */
+    justify-content: center; /* 가로 가운데 정렬 */
 }
 
 li {
     font-size: 0.8rem;
     color: #555;
+    margin: 5px; /* 각 항목 사이에 간격 추가 */
+    padding: 10px 20px; /* 항목의 테두리 내부 여백 */
+    background-color: #ffffff; /* 배경 색상 */
+    border: 2px solid #29B6F6; /* 동그란 테두리 */
+    border-radius: 25px; /* 동그란 테두리 */
+    display: flex;
+    align-items: center; /* 텍스트 세로 중앙 정렬 */
+    justify-content: center; /* 텍스트 가로 중앙 정렬 */
 }
+
 
 /* 버튼 스타일 */
 .restart-button {

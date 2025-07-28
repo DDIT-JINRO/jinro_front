@@ -18,7 +18,7 @@ const ResultPage = () => {
             {/* 결과 카드 */}
             <div className="result-card">
                 {/* 우승 직업 제목 */}
-                <h1 className="result-title">🎉 우승 직업 🎉</h1>
+                <h1 className="result-title">우승 직업</h1>
                 <h2 className="text-2xl font-bold mb-3 text-blue-700">{winner.jobName}</h2>
             </div>
 

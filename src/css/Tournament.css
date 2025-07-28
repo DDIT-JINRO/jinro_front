@@ -23,9 +23,16 @@
 }
 
 .tournament-round::before {
-    content: "🏆";
-    font-size: 30px;
+    content: "";
+    display: inline-block;
+    width: 30px; /* 이미지 크기 설정 */
+    height: 30px; /* 이미지 크기 설정 */
+    background-image: url('/src/assets/worldcup/images/worldcup.png'); /* 이미지 경로 설정 */
+    background-size: contain; /* 이미지 크기를 비율에 맞게 조정 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    margin-right: 10px; /* 아이콘과 텍스트 사이의 간격 */
 }
+
 
 /* 카드 영역 */
 .tournament-pair {
