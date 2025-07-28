@@ -1,3 +1,5 @@
+const backUrl = import.meta.env.VITE_BACK_END_URL;
+
 /**
  * 구름의 상태를 나타내는 상수 객체
  * - LOCKED: 미션이 잠겨 있어 접근할 수 없는 상태.
@@ -93,24 +95,14 @@ export const STAGE_POSITIONS = [
 
 // 바로가기 URL 상수 데이터
 export const SHORT_CUT_URL = [
-  // "http://192.168.145.28:8080/mpg/mif/inq/selectMyInquiryView.do",
-  // "http://192.168.145.28:8080/pse/cat/careerAptitudeTest.do",
-  // "http://192.168.145.28:8080/",
-  // "http://192.168.145.28:8080/pse/cr/crl/selectCareerList.do",
-  // "http://192.168.145.28:8080/prg/std/stdGroupList.do",
-  // "http://192.168.145.28:8080/cnslt/off/offlineReservation.do",
-  // "http://192.168.145.28:8080/comm/peer/teen/teenList.do",
-  // "http://192.168.145.28:8080/rsm/rsm",
-  // "http://192.168.145.28:8080/sint/qestnlst",
-  // "http://192.168.145.28:8080/imtintrvw/aiimtintrvw"
-  "http://localhost:8080/mpg/mif/inq/selectMyInquiryView.do",
-  "http://localhost:8080/pse/cat/careerAptitudeTest.do",
-  "http://localhost:8080/",
-  "http://localhost:8080/pse/cr/crl/selectCareerList.do",
-  "http://localhost:8080/prg/std/stdGroupList.do",
-  "http://localhost:8080/cnslt/off/offlineReservation.do",
-  "http://localhost:8080/comm/peer/teen/teenList.do",
-  "http://localhost:8080/rsm/rsm",
-  "http://localhost:8080/sint/qestnlst",
-  "http://localhost:8080/imtintrvw/aiimtintrvw"
+  `${backUrl}/mpg/mif/inq/selectMyInquiryView.do`,
+  `${backUrl}/pse/cat/careerAptitudeTest.do`,
+  `${backUrl}/`,
+  `${backUrl}/pse/cr/crl/selectCareerList.do`,
+  `${backUrl}/prg/std/stdGroupList.do`,
+  `${backUrl}/cnslt/off/offlineReservation.do`,
+  `${backUrl}/comm/peer/teen/teenList.do`,
+  `${backUrl}/rsm/rsm`,
+  `${backUrl}/sint/qestnlst`,
+  `${backUrl}/imtintrvw/aiimtintrv`
 ]

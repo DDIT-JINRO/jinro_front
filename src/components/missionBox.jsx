@@ -5,7 +5,6 @@ import { SHORT_CUT_URL } from "../data/roadmapStagedata";
 import { formatDate, getStageGroup } from "../data/roadmapUtils";
 
 const backUrl = import.meta.env.VITE_BACK_END_URL;
-const prefix = `${backUrl}/roadmap`
 
 /**
  * 사용자의 현재 미션 목록(진행 중, 완료)을 보여주는 박스 컴포넌트
@@ -53,8 +52,7 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
     }
 
     if(window.opener) {
-      window.opener.postMessage(message, 'http://192.168.145.28:8080');
-      // window.opener.postMessage(message, 'http://localhost:8080');
+      window.opener.postMessage(message, backUrl);
       window.close();
     } else {
       console.log("부모 창을 찾을 수 없습니다.");
