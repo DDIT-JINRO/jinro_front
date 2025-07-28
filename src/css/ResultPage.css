@@ -1,129 +1,227 @@
+/* 전역 스타일 및 애니메이션 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 body {
-    margin: 0;
-}
-
-/* 전체 화면 설정 */
-.result-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #E0F7FA; /* 배경 색상 */
-    padding: 40px 20px;
-    box-sizing: border-box;
-    overflow: hidden; /* 스크롤 숨기기 */
-}
-
-/* 결과 카드 디자인 */
-.result-card {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-}
-
-/* 우승 직업 제목 */
-.result-title {
-    font-size: 1.9rem;
-    font-weight: bold;
-    color: #29B6F6;
-    margin-bottom: 20px;
-}
-
-/* 직업 이름 */
-.result-card h2 {
-    font-size: 1.3rem;
-    color: #004D40;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-/* 직업 정보 섹션 */
-.result-info-container {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 800px;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-}
-
-/* 직업 정보 텍스트 */
-.result-info {
-    margin-bottom: 20px;
-    font-size: 0.8rem;
+    background-color: #eafaff; /* 선택 화면과 비슷한 하늘색 배경 */
+    font-family: 'Noto Sans KR', sans-serif;
     color: #333;
 }
 
-/* 관련 직업 목록 */
-ul {
-    display: flex; /* 가로로 나열하기 위해 Flexbox 사용 */
-    flex-wrap: wrap; /* 내용이 길어지면 다음 줄로 넘겨지도록 설정 */
-    padding-left: 0; /* 기본 padding 제거 */
-    margin: 0; /* 기본 margin 제거 */
-    justify-content: center; /* 가로 가운데 정렬 */
-}
-
-li {
-    font-size: 0.8rem;
-    color: #555;
-    margin: 5px; /* 각 항목 사이에 간격 추가 */
-    padding: 10px 20px; /* 항목의 테두리 내부 여백 */
-    background-color: #ffffff; /* 배경 색상 */
-    border: 2px solid #29B6F6; /* 동그란 테두리 */
-    border-radius: 25px; /* 동그란 테두리 */
+/* --- 메인 컨테이너 --- */
+.result-container {
     display: flex;
-    align-items: center; /* 텍스트 세로 중앙 정렬 */
-    justify-content: center; /* 텍스트 가로 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    height: 100%;
 }
 
+/* --- 우승자 카드 --- */
+.winner-card {
+    background: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border: 4px solid #848EFB; /* 월드컵 테마의 보라색 테두리 */
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 0.8s ease-in-out;
+}
 
-/* 버튼 스타일 */
+/* --- 카드 헤더 --- */
+.card-header {
+    margin-bottom: 2rem;
+}
+
+.winner-character {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem;
+    /* 캐릭터 이미지가 들어갈 경우를 대비한 스타일 */
+}
+
+.result-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+.result-title::before {
+    content: "";
+    display: inline-block;
+    width: 30px; /* 트로피 아이콘 크기 */
+    height: 30px; /* 트로피 아이콘 크기 */
+    background-image: url('/src/assets/worldcup/images/worldcup.png'); /* 트로피 이미지 경로 */
+    background-size: contain; /* 이미지 크기 비율에 맞게 조정 */
+    margin-right: 10px; /* 텍스트와 아이콘 사이에 간격 추가 */
+}
+
+.result-title::after {
+    content: "";
+    display: inline-block;
+    width: 30px; /* 트로피 아이콘 크기 */
+    height: 30px; /* 트로피 아이콘 크기 */
+    background-image: url('/src/assets/worldcup/images/worldcup.png'); /* 트로피 이미지 경로 */
+    background-size: contain; /* 이미지 크기 비율에 맞게 조정 */
+    margin-left: 10px; /* 텍스트와 아이콘 사이에 간격 추가 */
+}
+
+.winner-job-name {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #848EFB; /* 보라색 테마 색상 */
+    margin-bottom: 1rem;
+}
+
+/* --- 카드 본문 (상세 정보) --- */
+.card-body {
+    text-align: left;
+    border-top: 1px dashed #ddd;
+    border-bottom: 1px dashed #ddd;
+    padding: 2rem 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2열 그리드 */
+    gap: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.info-grid p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 아이콘과 텍스트 간격 */
+    color: #555;
+}
+
+.info-grid p svg { /* react-icons 아이콘 스타일 */
+    color: #848EFB;
+    font-size: 1.2rem;
+}
+
+.info-grid .main-duty {
+    grid-column: 1 / -1; /* 주요 업무는 2열 모두 사용 */
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* --- 관련 직업 섹션 --- */
+.related-jobs-section {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.related-jobs-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.job-tag {
+    background-color: #f3e5f5; /* 연한 보라색 배경 */
+    color: #8e44ad;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.job-tag:hover {
+    background-color: #e1bee7;
+    transform: translateY(-2px);
+}
+
+/* --- 카드 푸터 (버튼 그룹) --- */
+.card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.action-button,
 .restart-button {
-    background-color: #ff4081;
-    color: white;
-    padding: 12px 30px;
-    font-size: 1.1rem;
     border: none;
-    border-radius: 6px;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 200px;
-    margin-top: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.restart-button {
+    background-color: #848EFB;
+    color: white;
 }
 
 .restart-button:hover {
-    background-color: #f50057;
+    background-color: #626ef8;
+    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+    transform: translateY(-3px);
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .result-card {
-        width: 90%; /* 모바일에서 너비를 적당히 줄임 */
-    }
+.action-button {
+    background-color: #f1f1f1;
+    color: #555;
+}
 
-    .result-card h1 {
-        font-size: 1.8rem;
-    }
+.action-button:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-3px);
+}
 
-    .result-info {
-        font-size: 1rem;
-    }
+/* 연봉 상세 정보 스타일 */
+.salary-details {
+    grid-column: 1 / -1; /* 그리드 레이아웃의 전체 너비를 사용 */
+    text-align: left;
+}
 
-    .restart-button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        width: 150px;
-    }
+.salary-details strong {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem; /* 데스크탑 기준 */
+}
+
+.salary-tags-container {
+    display: flex;
+    flex-wrap: wrap; /* 태그가 많아지면 다음 줄로 넘김 */
+    gap: 10px;
+}
+
+.salary-tag {
+    background-color: #e8f5e9; /* 연두색 배경 */
+    color: #388e3c; /* 짙은 녹색 텍스트 */
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border: 1px solid #c8e6c9;
 }
