@@ -59,7 +59,9 @@ const ResultPage = () => {
             </p>
             <p>
               <strong>관련 자격증:</strong>{" "}
-              {winner.jobRelatedCert || "정보 없음"}
+              {winner.jobRelatedCert
+                  ? winner.jobRelatedCert.split(",").slice(0, 2).join(", ") || "정보 없음"
+                  : "정보 없음"}
             </p>
             <p className="main-duty">
               <strong>주요 업무:</strong> {winner.jobMainDuty || "정보 없음"}
@@ -70,7 +72,7 @@ const ResultPage = () => {
             <h3>관련 직업</h3>
             <div className="tags-container">
               {Array.isArray(winner.jobsRel) && winner.jobsRel.length > 0 ? (
-                winner.jobsRel.map((relJob, index) => (
+                winner.jobsRel.slice(0,5).map((relJob, index) => (
                   <span key={index} className="job-tag">
                     {relJob}
                   </span>
