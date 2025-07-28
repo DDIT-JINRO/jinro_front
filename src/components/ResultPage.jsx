@@ -12,8 +12,8 @@ const ResultPage = () => {
     navigate("/worldcup");
   };
 
-  const shareResult = () => {
-    alert("결과를 공유하는 기능입니다. (구현 필요)");
+  const exitWorldCup = () => {
+    window.close();
   };
 
   if (!winner) {
@@ -87,6 +87,9 @@ const ResultPage = () => {
         <footer className="card-footer">
           <button className="restart-button" onClick={restartWorldCup}>
             다시하기
+          </button>
+          <button className="exit-button" onClick={exitWorldCup}>
+            나가기
           </button>
         </footer>
       </div>

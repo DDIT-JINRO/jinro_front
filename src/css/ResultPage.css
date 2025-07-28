@@ -204,6 +204,30 @@ body {
     transform: translateY(-3px);
 }
 
+.exit-button {
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.exit-button {
+    background-color: #fb8484;
+    color: white;
+}
+
+.exit-button:hover {
+    background-color: #f86262;
+    box-shadow: 0 4px 15px rgba(173, 68, 68, 0.4);
+    transform: translateY(-3px);
+}
+
 .action-button {
     background-color: #f1f1f1;
     color: #555;
