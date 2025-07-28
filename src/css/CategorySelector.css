@@ -1,7 +1,11 @@
+body {
+    height: 100%;
+}
+
 /* 전체 모달 컨테이너 */
 .category-modal {
-    width: 100%; /* 기존 900px → 더 넓게 */
-    height: 100%; /* 기존 560px → 좀 더 크게 */
+    width: 100%;
+    height: 100%;
     margin: 0 auto; /* 중앙 정렬 보장 */
     background: #ffffff;
     border-radius: 20px;
