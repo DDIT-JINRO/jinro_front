@@ -22,9 +22,11 @@ function RoadmapOverlays({ roadmap }) {
       <MissionBox
         progressMissions={roadmap.progressMissions}
         completedMissions={roadmap.completedMissions}
-        onUpdate={roadmap.refreshMissionData}
+        refresh={roadmap.refreshMissionData}
         missionList={roadmap.missionList}
         onEditDueDate={roadmap.editModal.open}
+        setCharPosition={roadmap.handleSetCharPosition}
+        setIsCompleteMoving={roadmap.setIsCompleteMoving}
       />
 
       {/* 로드맵 결과 다시보기 버튼 컴포넌트 */}

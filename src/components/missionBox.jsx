@@ -4,6 +4,9 @@ import "../css/roadmap/missionBox.css";
 import { SHORT_CUT_URL } from "../data/roadmapStagedata";
 import { formatDate, getStageGroup } from "../data/roadmapUtils";
 
+const backUrl = import.meta.env.VITE_BACK_END_URL;
+const prefix = `${backUrl}/roadmap`
+
 /**
  * 사용자의 현재 미션 목록(진행 중, 완료)을 보여주는 박스 컴포넌트
  * @param {Array} missionList - 전체 미션 목록
@@ -12,7 +15,7 @@ import { formatDate, getStageGroup } from "../data/roadmapUtils";
  * @param {function} onUpdate - 새로고침하는 함수
  * @param {function} onEditDueDate - 완료 예정일 수정 모달을 여는 함수
  */
-function MissionBox({ missionList, progressMissions, completedMissions, onUpdate, onEditDueDate,}) {
+function MissionBox({ missionList, progressMissions, completedMissions, refresh, onEditDueDate, setCharPosition, setIsCompleteMoving }) {
   // 미션 박스 컴포넌트 상태 관리
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,7 +35,9 @@ function MissionBox({ missionList, progressMissions, completedMissions, onUpdate
         alert("완료 되지 않은 미션입니다.");
         return;
       }
-      onUpdate();
+      setCharPosition(stageId - 1);
+      setIsCompleteMoving(true);
+      refresh();
     } catch (err) {
       console.error("미션 완료 중 업데이트 중 오류가 발생했습니다.", err);
     }
@@ -48,8 +53,8 @@ function MissionBox({ missionList, progressMissions, completedMissions, onUpdate
     }
 
     if(window.opener) {
-      // window.opener.postMessage(message, 'http://192.168.145.28:8080');
-      window.opener.postMessage(message, 'http://localhost:8080');
+      window.opener.postMessage(message, 'http://192.168.145.28:8080');
+      // window.opener.postMessage(message, 'http://localhost:8080');
       window.close();
     } else {
       console.log("부모 창을 찾을 수 없습니다.");

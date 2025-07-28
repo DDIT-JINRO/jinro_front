@@ -14,7 +14,9 @@ import { getCloudState } from '../data/roadmapUtils';
  * @param {object} eventHandlers - 마우스 이동, 구름 진입/이탈 등 이벤트 핸들러 객체
  * @param {function} handleCloudClick - 구름 클릭 시 실행될 함수
  */
-function RoadmapView ({ charPosition, progressMissions, completedMissions, isMoving, character, eventHandlers, handleCloudClick })  {
+function RoadmapView ({ roadmap })  {
+
+  const { charPosition, progressMissions, completedMissions, isMoving, isCompleteMoving, setIsCompleteMoving, character, eventHandlers, handleCloudClick } = roadmap;
 
   // 나무 표지판 랜더링
   const renderWoodSign = (pos) => {
@@ -69,6 +71,8 @@ function RoadmapView ({ charPosition, progressMissions, completedMissions, isMov
       <Character
         position={STAGE_POSITIONS[charPosition].char}
         isMoving={isMoving}
+        isCompleteMoving={isCompleteMoving}
+        setIsCompleteMoving={setIsCompleteMoving}
         chracterDirection={character.chracterDirection}
       />
     </div>
