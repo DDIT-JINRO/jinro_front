@@ -42,6 +42,10 @@ const router = createBrowserRouter([
         path: "/aptiTest/result",
         element: <AptitestResult />
     },
+    {
+        path: "/mock-interview",
+        element: <MockInterviewScreen />,
+    },
 ]);
 
 export default router;
