@@ -44,7 +44,7 @@
 .category-modal__image {
     width: 80px;
     height: 74px;
-    background: url('/images/image.png') no-repeat center;
+    background: url('/src/assets/worldcup/images/worldcup.png') no-repeat center;
     background-size: cover;
 }
 
