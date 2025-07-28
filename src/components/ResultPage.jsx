@@ -30,9 +30,10 @@ const ResultPage = () => {
   return (
     <div className="result-container">
       <div className="winner-card">
+        <div className="gif-container">
+          <img src="/src/assets/worldcup/images/mococoResult.gif" alt="축하 GIF" className="celebration-gif" />
+        </div>
         <header className="card-header">
-          {/* 캐릭터 이미지가 있다면 아래 src를 수정하세요. 없다면 img 태그를 지워도 됩니다. */}
-          {/* <img src="/images/character_celebrate.png" alt="축하하는 캐릭터" className="winner-character" /> */}
           <h1 className="result-title">최종 우승 직업</h1>
           <h2 className="winner-job-name">{winner.jobName}</h2>
         </header>
