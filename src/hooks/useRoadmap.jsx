@@ -55,6 +55,9 @@ export const useRoadmap = () => {
   // 캐릭터 이동 상태 관리
   const [isMoving, setIsMoving] = useState(false);
 
+  // 캐릭터 미션 완료 모션 상태 관리
+  const [isCompleteMoving, setIsCompleteMoving] = useState(false);
+
   // 완료 예정일 모달 여닫음 여부 상태관리
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -217,6 +220,7 @@ export const useRoadmap = () => {
     isLoading,
     isCompleted,
     isMoving,
+    isCompleteMoving,
     calendar,
     tooltip,
     character,
@@ -238,5 +242,7 @@ export const useRoadmap = () => {
     handleCloudClick,
     handleCheckboxChange,
     refreshMissionData,
+    handleSetCharPosition,
+    setIsCompleteMoving
   };
 };

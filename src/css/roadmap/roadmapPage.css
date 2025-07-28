@@ -3,8 +3,8 @@ body {
 }
 
 #roadmap-background {
-  /* background-image: url("../../assets/roadmap/images/loop-background.gif"); */
-  background-image: url("../../assets/roadmap/images/background.png");
+  background-image: url("../../assets/roadmap/images/bgr.gif");
+  /* background-image: url("../../assets/roadmap/images/background.png"); */
   background-size: cover;
   background-position: center;
   width: 100vw;
@@ -39,6 +39,11 @@ body {
 .character.moving {
   z-index: 10;
   width: 7%;
+}
+
+.character.completeMoving {
+  width: 7%;
+  transform: translateY(-100px);
 }
 
 .cloud {
