@@ -27,7 +27,6 @@ const ResultPage = () => {
                 <div className="result-info">
                     <p><strong>평균 연봉:</strong> {winner.jobSal || "정보 없음"}</p>
                     <p><strong>만족도:</strong> {winner.jobSatis || "정보 없음"}</p>
-                    <p><strong>진입 경로:</strong> {winner.jobWay || "정보 없음"}</p>
                     <p><strong>관련 자격증:</strong> {winner.jobRelatedCert || "정보 없음"}</p>
                     <p><strong>주요 업무:</strong> {winner.jobMainDuty || "정보 없음"}</p>
                     <p><strong>관련 직업:</strong></p>

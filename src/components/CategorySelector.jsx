@@ -26,13 +26,15 @@ export default function CategorySelector() {
 
         selectJobsByCategory(selected)
             .then((data) => {
-                const shuffled = data.sort(() => Math.random() - 0.5);
+                const shuffled = data.jobsVOList.sort(() => Math.random() - 0.5);
                 const trimmed = shuffled.slice(0, round);
+                const comCode = data.comCodeVO;
                 navigate("/worldcup/tournament", {
                     state: {
                         jobs: trimmed,
                         categoryId: selected,
                         round: round,
+                        comCode : comCode
                     },
                 });
             })
@@ -44,9 +46,8 @@ export default function CategorySelector() {
             <div className="category-modal__header">
                 <div className="category-modal__title-area">
                     <div className="category-modal__title-row">
-                        <div className="category-modal__icon" />
-                        <div className="category-modal__image" />
-                        <div className="category-modal__icon" />
+                        <div className="category-modal__image" >
+                        </div>
                     </div>
                     <div className="category-modal__title">직업 월드컵</div>
                 </div>

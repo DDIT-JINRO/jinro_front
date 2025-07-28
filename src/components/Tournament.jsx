@@ -6,7 +6,7 @@ import '../css/Tournament.css';
 const Tournament = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { jobs: initialJobs, categoryId, round } = location.state || {};
+    const { jobs: initialJobs, categoryId, round ,comCode} = location.state || {};
 
     const [jobs, setJobs] = useState([]);
     const [currentPairIndex, setCurrentPairIndex] = useState(0);
@@ -64,16 +64,33 @@ const Tournament = () => {
 
             {jobs.length >= 2 && (
                 <div className="tournament-pair">
-                    {[jobA, jobB].map((job) => (
-                        <button
-                            key={job.jobCode}
-                            onClick={() => handleSelect(job)}
-                            className="tournament-card"
-                        >
-                            <h3 className="tournament-title">{job.jobName}</h3>
-                            <p className="tournament-info"><strong>직무 분류:</strong> {job.jobLcl}</p>
-                            <p className="tournament-info"><strong>주요 업무:</strong> {job.jobMainDuty}</p>
-                        </button>
+                    {[jobA, jobB].map((job, index) => (
+                        <div className="tournament-card-wrapper" key={job.jobCode}>
+                            <button
+                                onClick={() => handleSelect(job)}
+                                className="tournament-card"
+                            >
+                                <div className="tournament-card-content">
+                                    <h3 className="tournament-title">{job.jobName}</h3>
+                                    <p className="tournament-info"><strong>직무 분류:</strong> {comCode?.ccName}</p>
+                                    <p className="tournament-info"><strong>주요 업무:</strong> {job.jobMainDuty}</p>
+                                </div>
+                            </button>
+
+                            {/* 왼쪽 직업에만 왼쪽 캐릭터, 오른쪽 직업에만 오른쪽 캐릭터 */}
+                            {index === 0 && (
+                                <>
+                                    <div className="card-icon-left"></div>
+                                    <div className="character-left"></div>
+                                </>
+                            )}
+                            {index === 1 && (
+                                <>
+                                    <div className="card-icon-right"></div>
+                                    <div className="character-right"></div>
+                                </>
+                            )}
+                        </div>
                     ))}
                 </div>
             )}
