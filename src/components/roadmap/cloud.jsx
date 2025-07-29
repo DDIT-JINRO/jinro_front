@@ -1,5 +1,5 @@
-import "../css/roadmap/roadmapPage.css";
-import { CLOUD_STATE } from "../data/roadmapStagedata";
+import "../../css/roadmap/roadmapPage.css";
+import { CLOUD_STATE } from "../../data/roadmapStagedata";
 
 const prefix = `/src/assets/roadmap/images/`;
 

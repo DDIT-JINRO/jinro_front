@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 // CSS 파일 import
-import "../css/ResultPage.css";
+import "../../css/worldcup/ResultPage.css";
 
 const ResultPage = () => {
   const location = useLocation();

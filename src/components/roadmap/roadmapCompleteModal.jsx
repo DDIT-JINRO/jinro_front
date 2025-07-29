@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../css/roadmap/roadmapCompleteModal.css";
+import "../../css/roadmap/roadmapCompleteModal.css";
 
 /**
  * 로드맵의 모든 미션을 완료했을 때 나타나는 모달 컴포넌트

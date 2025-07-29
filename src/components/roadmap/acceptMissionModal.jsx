@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS 파일
+import "../../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS 파일
 
 /**
  * 미션 수락 또는 잠금 상태를 알려주는 모달 컴포넌트

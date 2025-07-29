@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import '../css/roadmap/roadmapErrorPage.css';
+import '../../css/roadmap/roadmapErrorPage.css';
 
 const RoadmapErrorPage = () => {
 	const location = useLocation();

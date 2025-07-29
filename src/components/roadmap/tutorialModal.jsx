@@ -1,4 +1,4 @@
-import "../css/roadmap/tutorialModal.css";
+import "../../css/roadmap/tutorialModal.css";
 
 /**
  * 튜토리얼 모달 컴포넌트

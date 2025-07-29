@@ -1,4 +1,4 @@
-import CategorySelector from "../components/CategorySelector";
+import CategorySelector from "../../components/worldcup/CategorySelector";
 
 export default function WorldcupPage() {
     return (

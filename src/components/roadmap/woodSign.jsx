@@ -1,4 +1,4 @@
-import "../css/roadmap/woodSign.css";
+import "../../css/roadmap/woodSign.css";
 
 const prefix = `/src/assets/roadmap/images/`;
 const signImgSrc = `${prefix}wood_sign.png`;

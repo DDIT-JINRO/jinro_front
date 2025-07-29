@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import "../css/roadmap/roadmapPage.css";
+import "../../css/roadmap/roadmapPage.css";
 
 /**
  * 이동 상태와 방향에 따라 다른 이미지를 표시하는 캐릭터 컴포넌트

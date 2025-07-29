@@ -1,7 +1,7 @@
-import { useRoadmap } from "../hooks/useRoadmap";
-import RoadmapView from "../components/roadmapView";
-import RoadmapOverlays from "../components/roadmapOverlays";
-import "../css/roadmap/roadmapPage.css";
+import { useRoadmap } from "../../hooks/roadmap/useRoadmap";
+import RoadmapView from "../../components/roadmap/roadmapView";
+import RoadmapOverlays from "../../components/roadmap/roadmapOverlays";
+import "../../css/roadmap/roadmapPage.css";
 
 // 로드맵 페이지 컴포넌트
 function RoadmapPage() {

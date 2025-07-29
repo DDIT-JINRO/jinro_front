@@ -1,4 +1,4 @@
-import "../css/roadmap/missionTooltip.css";
+import "../../css/roadmap/missionTooltip.css";
 
 /**
  * 구름 위에 마우스를 올렸을 때 미션 이름을 보여주는 툴팁 컴포넌트

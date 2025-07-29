@@ -1,8 +1,8 @@
 import Character from './character';
 import Cloud from './cloud';
 import WoodSign from './woodSign';
-import { CLOUD_STATE, STAGE_POSITIONS } from '../data/roadmapStagedata';
-import { getCloudState } from '../data/roadmapUtils';
+import { CLOUD_STATE, STAGE_POSITIONS } from '../../data/roadmapStagedata';
+import { getCloudState } from '../../data/roadmapUtils';
 
 /**
  * 로드맵의 전체를 렌더링하는 컴포넌트 (배경, 구름, 캐릭터, 나무 표지판)

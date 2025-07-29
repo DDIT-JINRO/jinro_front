@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { updateCompleteMission } from "../api/roadMapApi";
-import "../css/roadmap/missionBox.css";
-import { SHORT_CUT_URL } from "../data/roadmapStagedata";
-import { formatDate, getStageGroup } from "../data/roadmapUtils";
+import { updateCompleteMission } from "../../api/roadmap/roadMapApi";
+import "../../css/roadmap/missionBox.css";
+import { SHORT_CUT_URL } from "../../data/roadmapStagedata";
+import { formatDate, getStageGroup } from "../../data/roadmapUtils";
 import { useNavigate } from "react-router-dom";
 
 const backUrl = import.meta.env.VITE_BACK_END_URL;

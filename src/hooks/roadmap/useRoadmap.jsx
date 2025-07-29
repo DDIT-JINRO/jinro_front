@@ -3,9 +3,9 @@ import { useRoadmapData } from './useRoadmapData';
 import { useModalManager } from './useModalManager';
 import { useRoadmapInteraction } from './useRoadmapInteraction';
 import { useCookie } from './useCookie';
-import { updateDueDate, updateCompleteMission } from '../api/roadMapApi';
-import { CLOUD_STATE, STAGE_POSITIONS } from '../data/roadmapStagedata';
-import { getCloudState } from '../data/roadmapUtils';
+import { updateDueDate, updateCompleteMission } from '../../api/roadmap/roadMapApi';
+import { CLOUD_STATE, STAGE_POSITIONS } from '../../data/roadmapStagedata';
+import { getCloudState } from '../../data/roadmapUtils';
 import { useNavigate } from 'react-router-dom';
 
 export const useRoadmap = () => {

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css"; // 기본 스타일
-import "../css/roadmap/customCalendar.css";
-import { formatDate } from "../data/roadmapUtils";
+import "../../css/roadmap/customCalendar.css";
+import { formatDate } from "../../data/roadmapUtils";
 
 /**
  *  완료된 미션과 진행 중인 미션을 날짜별로 표시하는 캘린더 컴포넌트

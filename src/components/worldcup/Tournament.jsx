@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { insertWorldcupResult, selectJobById } from "../api/worldcupApi.js";
-import '../css/Tournament.css';
+import { insertWorldcupResult, selectJobById } from "../../api/worldcup/worldcupApi.js";
+import '../../css/worldcup/Tournament.css';
 
 const Tournament = () => {
     const navigate = useNavigate();

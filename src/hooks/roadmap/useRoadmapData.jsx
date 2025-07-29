@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { selectMemberRoadmap, selectMissionList } from '../api/roadMapApi';
+import { selectMemberRoadmap, selectMissionList } from '../../api/roadmap/roadMapApi';
 import { useNavigate } from 'react-router-dom';
 
 export const useRoadmapData = () => {

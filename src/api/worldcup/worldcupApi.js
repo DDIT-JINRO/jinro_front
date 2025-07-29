@@ -1,7 +1,10 @@
 import axios from "axios";
+const backUrl = import.meta.env.VITE_BACK_END_URL;
+
+const prefix = `${backUrl}/worldcup`;
 
 const api = axios.create({
-    baseURL: "http://localhost:8080/worldcup",
+    baseURL: `${prefix}`,
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
 });
