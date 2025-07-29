@@ -1,0 +1,181 @@
+/* 전체 컨테이너 */
+.tournament-container {
+    width: 100%;
+    min-height: 95vh;
+    background: #D3F8FF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+    box-sizing: border-box;
+    position: relative; /* 캐릭터 배치용 */
+}
+
+/* 상단 타이틀 */
+.tournament-round {
+    font-family: 'Do Hyeon';
+    font-size: 36px;
+    color: #848EFB;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tournament-round::before {
+    content: "";
+    display: inline-block;
+    width: 30px; /* 이미지 크기 설정 */
+    height: 30px; /* 이미지 크기 설정 */
+    background-image: url('/src/assets/worldcup/images/worldcup.png'); /* 이미지 경로 설정 */
+    background-size: contain; /* 이미지 크기를 비율에 맞게 조정 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    margin-right: 10px; /* 아이콘과 텍스트 사이의 간격 */
+}
+.tournament-round::after {
+    content: "";
+    display: inline-block;
+    width: 30px; /* 이미지 크기 설정 */
+    height: 30px; /* 이미지 크기 설정 */
+    background-image: url('/src/assets/worldcup/images/worldcup.png'); /* 이미지 경로 설정 */
+    background-size: contain; /* 이미지 크기를 비율에 맞게 조정 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    margin-left: 10px; /* 아이콘과 텍스트 사이의 간격 */
+}
+
+
+/* 카드 영역 */
+.tournament-pair {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    width: 100%;
+    height: calc(100% - 100px);
+    padding: 0 60px;
+    box-sizing: border-box;
+}
+
+.tournament-card-wrapper {
+    position: relative;
+    /* 카드가 hover 되면 자식 캐릭터들에도 영향을 줄 수 있도록 설정 */
+}
+/* 개별 카드 */
+.tournament-card {
+    width: 260px;
+    height: 400px;
+    border: 2px solid #848EFB;
+    border-radius: 10px;
+    background: #FFFFFF;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    cursor: pointer;
+    position: relative; /* 카드의 부모 위치 기준으로 자식 배치 */
+    transition: transform 0.2s ease; /* 카드 hover 효과 */
+}
+
+/* 카드 hover 시 */
+.tournament-card:hover {
+    transform: scale(1.05);  /* 카드 hover시 확대 */
+    background: #f8f9ff;     /* 배경색 변경 */
+}
+
+/* 카드 안 텍스트 */
+.tournament-title {
+    font-family: 'Do Hyeon';
+    font-size: 24px;
+    color: #1D3754;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+.tournament-sub {
+    font-family: 'Noto Sans KR';
+    font-size: 11px;
+    font-weight: 500;
+    color: #858E96;
+    line-height: 13px;
+    margin-bottom: 15px;
+    white-space: pre-line;
+    flex-shrink: 0;
+}
+
+.tournament-summary,
+.tournament-detail {
+    font-family: 'Do Hyeon';
+    font-size: 14px;
+    color: #1D3754;
+    line-height: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* 가운데 VS */
+.vs-text {
+    font-family: 'Do Hyeon';
+    font-size: 28px;
+    color: #1D3754;
+    margin: 0 10px;
+}
+
+/* hover 시 카드 안의 캐릭터와 텍스트의 효과 */
+.tournament-card-wrapper:hover .card-icon-left,
+.tournament-card-wrapper:hover .card-icon-right,
+.tournament-card-wrapper:hover .character-left,
+.tournament-card-wrapper:hover .character-right {
+    transform: scale(1.1); /* 크기 확대 */
+    transition: transform 0.2s ease;
+}
+
+/* 카드 위쪽에 캐릭터 (중앙 배치용) */
+.card-icon-left {
+    position: absolute;
+    top: -17%;
+    left: calc(65% - 25px);
+    width: 40%;
+    height: 20%;
+    background-image: url('/src/assets/worldcup/images/top-mococo.png');
+    background-size: cover;
+    transition: transform 0.2s ease;
+}
+
+.card-icon-right {
+    position: absolute;
+    top: -17%;
+    left: calc(65% - 25px);
+    width: 40%;
+    height: 20%;
+    background-image: url('/src/assets/worldcup/images/top-mococo.png');
+    background-size: cover;
+    transition: transform 0.2s ease;
+}
+
+/* 좌측 캐릭터 */
+.character-left {
+    position: absolute;
+    left: -63%; /* 카드 왼쪽 */
+    bottom: 30%; /* 카드 하단 */
+    width: 150px;
+    height: 230px;
+    background-image: url('/src/assets/worldcup/images/left-mococo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: transform 0.2s ease;
+}
+
+/* 우측 캐릭터 */
+.character-right {
+    position: absolute;
+    right: -67%; /* 카드 오른쪽 */
+    bottom: 30%; /* 카드 하단 */
+    width: 150px;
+    height: 230px;
+    background-image: url('/src/assets/worldcup/images/right-mococo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transition: transform 0.2s ease;
+}

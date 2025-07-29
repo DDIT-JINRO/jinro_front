@@ -1,0 +1,221 @@
+body {
+   margin: 0;
+}
+
+#roadmap-background {
+  background-image: url("../../assets/roadmap/images/bgr.gif");
+  /* background-image: url("../../assets/roadmap/images/background.png"); */
+  background-size: cover;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #b4e3ff; /* 배경 이미지 바깥 영역 색상 */
+  position: relative; /* MissionBox 같은 자식 요소의 기준점 역할 */
+}
+
+.roadmap-content-wrapper {
+  max-width: 1084px; /* 배경 이미지의 원본 너비 */
+  height: 0;
+  padding-bottom: 62.64%; /* (679 / 1084) * 100 = 62.638... */
+}
+
+.character {
+  z-index: 1;
+  position: absolute;
+  transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
+  width: 5%; /* 사용자 요청: 캐릭터 div의 너비 */
+}
+
+.character img {
+  user-select: none; 
+  width: 100%; /* 부모 div의 100% */
+  height: auto;  /* 가로세로 비율 유지 */
+}
+
+.character.moving {
+  z-index: 10;
+  width: 7%;
+}
+
+.character.completeMoving {
+  width: 7%;
+  transform: translateY(-100px);
+}
+
+.cloud {
+  z-index: 5;
+  position: absolute;
+  transition: top 0.7s ease-in-out, left 0.7s ease-in-out; 
+  width: 15%; /* 구름 div의 너비 (이전 이미지 비율) */
+}
+
+.cloud img {
+  user-select: none; 
+  width: 100%; /* 부모 div의 100% */
+  height: auto; /* 가로세로 비율 유지 */
+}
+
+.wood-sign-container {
+  user-select: none; 
+  position: absolute;
+  top: 15%;
+  left: 30%; /* Adjust to be slightly left of center */
+  transform: translate(-50%, -50%);
+  z-index: 2; /* Behind the character */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* wood-sign-image와 wood-sign-text는 woodSign.css에서 관리 */
+
+.cloud.progress, .cloud.unlocked {
+  cursor: pointer;
+  animation: pulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
+}
+
+.cloud.completed {
+  cursor: pointer;
+}
+
+.cloud.progress.current {
+  cursor: default;
+  animation: none;
+}
+
+/* 활성화된 구름에 반짝이는 효과 */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 달력 슬라이더 */
+.calendar-slider {
+  position: fixed; /* 화면에 고정 */
+  top: 0;
+  right: 0;
+  width: 600px; /* 달력을 키우기 위해 너비 확장 */
+  height: 400px;
+  background-color: rgba(255, 255, 255, 0.65); /* 반투명 흰색 */
+  backdrop-filter: blur(10px); /* 블러 효과 */
+
+  border-radius: 0 0 20px 20px;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transform: translateY(-100%); 
+  transition: transform 0.4s ease-in-out;
+}
+
+/* 'open' 클래스가 추가되었을 때 (열린 상태) */
+.calendar-slider.open {
+  transform: translateY(0); 
+}
+
+/* 토글 버튼 */
+.calendar-toggle-button {
+  position: absolute;
+  bottom: -30px; /* 슬라이더 하단에 붙어서 튀어나오도록 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.65); /* 반투명 흰색 */
+  backdrop-filter: blur(10px); /* 블러 효과 */
+  border: 1px solid #eee;
+  border-top: none;
+  border-radius: 0 0 10px 10px; /* 아래쪽 모서리만 둥글게 */
+  cursor: pointer;
+
+  /* 내부 아이콘 스타일 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: #555;
+}
+
+.calendar-toggle-button:hover {
+  background-color: #f8f8f8;
+}
+
+/* 실제 달력이 들어가는 영역 */
+.calendar-content {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
+
+/* 전체 컨테이너 스타일 */
+.dont-show-again {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+
+  display: flex;
+  align-items: center;
+}
+
+/* display:none 대신 이 방법을 사용해야 키보드 접근성이 유지됩니다. */
+.dont-show-again input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 라벨 텍스트 스타일 */
+.dont-show-again label {
+  color: #333; /* 텍스트 색상 */
+  font-size: 15px; /* 폰트 크기 */
+  font-weight: 500; /* 폰트 굵기 */
+  user-select: none; 
+  cursor: pointer; 
+}
+
+/* 우리가 직접 디자인할 커스텀 체크박스 (기본 상태) */
+.dont-show-again label::before {
+  content: ''; /* 가상 요소는 content 속성이 필수입니다 */
+  display: inline-block; /* 텍스트 옆에 오도록 설정 */
+  width: 18px;   /* 너비 */
+  height: 18px;  /* 높이 */
+  background-color: #fff; /* 배경색 */
+  border: 2px solid #ddd;  /* 테두리 */
+  border-radius: 5px;   /* 모서리를 둥글게 */
+  margin-right: 8px;    /* 텍스트와의 간격 */
+  
+  /* 부드러운 전환 효과 */
+  transition: background-color 0.2s ease-in-out;
+  
+  /* 수직 정렬을 위해 추가 */
+  vertical-align: middle; 
+}
+
+/* 체크박스가 '선택됐을 때' 커스텀 체크박스 스타일 */
+.dont-show-again input[type="checkbox"]:checked + label::before {
+  background-color: #FF8A00; 
+  border-color: #FF8A00;
+}
+
+/* 체크박스가 '선택됐을 때' 나타날 체크 표시 (V) 아이콘 */
+.dont-show-again input[type="checkbox"]:checked + label::after {
+  content: '';
+  position: absolute;
+  left: 7px; /* 체크 표시 위치 (가로) */
+  top: 4px;  /* 체크 표시 위치 (세로) */
+  
+  width: 5px;
+  height: 10px;
+  
+  border: solid white; /* 체크 표시 색상 */
+  border-width: 0 3px 3px 0;
+  
+  /* 45도 회전해서 V 모양 만들기 */
+  transform: rotate(45deg);
+}

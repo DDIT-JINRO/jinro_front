@@ -1,7 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
-import WorldcupPage from "./pages/WorldcupPage";
-import ResultPage from "./components/ResultPage.jsx";
-import Tournament from "./components/Tournament.jsx";
+import WorldcupPage from "./pages/worldcup/WorldcupPage";
+import ResultPage from "./pages/worldcup/ResultPage";
+import Tournament from "./components/worldcup/Tournament";
+import RoadmapPage from "./pages/roadmap/roadMapPage";
+import RoadmapResultPage from "./pages/roadmap/roadmapResultPage";
+import RoadmapErrorPage from "./pages/roadmap/roadmapErrorPage";
 
 const router = createBrowserRouter([
     {
@@ -15,6 +18,18 @@ const router = createBrowserRouter([
     {
         path: "/worldcup/result",
         element: <ResultPage />,
+    },
+    {
+        path: "/roadmap",
+        element: <RoadmapPage />,
+    },
+    {
+        path: "/roadmap/results",
+        element: <RoadmapResultPage />,
+    },
+    {
+        path: "/roadmap/error",
+        element: <RoadmapErrorPage />,
     },
 ]);
 

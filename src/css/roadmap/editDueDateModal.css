@@ -1,0 +1,84 @@
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.edit-modal-content {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: scaleUp 0.3s ease-in-out forwards;
+}
+
+.edit-modal-content h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.edit-modal-content input[type="date"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.edit-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.edit-modal-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  width: 120px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-modal-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.save-btn {
+  background-color: #5865f2;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

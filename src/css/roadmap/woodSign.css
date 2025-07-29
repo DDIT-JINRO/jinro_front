@@ -1,0 +1,26 @@
+.wood-sign-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Lowest z-index */
+  width: 6%; /* 표지판 div의 너비 (이전 이미지 비율) */
+}
+
+.wood-sign-image {
+  width: 100%; /* 부모 div의 100% */
+  height: auto;
+}
+
+.wood-sign-text {
+  position: absolute;
+  font-size: clamp(8px, 0.7vw, 14px); /* 최소 8px, 뷰포트 너비의 0.7%, 최대 14px */
+  font-weight: bold;
+  color: #ffffff; /* Adjust color as needed */
+  text-align: center;
+  top: 32%; /* Center text vertically on the sign */
+  left: 48%; /* Center text horizontally on the sign */
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}

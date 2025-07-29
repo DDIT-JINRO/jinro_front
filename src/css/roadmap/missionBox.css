@@ -1,0 +1,198 @@
+/* 미션 박스 전체 컨테이너 (핵심 수정 영역) */
+.mission-box-container {
+  position: absolute;
+  bottom: 45px;
+  left: 15px;
+
+  /* 👇 평소(닫힌) 상태의 크기 */
+  width: 70.33px;
+  height: 26px;
+
+  /* --- Frosted Glass 효과 --- */
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  overflow: hidden; /* 👇 내부 요소가 튀어나가지 않도록 숨김 처리 */
+
+  /* 👇 크기와 배경색 변경에 애니메이션 효과 적용 */
+  transition: all 0.4s ease-in-out;
+}
+
+/* 👇 열린 상태의 크기 */
+.mission-box-container.open {
+  width: 300px;
+  height: 200px; /* 제목과 목록을 포함할 수 있는 충분한 높이 */
+  z-index: 100;
+  padding: 20px;
+}
+
+/* '나의 임무' 타이틀 */
+.mission-box-title {
+  margin: 0; /* 불필요한 마진 제거 */
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer; /* 클릭 가능함을 나타냄 */
+  white-space: nowrap;
+}
+
+.mission-box-title.open {
+  cursor: default;
+}
+
+/* 미션 목록 (스크롤 영역) */
+.mission-list {
+  list-style: none;
+  padding: 0;
+  margin: 0; /* <ul> 태그의 기본 마진 제거 */
+
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0; /* 👇 평소 높이를 0으로 만들어 빈 공간을 완전히 제거 */
+  overflow-y: auto;
+  padding-right: 8px;
+
+  transition: opacity 0.3s ease, visibility 0.3s ease, max-height 0.4s ease;
+  transition-delay: 0.1s;
+}
+
+/* 👇 열린 상태일 때 목록을 다시 보이게 처리 */
+.mission-box-container.open .mission-list {
+  opacity: 1;
+  visibility: visible;
+  max-height: 160px; /* 👇 원래 목록의 최대 높이로 복원 */
+  margin-top: 15px; /* 👇 제목과의 간격을 주기 위해 추가 */
+}
+
+.mission-box-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  z-index: 101; /* Ensure it's above other content */
+}
+
+.mission-box-close-btn:hover {
+  color: #333;
+}
+
+/* 개별 미션 아이템 */
+.mission-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #444;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mission-item > span:first-child {
+  margin-bottom: 5px; /* Add some space between mission name and due date */
+}
+
+.mission-due-date {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex; /* Make it a flex container */
+  align-items: center; /* Align items vertically */
+  gap: 5px; /* Space between text and button */
+}
+
+.edit-date-btn {
+  background-color: #6c757d; /* A neutral color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-date-btn:hover {
+  background-color: #5a6268;
+}
+
+.mission-name {
+  display: flex;
+  gap: 10px;
+}
+
+.short-cut-btn {
+  background-color: #a8b1ff;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 6px;
+  text-align: center;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.mission-status.progress {
+  background-color: #faa321;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 6px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.mission-status {
+  align-self: flex-end; /* Align status to the end */
+}
+
+/* '완료' 버튼 스타일 */
+.mission-status.completeBtn {
+  background-color: #5865f2;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 5px;
+  padding: 2px 6px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.mission-status.completeBtn:hover {
+  background-color: #4752c4;
+}
+
+/* '완료됨' 상태 스타일 */
+.mission-status.completed {
+  background-color: #848efb;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 6px;
+  text-align: center;
+  font-size: 10px;
+}
+
+/* 스크롤바 디자인 */
+.mission-list::-webkit-scrollbar {
+  width: 6px;
+}
+.mission-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.mission-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+.mission-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6);
+}

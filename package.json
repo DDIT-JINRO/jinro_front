@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prod" : "vite --host --mode production",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -13,6 +14,7 @@
     "axios": "^1.10.0",
     "express": "^5.1.0",
     "react": "^19.1.0",
+    "react-calendar": "^6.0.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.0"
   },
