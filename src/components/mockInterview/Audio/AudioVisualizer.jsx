@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAudioVisualizer } from '../../../hooks/mockInterview/useAudioVisualizer';
+import styles from '../../../styles/mockInterview/MockInterview.module.css';
 
 const AudioVisualizer = ({
   analyser,
@@ -23,28 +24,20 @@ const AudioVisualizer = ({
   });
 
   return (
-    <div>
+    <div className={styles.audioVisualizer}>
       {/* 음성 인식 상태 헤더 */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        marginBottom: '8px' 
-      }}>
-        <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
+      <div className={styles.audioVisualizerHeader}>
+        <h4 className={styles.audioVisualizerTitle}>
           음성 인식 상태
         </h4>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '8px',
-          fontSize: '12px',
-          color: isListening ? '#10b981' : '#6b7280'
-        }}>
-          <div style={{ 
-            width: '6px', 
-            height: '6px', 
-            borderRadius: '50%', 
+        <div className={`
+          ${styles.audioVisualizerStatus} 
+          ${isListening ? styles.listening : styles.waiting}
+        `}>
+          <div className={`
+            ${styles.audioVisualizerStatusDot}
+            ${isListening ? styles.listening : styles.waiting}
+          `} style={{
             backgroundColor: isListening ? '#10b981' : '#6b7280'
           }}></div>
           <span>
@@ -58,19 +51,10 @@ const AudioVisualizer = ({
       </div>
       
       {/* 비주얼라이저 캔버스 */}
-      <div style={{ 
-        border: '1px solid #e5e7eb', 
-        borderRadius: '8px', 
-        overflow: 'hidden',
-        backgroundColor: '#1f2937'
-      }}>
+      <div className={styles.audioVisualizerCanvas}>
         <canvas
           ref={canvasRef}
-          style={{ 
-            width: '100%', 
-            height: '80px', 
-            display: 'block'
-          }}
+          className={styles.audioVisualizerCanvasElement}
         />
       </div>
     </div>

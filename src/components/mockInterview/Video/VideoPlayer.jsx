@@ -1,5 +1,6 @@
 import React from 'react';
 import { Camera, Mic, MicOff, CameraOff } from 'lucide-react';
+import styles from '../../../styles/mockInterview/MockInterview.module.css';
 
 const VideoPlayer = ({
   videoRef,
@@ -11,52 +12,31 @@ const VideoPlayer = ({
   onToggleMic
 }) => {
   return (
-    <div style={{ 
-      backgroundColor: 'white', 
-      borderRadius: '12px', 
-      boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', 
-      padding: '24px', 
-      height: '100%' 
-    }}>
+    <div className={styles.videoPlayer}>
       {/* 헤더 */}
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        marginBottom: '16px' 
-      }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+      <div className={styles.videoPlayerHeader}>
+        <h3 className={styles.videoPlayerTitle}>
           면접 화면
         </h3>
         
         {/* 미디어 컨트롤 버튼 */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className={styles.videoPlayerControls}>
           <button
             onClick={onToggleCamera}
-            style={{
-              padding: '12px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s',
-              backgroundColor: isCameraOn ? '#3b82f6' : '#ef4444',
-              color: 'white'
-            }}
+            className={`
+              ${styles.videoPlayerButton} 
+              ${isCameraOn ? styles.on : styles.off}
+            `}
             title={isCameraOn ? '카메라 끄기' : '카메라 켜기'}
           >
             {isCameraOn ? <Camera size={20} /> : <CameraOff size={20} />}
           </button>
           <button
             onClick={onToggleMic}
-            style={{
-              padding: '12px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s',
-              backgroundColor: isMicOn ? '#3b82f6' : '#ef4444',
-              color: 'white'
-            }}
+            className={`
+              ${styles.videoPlayerButton} 
+              ${isMicOn ? styles.on : styles.off}
+            `}
             title={isMicOn ? '마이크 끄기' : '마이크 켜기'}
           >
             {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
@@ -65,38 +45,21 @@ const VideoPlayer = ({
       </div>
       
       {/* 비디오 화면 */}
-      <div style={{ 
-        position: 'relative', 
-        backgroundColor: '#111827', 
-        borderRadius: '8px', 
-        overflow: 'hidden', 
-        aspectRatio: '16/9',
-        marginBottom: '16px'
-      }}>
+      <div className={styles.videoPlayerScreen}>
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className={styles.videoPlayerVideo}
         />
         
         {/* 카메라 꺼짐 상태 */}
         {!isCameraOn && (
-          <div style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 0, 
-            backgroundColor: '#374151', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
-          }}>
-            <div style={{ textAlign: 'center', color: 'white' }}>
-              <CameraOff size={48} style={{ margin: '0 auto 8px', opacity: 0.5 }} />
-              <p style={{ fontSize: '14px', opacity: 0.75, margin: 0 }}>
+          <div className={styles.videoPlayerOverlay}>
+            <div className={styles.videoPlayerOverlayContent}>
+              <CameraOff size={48} className={styles.videoPlayerOverlayIcon} />
+              <p className={styles.videoPlayerOverlayText}>
                 카메라가 꺼져있습니다
               </p>
             </div>
@@ -106,24 +69,8 @@ const VideoPlayer = ({
         {/* 음성 인식 상태 표시 */}
         <div style={{ position: 'absolute', top: '16px', left: '16px' }}>
           {isListening && (
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              backgroundColor: '#10b981', 
-              color: 'white', 
-              padding: '4px 12px', 
-              borderRadius: '9999px', 
-              fontSize: '14px',
-              fontWeight: '600'
-            }}>
-              <div style={{ 
-                width: '8px', 
-                height: '8px', 
-                backgroundColor: 'white', 
-                borderRadius: '50%', 
-                animation: 'pulse 2s infinite' 
-              }}></div>
+            <div className={`${styles.statusIndicator} ${styles.listening}`}>
+              <div className={styles.pulsingDot}></div>
               🎤 음성 인식 중
             </div>
           )}

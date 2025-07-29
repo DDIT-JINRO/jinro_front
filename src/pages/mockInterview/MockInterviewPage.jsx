@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 // 훅 임포트
 import {
@@ -47,6 +48,7 @@ const MockInterviewPage = () => {
     speechSupported,
     startListening,
     stopListening,
+    clearCurrentAnswer,
     getCurrentAnswerAndClear
   } = useSpeechRecognition();
 
@@ -99,8 +101,9 @@ const MockInterviewPage = () => {
   const handleNextQuestion = () => {
     console.log(`📝 질문 ${currentQuestion + 1} 답변 저장:`, currentAnswer);
     
-    // 현재 답변 저장
-    saveAnswer(currentQuestion, currentAnswer);
+    // 현재 답변을 저장하면서 동시에 초기화
+    const answerToSave = getCurrentAnswerAndClear();
+    saveAnswer(currentQuestion, answerToSave);
     
     // 음성 인식 중지
     stopListening();
@@ -112,9 +115,9 @@ const MockInterviewPage = () => {
       console.log('🎉 모든 질문 완료! 결과 화면으로 이동');
       setShowResults(true);
     } else {
-      // 다음 질문으로 이동 시 타이머 리셋
+      // 다음 질문으로 이동 시 타이머 리셋 및 음성 인식 답변 초기화 확인
       resetTimer();
-      console.log(`➡️ 질문 ${currentQuestion + 2}번으로 이동`);
+      console.log(`➡️ 질문 ${currentQuestion + 2}번으로 이동 (답변 초기화됨)`);
     }
   };
 
@@ -122,8 +125,9 @@ const MockInterviewPage = () => {
   const handleEndInterview = () => {
     console.log('🔚 면접 강제 종료');
     
-    // 현재 답변 저장
-    saveAnswer(currentQuestion, currentAnswer);
+    // 현재 답변을 저장하면서 동시에 초기화
+    const answerToSave = getCurrentAnswerAndClear();
+    saveAnswer(currentQuestion, answerToSave);
     
     // 타이머 및 음성 인식 중지
     pauseTimerOriginal();
@@ -148,6 +152,7 @@ const MockInterviewPage = () => {
     // 모든 상태 초기화
     resetInterview();
     resetTimer();
+    clearCurrentAnswer(); // 음성 인식 답변도 초기화
     setShowResults(false);
   };
 
@@ -175,6 +180,12 @@ const MockInterviewPage = () => {
     }
   }, [isTimeExpired]);
 
+  // 질문 변경 시 음성 인식 답변 초기화 (안전장치)
+  useEffect(() => {
+    console.log(`🔄 질문 ${currentQuestion + 1}번으로 변경됨 - 음성 인식 답변 초기화`);
+    clearCurrentAnswer();
+  }, [currentQuestion]);
+
   // 로딩 중일 때
   if (!questionsLoaded) {
     return <LoadingScreen />;
@@ -197,7 +208,7 @@ const MockInterviewPage = () => {
   const { circumference, strokeDashoffset } = calculateCircularProgress(timerProgress);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' }}>
+    <div className={`${styles.mockInterviewContainer} ${styles.mockInterviewPage}`}>
       
       {/* 상단 진행 상태바 */}
       <ProgressBar
@@ -209,18 +220,14 @@ const MockInterviewPage = () => {
       />
 
       {/* 메인 컨텐츠 */}
-      <div style={{ flex: 1, padding: '24px' }}>
-        <div style={{ 
-          maxWidth: '1200px', 
-          margin: '0 auto', 
-          height: '100%', 
-          display: 'grid', 
-          gridTemplateColumns: window.innerWidth >= 1024 ? '1fr 2fr' : '1fr',
-          gap: '24px'
-        }}>
+      <div className={styles.mainContent}>
+        <div className={`
+          ${styles.mainGrid} 
+          ${window.innerWidth >= 1024 ? styles.mainGridDesktop : styles.mainGridMobile}
+        `}>
           
           {/* 왼쪽: 타이머 및 질문 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className={styles.leftColumn}>
             
             {/* 원형 타이머 */}
             <CircularTimer
@@ -251,7 +258,7 @@ const MockInterviewPage = () => {
           </div>
 
           {/* 오른쪽: 웹캠 화면 */}
-          <div>
+          <div className={styles.rightColumn}>
             <VideoPlayer
               videoRef={videoRef}
               isCameraOn={isCameraOn}
@@ -263,7 +270,7 @@ const MockInterviewPage = () => {
             />
 
             {/* 오디오 비주얼라이저 */}
-            <div style={{ marginTop: '16px' }}>
+            <div className={styles.audioVisualizerContainer}>
               <AudioVisualizer
                 analyser={analyser}
                 dataArray={dataArray}
@@ -278,22 +285,6 @@ const MockInterviewPage = () => {
           </div>
         </div>
       </div>
-      
-      {/* 글로벌 스타일 */}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: .5;
-          }
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

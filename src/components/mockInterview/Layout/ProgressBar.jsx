@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import styles from '../../../styles/mockInterview/MockInterview.module.css';
 
 const ProgressBar = ({
   currentQuestion,
@@ -9,31 +10,16 @@ const ProgressBar = ({
   onEndInterview
 }) => {
   return (
-    <div style={{ backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '16px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className={styles.progressBar}>
+      <div className={styles.progressBarInner}>
         {/* 헤더 */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          marginBottom: '8px' 
-        }}>
-          <h2 style={{ 
-            fontSize: '18px', 
-            fontWeight: '600', 
-            color: isListening ? '#10b981' : '#1f2937',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
+        <div className={styles.progressBarHeader}>
+          <h2 className={`
+            ${styles.progressBarTitle} 
+            ${isListening ? styles.listening : ''}
+          `}>
             {isListening && (
-              <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: '#10b981',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }}></div>
+              <div className={styles.pulsingDot}></div>
             )}
             모의면접 진행 중 {isListening ? '(🎤 음성 인식 중)' : ''} ({totalQuestions}개 질문 로드됨)
           </h2>
@@ -41,20 +27,7 @@ const ProgressBar = ({
           {/* 면접 종료 버튼 */}
           <button
             onClick={onEndInterview}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              backgroundColor: '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
+            className={`${styles.btn} ${styles.btnDanger}`}
           >
             <X size={16} />
             면접 종료
@@ -62,29 +35,19 @@ const ProgressBar = ({
         </div>
         
         {/* 진행률 바 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '14px', color: '#6b7280', whiteSpace: 'nowrap' }}>
+        <div className={styles.progressBarContent}>
+          <span className={styles.progressBarText}>
             질문 {currentQuestion + 1} / {totalQuestions}
           </span>
           
-          <div style={{ 
-            flex: 1, 
-            backgroundColor: '#e5e7eb', 
-            borderRadius: '9999px', 
-            height: '12px', 
-            overflow: 'hidden' 
-          }}>
+          <div className={styles.progressBarFill}>
             <div 
-              style={{ 
-                height: '100%', 
-                backgroundColor: '#3b82f6', 
-                transition: 'all 0.3s ease-out',
-                width: `${progressPercentage}%`
-              }}
+              className={styles.progressBarFillInner}
+              style={{ width: `${progressPercentage}%` }}
             />
           </div>
           
-          <span style={{ fontSize: '14px', color: '#6b7280', whiteSpace: 'nowrap' }}>
+          <span className={styles.progressBarText}>
             {Math.round(progressPercentage)}% 완료
           </span>
         </div>

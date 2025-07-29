@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { TIMER_DEFAULTS } from '../../utils/constants';
+import { TIMER_DEFAULTS } from '../../utils/mockInterview/constants';
 
 /**
  * 타이머 기능을 관리하는 커스텀 훅
