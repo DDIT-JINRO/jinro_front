@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, Pause } from 'lucide-react';
-import styles from '../../../styles/mockInterview/MockInterview.module.css';
+import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 const CircularTimer = ({
   timeLeft,

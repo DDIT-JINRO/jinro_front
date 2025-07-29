@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import styles from '../../../styles/mockInterview/MockInterview.module.css';
+import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 const ProgressBar = ({
   currentQuestion,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Camera, Mic, MicOff, CameraOff } from 'lucide-react';
-import styles from '../../../styles/mockInterview/MockInterview.module.css';
+import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 const VideoPlayer = ({
   videoRef,
@@ -9,7 +9,10 @@ const VideoPlayer = ({
   isListening,
   speechSupported,
   onToggleCamera,
-  onToggleMic
+  onToggleMic,
+  isRecording = false,
+  recordingDuration = 0,
+  formatRecordingTime
 }) => {
   return (
     <div className={styles.videoPlayer}>
@@ -75,6 +78,17 @@ const VideoPlayer = ({
             </div>
           )}
         </div>
+
+        {/* 녹화 상태 표시 */}
+        {isRecording && (
+          <div className={styles.recordingIndicator}>
+            <div className={styles.recordingDot}></div>
+            <span>REC</span>
+            <span className={styles.recordingTime}>
+              {formatRecordingTime ? formatRecordingTime() : '00:00'}
+            </span>
+          </div>
+        )}
         
         {/* 마이크 상태 표시 */}
         <div style={{ position: 'absolute', bottom: '16px', right: '16px' }}>
