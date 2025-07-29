@@ -1,0 +1,201 @@
+.apti-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* 진행률 바 */
+.progress-box {
+    width: 80%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    margin: 30px auto;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #7881f5;
+    border-radius: 10px;
+    transition: width 0.3s ease-in-out;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+/* 문항 리스트 */
+.question-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 40px;
+}
+
+.question-item {
+    margin-bottom: 40px;
+    text-align: left;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 선택 버튼 */
+.choice-button-group {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.choice-btn {
+    width: 100px;
+    padding: 15px 1px;
+    margin: 10px 10px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.choice-btn:hover {
+    background-color: #5c68d9;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.choice-btn.selected {
+    background-color: #7881f5;
+    color: white;
+}
+
+/* 페이지 버튼 */
+.page-btn {
+    margin: 20px;
+    bottom: 50px;
+    padding: 15px 30px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: none;
+    background-color: #7881f5;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.page-btn:hover {
+    background-color: #5c68d9;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.page-btn.prev {
+    left: calc(50% - 240px);
+}
+
+.page-btn.next {
+    left: calc(50% - 100px);
+}
+
+.aptiTestGap {
+    padding: 0 20px;
+}
+
+.choice-button-group-q2 {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* 버튼 사이 간격 */
+    flex-wrap: nowrap;
+}
+
+/* qno 2번 선택지 버튼: 크기 줄임 */
+.choice-btn-q2 {
+    width: 160px;
+    /* 기본 200px에서 절반으로 */
+    padding: 10px 5px;
+    /* 패딩도 조금 줄임 */
+    font-size: 15px;
+    /* 글자 크기 살짝 작게 */
+}
+
+.submit-btn {
+    background-color: #7881f5;
+    color: white;
+    padding: 12px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: 0.2s ease-in-out;
+    right: 5%;
+}
+
+.submit-btn:hover:enabled {
+    background-color: #5c68d9;
+    transform: translateX(-50%) scale(1.05);
+}
+
+.submit-button-wrap {
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.temp-btn {
+    background-color: #7881f5;
+    color: white;
+    padding: 12px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: 0.2s ease-in-out;
+    position: relative;
+    left: 12%;
+}
+
+.temp-btn:hover {
+    background-color: #5c68d9;
+    transform: translateX(-50%) scale(1.05);
+}
+
+.choice-btn-q2.selected {
+    background-color: #7881f5;
+    color: white;
+}
+
+.choice-btn-q2 {
+    width: 150px;
+    padding: 15px 5px;
+    margin: 10px 10px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.choice-btn-q2:hover {
+    background-color: #5c68d9;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}

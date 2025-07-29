@@ -1,5 +1,5 @@
 import { use, useState } from "react";
-import '../css/AptiTestPage.css';
+import '../../css/aptiTest/AptiTestPage.css';
 
 function Submenu({ num, setIsNext, setAgeGroup }) {
 
