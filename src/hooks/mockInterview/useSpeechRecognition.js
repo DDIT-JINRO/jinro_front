@@ -144,11 +144,6 @@ export const useSpeechRecognition = () => {
             return newAnswer;
           });
         }
-        
-        // 중간 결과 로깅 (디버깅용)
-        if (interimTranscript && interimTranscript.length > 0) {
-          console.log('🔄 중간 인식 결과:', interimTranscript);
-        }
       };
       
       // recognition 인스턴스에 제어 플래그 추가

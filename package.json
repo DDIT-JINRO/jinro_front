@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.21",
     "@rollup/rollup-win32-x64-msvc": "^4.40.2",
     "axios": "^1.10.0",
     "express": "^5.1.0",

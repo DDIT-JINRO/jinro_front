@@ -43,13 +43,11 @@ export const useMediaRecorder = () => {
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           videoChunksRef.current.push(event.data);
-          console.log('📦 녹화 데이터 청크 수집:', event.data.size, 'bytes');
         }
       };
 
       // 녹화 완료 이벤트
       mediaRecorder.onstop = () => {
-        console.log('🎬 녹화 완료, 총', videoChunksRef.current.length, '개 청크');
         setRecordedChunks([...videoChunksRef.current]);
         setIsRecording(false);
         
