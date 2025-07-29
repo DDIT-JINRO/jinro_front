@@ -55,8 +55,8 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
 
     setCharPosition(selectedMission.rsId - 1);
     try {
-      const res = await insertMission(selectedMission.rsId, dueDate);
-      if (!res || res === "fail") throw new Error("미션 수락 중 오류가 발생했습니다.");
+      await insertMission(selectedMission.rsId, dueDate);
+      
       refreshMissionData();
     } catch (error) {
       navigate("/roadmap/error", {

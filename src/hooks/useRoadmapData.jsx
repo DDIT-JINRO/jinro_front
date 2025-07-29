@@ -32,17 +32,11 @@ export const useRoadmapData = () => {
     try {
       // 1. 전체 미션 리스트 조회
       const missions = await selectMissionList();
-      if (!missions) {
-        throw new Error("미션 리스트를 불러오는 중 오류가 발생하였습니다.");
-      }
       
       setMissionList(missions);
       
       // 2. 사용자의 로드맵 정보 조회
       const roadmapData = await selectMemberRoadmap();
-      if (!roadmapData) {
-        throw new Error("로드맵 정보를 불러오는 중 오류가 발생하였습니다.");
-      }
 
       setCharPosition(roadmapData.currentCharPosition > 0 ? roadmapData.currentCharPosition - 1 : 0);
       setCompletedMissions(roadmapData.completedMissions);
@@ -66,9 +60,6 @@ export const useRoadmapData = () => {
     try {
       // 사용자의 로드맵 정보 조회
       const roadmapData = await selectMemberRoadmap();
-      if (!roadmapData) {
-        throw new Error("로드맵 정보를 불러오는 중 오류가 발생하였습니다.");
-      }
 
       setCompletedMissions(roadmapData.completedMissions);
       setProgressMissions(roadmapData.progressMissions);

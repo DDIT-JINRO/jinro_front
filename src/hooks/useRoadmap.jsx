@@ -114,9 +114,6 @@ export const useRoadmap = () => {
     if (missionToEdit) {
       try {
         const res = await updateDueDate(missionToEdit.rsId, newDueDate);
-        if (!res) {
-          throw new Error("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
-        }
 
         if (res == "fail") {
           alert("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
@@ -146,9 +143,6 @@ export const useRoadmap = () => {
   const handleCompleteFinalMission = async (stageId) => {
     try {
       const res = await updateCompleteMission(stageId);
-      if (!res) {
-        throw new Error("최종 미션 완료 중 오류가 발생했습니다.");
-      }
 
       if (res === "fail") {
         alert("미션을 완료하지 않았습니다.");

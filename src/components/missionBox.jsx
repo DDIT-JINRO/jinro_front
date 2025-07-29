@@ -33,12 +33,9 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
   const handleCompleteClick = async (stageId) => {
     try {
       const res = await updateCompleteMission(stageId);
-      if (!res) {
-        throw new Error("미션 완료 중 오류가 발생하였습니다.");
-      }
 
       if (res === "fail") {
-        alert("완료 되지 않은 미션입니다.");
+        alert("미션을 완료하지 않았습니다.");
         return;
       }
       setCharPosition(stageId - 1);
