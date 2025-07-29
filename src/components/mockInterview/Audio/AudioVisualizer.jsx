@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAudioVisualizer } from '../../hooks/useAudioVisualizer';
+import { useAudioVisualizer } from '../../../hooks/mockInterview/useAudioVisualizer';
 
 const AudioVisualizer = ({
   analyser,

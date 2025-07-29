@@ -6,7 +6,7 @@ import {
   useSpeechRecognition,
   useTimer,
   useQuestions
-} from '../hooks';
+} from '../../hooks/mockInterview';
 
 // 컴포넌트 임포트
 import {
@@ -17,10 +17,10 @@ import {
   VideoPlayer,
   AudioVisualizer,
   InterviewResult
-} from '../components';
+} from '../../components/mockInterview';
 
 // 유틸리티 임포트
-import { TIMER_DEFAULTS, calculateCircularProgress } from '../utils';
+import { TIMER_DEFAULTS, calculateCircularProgress } from '../../utils/mockInterview';
 
 const MockInterviewPage = () => {
   const [showResults, setShowResults] = useState(false);
