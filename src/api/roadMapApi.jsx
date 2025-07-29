@@ -78,10 +78,6 @@ export const insertMission = async (rsId, dueDate) => {
   try {
     const res = await axios.post(`${prefix}/insertMission`, { rsId: rsId, dueDate: dueDate });
 
-    if (!res.data || res.data === "fail") {
-      throw new Error("미션 수락 중 오류가 발생했습니다.");
-    }
-
     return res.data;
   } catch (error) {
     handleApiError(error, "로드맵 정보 조회"); 

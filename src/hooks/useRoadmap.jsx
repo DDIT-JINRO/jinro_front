@@ -148,6 +148,7 @@ export const useRoadmap = () => {
         alert("미션을 완료하지 않았습니다.");
         return;
       }
+      
       if (res === "complete") {
         setIsRoadmapCompleteModalOpen(true);
       }
