@@ -105,9 +105,10 @@ export const useAudioVisualizer = ({
           // 오디오 레벨 계산
           let sum = 0;
           for (let i = 0; i < dataArray.length; i++) {
-            sum += dataArray[i];
+            sum += dataArray[i] * dataArray[i];
           }
-          const average = sum / dataArray.length;
+          const rms = Math.sqrt(sum / dataArray.length);
+          const average = Math.round((rms / 255) * 100);
           
           if (average < 2) {
             // 음성 인식 상태에 따라 다른 메시지 표시

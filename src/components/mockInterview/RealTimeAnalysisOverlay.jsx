@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Eye, Mic, Volume2, Smile, Users, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 const RealTimeAnalysisOverlay = ({ analysisData }) => {
   const [isMinimized, setIsMinimized] = useState(false);
+  const [currentTips, setCurrentTips] = useState([]);
+  const [lastTipUpdate, setLastTipUpdate] = useState(0);
+  
+  // 이전 데이터를 저장해서 급격한 변화 방지
+  const prevDataRef = useRef({
+    faceDetected: false,
+    eyeContactPercentage: 0,
+    currentVolume: 0
+  });
   
   if (!analysisData) return null;
 
   const { audio, video } = analysisData;
 
-  // 전체 점수 계산 (실시간 예상 점수)
+  // 전체 점수 계산 (실시간 예상 점수) - 안정화됨
   const calculateCurrentScore = () => {
     let score = 70; // 기본 점수
     
@@ -26,6 +35,121 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
   };
 
   const currentScore = calculateCurrentScore();
+
+  // 팁 생성 함수 (5초마다 업데이트)
+  const generateTips = () => {
+    const currentTime = Date.now();
+    const shouldUpdateTips = currentTime - lastTipUpdate > 5000; // 5초마다 업데이트
+    
+    if (!shouldUpdateTips && currentTips.length > 0) {
+      return currentTips;
+    }
+    
+    const tips = [];
+    
+    // 얼굴 감지 관련
+    if (!video.faceDetected) {
+      tips.push({
+        type: 'warning',
+        icon: '👤',
+        message: '카메라 앞에 얼굴을 위치시켜주세요'
+      });
+    }
+    
+    // 음성 볼륨 관련
+    if (audio.currentVolume < 10) {
+      tips.push({
+        type: 'warning',
+        icon: '🔊',
+        message: '목소리를 더 크게 말해주세요'
+      });
+    } else if (audio.currentVolume > 90) {
+      tips.push({
+        type: 'warning',
+        icon: '🔇',
+        message: '목소리를 조금 더 부드럽게 해주세요'
+      });
+    }
+    
+    // 아이컨택 관련 (얼굴이 감지된 경우에만)
+    if (video.faceDetected && video.eyeContactPercentage < 40) {
+      tips.push({
+        type: 'warning',
+        icon: '👁️',
+        message: '카메라를 더 자주 봐주세요'
+      });
+    }
+    
+    // 습관어 관련
+    if (audio.fillerWordsCount > 5) {
+      tips.push({
+        type: 'warning',
+        icon: '🗣️',
+        message: '습관어 사용을 줄여보세요'
+      });
+    }
+    
+    // 좋은 상태일 때 격려 메시지
+    if (currentScore >= 80) {
+      tips.push({
+        type: 'success',
+        icon: '🎉',
+        message: '훌륭합니다! 이 상태를 유지하세요'
+      });
+    } else if (video.faceDetected && video.eyeContactPercentage > 60) {
+      tips.push({
+        type: 'success',
+        icon: '✨',
+        message: '좋은 아이컨택을 유지하고 있습니다'
+      });
+    } else if (audio.currentVolume >= 20 && audio.currentVolume <= 80) {
+      tips.push({
+        type: 'success',
+        icon: '🎤',
+        message: '적절한 목소리 크기입니다'
+      });
+    }
+    
+    // 팁이 없으면 기본 메시지
+    if (tips.length === 0) {
+      tips.push({
+        type: 'info',
+        icon: '💡',
+        message: '자연스럽게 면접을 진행해주세요'
+      });
+    }
+    
+    // 팁이 너무 많으면 최대 3개로 제한
+    const limitedTips = tips.slice(0, 3);
+    
+    if (shouldUpdateTips) {
+      setCurrentTips(limitedTips);
+      setLastTipUpdate(currentTime);
+    }
+    
+    return limitedTips;
+  };
+
+  // 안정화된 얼굴 감지 상태 (급격한 변화 방지)
+  const getStabilizedFaceDetection = () => {
+    const current = video.faceDetected;
+    const previous = prevDataRef.current.faceDetected;
+    
+    // 이전 상태와 다르면 잠시 대기 후 업데이트
+    if (current !== previous) {
+      setTimeout(() => {
+        prevDataRef.current.faceDetected = current;
+      }, 200);
+      return previous; // 이전 상태 유지
+    }
+    
+    return current;
+  };
+
+  const stabilizedFaceDetected = getStabilizedFaceDetection();
+
+  // 현재 팁들 생성
+  const tipsToShow = generateTips();
 
   // 축소된 버전 (면접 중 방해되지 않도록)
   if (isMinimized) {
@@ -145,12 +269,12 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
           </div>
           
           <div className={styles.metricItems}>
-            {/* 얼굴 감지 */}
+            {/* 얼굴 감지 - 안정화됨 */}
             <div className={styles.metricItem}>
               <span className={styles.metricIcon}>👤</span>
               <span>얼굴 감지</span>
-              <span className={`${styles.metricValue} ${video.faceDetected ? styles.success : styles.warning}`}>
-                {video.faceDetected ? '✓' : '✗'}
+              <span className={`${styles.metricValue} ${stabilizedFaceDetected ? styles.success : styles.warning}`}>
+                {stabilizedFaceDetected ? '✓' : '✗'}
               </span>
             </div>
 
@@ -205,50 +329,17 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
         </div>
       </div>
 
-      {/* 실시간 팁 */}
+      {/* 실시간 팁 - 5초마다 업데이트 */}
       <div className={styles.realTimeTips}>
-        {!video.faceDetected && (
-          <div className={styles.tip}>
-            <span className={styles.tipIcon}>👤</span>
-            <span>카메라 앞에 얼굴을 위치시켜주세요</span>
+        {tipsToShow.map((tip, index) => (
+          <div 
+            key={`${tip.type}-${index}`}
+            className={tip.type === 'success' ? styles.tipSuccess : styles.tip}
+          >
+            <span className={styles.tipIcon}>{tip.icon}</span>
+            <span>{tip.message}</span>
           </div>
-        )}
-        
-        {audio.currentVolume < 10 && (
-          <div className={styles.tip}>
-            <span className={styles.tipIcon}>🔊</span>
-            <span>목소리를 더 크게 말해주세요</span>
-          </div>
-        )}
-        
-        {audio.currentVolume > 90 && (
-          <div className={styles.tip}>
-            <span className={styles.tipIcon}>🔇</span>
-            <span>목소리를 조금 더 부드럽게 해주세요</span>
-          </div>
-        )}
-        
-        {video.eyeContactPercentage < 40 && video.faceDetected && (
-          <div className={styles.tip}>
-            <span className={styles.tipIcon}>👁️</span>
-            <span>카메라를 더 자주 봐주세요</span>
-          </div>
-        )}
-        
-        {audio.fillerWordsCount > 5 && (
-          <div className={styles.tip}>
-            <span className={styles.tipIcon}>🗣️</span>
-            <span>습관어 사용을 줄여보세요</span>
-          </div>
-        )}
-        
-        {/* 좋은 상태일 때 격려 메시지 */}
-        {currentScore >= 80 && (
-          <div className={styles.tipSuccess}>
-            <span className={styles.tipIcon}>🎉</span>
-            <span>훌륭합니다! 이 상태를 유지하세요</span>
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );

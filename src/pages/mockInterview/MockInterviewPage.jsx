@@ -116,24 +116,23 @@ const MockInterviewPage = () => {
   const startTimer = async () => {
     console.log('⏰ 타이머 및 실시간 분석 시작...');
     
-    startTimerOriginal();
+    if (speechSupported && isMicOn) {
+      startListening(isMicOn);
+      console.log('🎤 음성 인식 시작됨');
+    }
     
     // 실시간 분석 시작
     if (mediaStream && cameraPermissionGranted) {
       await startAnalysis();
       console.log('📊 실시간 분석 시작됨');
     }
+
+    startTimerOriginal();
     
     // 녹화 시작 (선택사항)
     if (mediaStream && !isRecording) {
       await startRecording(mediaStream);
       console.log('🎥 면접 녹화 시작됨');
-    }
-    
-    // 음성 인식 시작
-    if (speechSupported && isMicOn) {
-      startListening(isMicOn);
-      console.log('🎤 음성 인식 시작됨');
     }
   };
 
