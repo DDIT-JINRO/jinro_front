@@ -2253,3 +2253,461 @@
     flex: 0 0 40px;
   }
 }
+
+/* 🎯 아이컨택 특별 섹션 스타일 */
+.eyeContactSpecialSection {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #bae6fd;
+}
+
+.eyeContactHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0c4a6e;
+}
+
+.eyeContactGrade {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  min-width: 20px;
+}
+
+.eyeContactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eyeContactMainMetric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eyeContactPercentage {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0c4a6e;
+  line-height: 1;
+}
+
+.eyeContactLabel {
+  font-size: 11px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.trendUp {
+  color: #10b981;
+  font-size: 12px;
+}
+
+.trendDown {
+  color: #ef4444;
+  font-size: 12px;
+}
+
+.eyeContactProgressBar {
+  height: 6px;
+  background: rgba(203, 213, 225, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.eyeContactProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+.eyeContactDebug {
+  display: flex;
+  gap: 8px;
+  font-size: 9px;
+  color: #64748b;
+  margin-top: 4px;
+  padding: 4px 6px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.eyeContactDebug span {
+  flex: 1;
+}
+
+/* 축소된 오버레이의 아이컨택 등급 표시 */
+.eyeContactMiniGrade {
+  background-color: #3b82f6;
+  margin-left: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: white;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+/* 팁 스타일 개선 */
+.tipInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #e0f2fe;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #0c4a6e;
+  border-left: 3px solid #0284c7;
+}
+
+/* 기존 tip, tipSuccess 스타일과 함께 사용 */
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #92400e;
+  border-left: 3px solid #f59e0b;
+}
+
+.tipSuccess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #d1fae5;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+/* 실시간 오버레이 전체 스타일 개선 */
+.realTimeOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 300px;
+  max-width: 340px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* 스크롤바 스타일 (오버레이 전용) */
+.realTimeOverlay::-webkit-scrollbar {
+  width: 4px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 2px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 2px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* 호버 효과 */
+.realTimeOverlay:hover {
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+}
+
+/* 현재 점수 컨테이너 개선 */
+.currentScoreContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+}
+
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.scoreNumber {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.scoreStatus {
+  flex: 1;
+}
+
+.statusGood {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #059669;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNormal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNeedImprovement {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* 메트릭 섹션 스타일 개선 */
+.metricSection {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.metricItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.metricIcon {
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+
+.metricValue {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.metricValue.success {
+  color: #059669;
+}
+
+.metricValue.warning {
+  color: #d97706;
+}
+
+/* 볼륨 바 */
+.volumeBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.volumeFill {
+  height: 100%;
+  transition: width 0.2s ease, background-color 0.3s ease;
+}
+
+/* 프로그레스 바 */
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* 실시간 팁 컨테이너 */
+.realTimeTips {
+  max-height: 140px;
+  overflow-y: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* 팁 아이콘 */
+.tipIcon {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 축소된 오버레이 */
+.realTimeOverlayMinimized {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.expandButton:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.currentScoreText {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* 애니메이션 효과 */
+@keyframes eyeContactGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.eyeContactSpecialSection:hover {
+  animation: eyeContactGlow 2s ease-in-out infinite;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .realTimeOverlay {
+    min-width: 260px;
+    max-width: 300px;
+    font-size: 11px;
+    padding: 12px;
+    max-height: 85vh;
+  }
+  
+  .eyeContactSpecialSection {
+    padding: 10px;
+  }
+  
+  .eyeContactPercentage {
+    font-size: 18px;
+  }
+  
+  .currentScoreContainer {
+    padding: 10px;
+  }
+  
+  .scoreCircle {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .scoreNumber {
+    font-size: 14px;
+  }
+  
+  .metricSection {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .realTimeOverlay {
+    min-width: 240px;
+    max-width: 280px;
+    font-size: 10px;
+    padding: 10px;
+  }
+  
+  .eyeContactPercentage {
+    font-size: 16px;
+  }
+}

@@ -1,45 +1,132 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Mic, Volume2, Smile, Users, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+import { Eye, Mic, Volume2, Smile, Users, TrendingUp, TrendingDown, BarChart3, Target } from 'lucide-react';
 import styles from '../../styles/mockInterview/MockInterview.module.css';
 
 const RealTimeAnalysisOverlay = ({ analysisData }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [currentTips, setCurrentTips] = useState([]);
   const [lastTipUpdate, setLastTipUpdate] = useState(0);
+  const [eyeContactTrend, setEyeContactTrend] = useState('stable'); // up, down, stable
   
-  // 이전 데이터를 저장해서 급격한 변화 방지
+  // 이전 데이터를 저장해서 트렌드 분석
   const prevDataRef = useRef({
     faceDetected: false,
     eyeContactPercentage: 0,
-    currentVolume: 0
+    currentVolume: 0,
+    eyeContactHistory: [] // 최근 10개 값 저장
   });
   
   if (!analysisData) return null;
 
   const { audio, video } = analysisData;
 
-  // 전체 점수 계산 (실시간 예상 점수) - 안정화됨
+  // 🎯 아이컨택 트렌드 분석
+  useEffect(() => {
+    if (video.eyeContactPercentage !== undefined) {
+      const history = prevDataRef.current.eyeContactHistory;
+      history.push(video.eyeContactPercentage);
+      
+      // 최근 10개 값만 유지
+      if (history.length > 10) {
+        history.shift();
+      }
+      
+      // 트렌드 계산 (최근 5개 vs 이전 5개)
+      if (history.length >= 6) {
+        const recent = history.slice(-3); // 최근 3개
+        const previous = history.slice(-6, -3); // 이전 3개
+        
+        const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+        const previousAvg = previous.reduce((a, b) => a + b, 0) / previous.length;
+        
+        const difference = recentAvg - previousAvg;
+        
+        if (difference > 5) {
+          setEyeContactTrend('up');
+        } else if (difference < -5) {
+          setEyeContactTrend('down');
+        } else {
+          setEyeContactTrend('stable');
+        }
+      }
+      
+      prevDataRef.current.eyeContactHistory = history;
+    }
+  }, [video.eyeContactPercentage]);
+
+  useEffect(() => {
+    console.log('🔍 RealTimeAnalysisOverlay - analysisData 업데이트:', {
+      analysisData: analysisData ? {
+        audio: {
+          currentVolume: analysisData.audio.currentVolume,
+          speakingTime: analysisData.audio.speakingTime
+        },
+        video: {
+          faceDetected: analysisData.video.faceDetected,
+          eyeContactPercentage: analysisData.video.eyeContactPercentage,
+          rawEyeContact: analysisData.video.rawEyeContact,
+          smileDetection: analysisData.video.smileDetection,
+          faceDetectionRate: analysisData.video.faceDetectionRate
+        }
+      } : null,
+      timestamp: new Date().toLocaleTimeString()
+    });
+  }, [analysisData]);
+
+  // 전체 점수 계산 (실시간 예상 점수) - 아이컨택 가중치 증가
   const calculateCurrentScore = () => {
-    let score = 70; // 기본 점수
+    let score = 65; // 기본 점수를 65로 상향
     
     // 오디오 점수 반영
-    if (audio.currentVolume >= 20 && audio.currentVolume <= 80) score += 5;
-    if (audio.currentVolume < 10 || audio.currentVolume > 90) score -= 5;
+    if (audio.currentVolume >= 20 && audio.currentVolume <= 80) score += 8;
+    if (audio.currentVolume < 10 || audio.currentVolume > 90) score -= 8;
     
-    // 비디오 점수 반영
-    if (video.faceDetected) score += 10;
-    if (video.eyeContactPercentage >= 60) score += 10;
-    if (video.postureScore >= 70) score += 5;
+    // 비디오 점수 반영 (아이컨택 가중치 증가)
+    if (video.faceDetected) score += 8;
+
+    const eyeContactValue = video.eyeContactPercentage || 0;
+    console.log('📊 점수 계산:', {
+      eyeContactValue,
+      faceDetected: video.faceDetected,
+      currentScore: score
+    });
+
+    if (video.eyeContactPercentage >= 70) score += 15; // 기존 10에서 15로 증가
+    else if (video.eyeContactPercentage >= 50) score += 10; // 새로 추가
+    else if (video.eyeContactPercentage >= 30) score += 5; // 새로 추가
+    else if (video.eyeContactPercentage < 20) score -= 10; // 페널티 추가
     
-    return Math.max(40, Math.min(95, score));
+    if (video.postureScore >= 70) score += 4;
+
+    const finalScore = Math.max(35, Math.min(95, score));
+
+    console.log('📊 최종 점수:', {
+      baseScore: 65,
+      eyeContactBonus: eyeContactValue >= 70 ? 15 : eyeContactValue >= 50 ? 10 : eyeContactValue >= 30 ? 5 : eyeContactValue < 20 ? -10 : 0,
+      finalScore
+    });
+
+    return finalScore;
   };
 
   const currentScore = calculateCurrentScore();
 
-  // 팁 생성 함수 (5초마다 업데이트)
+  // 🎯 아이컨택 품질 등급 계산
+  const getEyeContactGrade = () => {
+    const percentage = video.eyeContactPercentage;
+    if (percentage >= 70) return { grade: 'A', color: '#10b981', label: '우수' };
+    if (percentage >= 50) return { grade: 'B', color: '#3b82f6', label: '양호' };
+    if (percentage >= 30) return { grade: 'C', color: '#f59e0b', label: '보통' };
+    if (percentage >= 15) return { grade: 'D', color: '#ef4444', label: '미흡' };
+    return { grade: 'F', color: '#dc2626', label: '부족' };
+  };
+
+  const eyeContactGrade = getEyeContactGrade();
+
+  // 팁 생성 함수 (3초마다 업데이트로 단축)
   const generateTips = () => {
     const currentTime = Date.now();
-    const shouldUpdateTips = currentTime - lastTipUpdate > 5000; // 5초마다 업데이트
+    const shouldUpdateTips = currentTime - lastTipUpdate > 3000; // 3초로 단축
     
     if (!shouldUpdateTips && currentTips.length > 0) {
       return currentTips;
@@ -47,12 +134,61 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
     
     const tips = [];
     
+    // 🎯 아이컨택 관련 팁 우선순위 최상위
+    if (video.eyeContactPercentage < 20) {
+      tips.push({
+        type: 'warning',
+        icon: '👁️',
+        message: '카메라 렌즈를 직접 보는 연습을 해보세요',
+        priority: 1
+      });
+    } else if (video.eyeContactPercentage < 40) {
+      tips.push({
+        type: 'warning',
+        icon: '🎯',
+        message: '아이컨택을 조금 더 자주 해주세요',
+        priority: 2
+      });
+    } else if (video.eyeContactPercentage >= 70) {
+      tips.push({
+        type: 'success',
+        icon: '👌',
+        message: '완벽한 아이컨택을 유지하고 있습니다!',
+        priority: 1
+      });
+    } else if (video.eyeContactPercentage >= 50) {
+      tips.push({
+        type: 'success',
+        icon: '👍',
+        message: '좋은 아이컨택입니다. 이 상태를 유지하세요',
+        priority: 2
+      });
+    }
+    
+    // 아이컨택 트렌드 기반 팁
+    if (eyeContactTrend === 'up' && video.eyeContactPercentage >= 40) {
+      tips.push({
+        type: 'success',
+        icon: '📈',
+        message: '아이컨택이 개선되고 있습니다!',
+        priority: 2
+      });
+    } else if (eyeContactTrend === 'down' && video.eyeContactPercentage < 50) {
+      tips.push({
+        type: 'warning',
+        icon: '📉',
+        message: '아이컨택이 줄어들고 있습니다. 집중해주세요',
+        priority: 1
+      });
+    }
+    
     // 얼굴 감지 관련
     if (!video.faceDetected) {
       tips.push({
         type: 'warning',
         icon: '👤',
-        message: '카메라 앞에 얼굴을 위치시켜주세요'
+        message: '카메라 앞에 얼굴을 위치시켜주세요',
+        priority: 1
       });
     }
     
@@ -61,22 +197,22 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
       tips.push({
         type: 'warning',
         icon: '🔊',
-        message: '목소리를 더 크게 말해주세요'
+        message: '목소리를 더 크게 말해주세요',
+        priority: 3
       });
     } else if (audio.currentVolume > 90) {
       tips.push({
         type: 'warning',
         icon: '🔇',
-        message: '목소리를 조금 더 부드럽게 해주세요'
+        message: '목소리를 조금 더 부드럽게 해주세요',
+        priority: 3
       });
-    }
-    
-    // 아이컨택 관련 (얼굴이 감지된 경우에만)
-    if (video.faceDetected && video.eyeContactPercentage < 40) {
+    } else if (audio.currentVolume >= 20 && audio.currentVolume <= 80) {
       tips.push({
-        type: 'warning',
-        icon: '👁️',
-        message: '카메라를 더 자주 봐주세요'
+        type: 'info',
+        icon: '🎤',
+        message: '적절한 목소리 크기입니다',
+        priority: 4
       });
     }
     
@@ -85,42 +221,34 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
       tips.push({
         type: 'warning',
         icon: '🗣️',
-        message: '습관어 사용을 줄여보세요'
+        message: '습관어 사용을 줄여보세요',
+        priority: 3
       });
     }
     
-    // 좋은 상태일 때 격려 메시지
-    if (currentScore >= 80) {
+    // 전체적으로 좋은 상태일 때
+    if (currentScore >= 85) {
       tips.push({
         type: 'success',
         icon: '🎉',
-        message: '훌륭합니다! 이 상태를 유지하세요'
-      });
-    } else if (video.faceDetected && video.eyeContactPercentage > 60) {
-      tips.push({
-        type: 'success',
-        icon: '✨',
-        message: '좋은 아이컨택을 유지하고 있습니다'
-      });
-    } else if (audio.currentVolume >= 20 && audio.currentVolume <= 80) {
-      tips.push({
-        type: 'success',
-        icon: '🎤',
-        message: '적절한 목소리 크기입니다'
+        message: '모든 것이 완벽합니다! 계속 유지하세요',
+        priority: 1
       });
     }
     
-    // 팁이 없으면 기본 메시지
+    // 기본 격려 메시지
     if (tips.length === 0) {
       tips.push({
         type: 'info',
         icon: '💡',
-        message: '자연스럽게 면접을 진행해주세요'
+        message: '자연스럽게 면접을 진행해주세요',
+        priority: 5
       });
     }
     
-    // 팁이 너무 많으면 최대 3개로 제한
-    const limitedTips = tips.slice(0, 3);
+    // 우선순위로 정렬하고 최대 3개로 제한
+    const sortedTips = tips.sort((a, b) => a.priority - b.priority);
+    const limitedTips = sortedTips.slice(0, 3);
     
     if (shouldUpdateTips) {
       setCurrentTips(limitedTips);
@@ -129,24 +257,6 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
     
     return limitedTips;
   };
-
-  // 안정화된 얼굴 감지 상태 (급격한 변화 방지)
-  const getStabilizedFaceDetection = () => {
-    const current = video.faceDetected;
-    const previous = prevDataRef.current.faceDetected;
-    
-    // 이전 상태와 다르면 잠시 대기 후 업데이트
-    if (current !== previous) {
-      setTimeout(() => {
-        prevDataRef.current.faceDetected = current;
-      }, 200);
-      return previous; // 이전 상태 유지
-    }
-    
-    return current;
-  };
-
-  const stabilizedFaceDetected = getStabilizedFaceDetection();
 
   // 현재 팁들 생성
   const tipsToShow = generateTips();
@@ -162,6 +272,20 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
         >
           <BarChart3 size={16} />
           <span className={styles.currentScoreText}>{currentScore}</span>
+          {/* 🎯 아이컨택 등급 미니 표시 */}
+          <span 
+            className={styles.eyeContactMiniGrade}
+            style={{ 
+              backgroundColor: eyeContactGrade.color,
+              marginLeft: '4px',
+              padding: '2px 4px',
+              borderRadius: '4px',
+              fontSize: '10px',
+              color: 'white'
+            }}
+          >
+            {eyeContactGrade.grade}
+          </span>
         </button>
       </div>
     );
@@ -193,16 +317,71 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
         <div className={styles.scoreStatus}>
           {currentScore >= 80 ? (
             <span className={styles.statusGood}>
-              <TrendingUp size={14} /> 좋음
+              <TrendingUp size={14} /> 우수
             </span>
-          ) : currentScore >= 60 ? (
+          ) : currentScore >= 65 ? (
             <span className={styles.statusNormal}>
-              <Users size={14} /> 보통
+              <Users size={14} /> 양호
+            </span>
+          ) : currentScore >= 50 ? (
+            <span className={styles.statusNormal}>
+              <Target size={14} /> 보통
             </span>
           ) : (
             <span className={styles.statusNeedImprovement}>
               <TrendingDown size={14} /> 개선 필요
             </span>
+          )}
+        </div>
+      </div>
+
+      {/* 🎯 아이컨택 특별 섹션 추가 */}
+      <div className={styles.eyeContactSpecialSection}>
+        <div className={styles.eyeContactHeader}>
+          <Eye size={14} />
+          <span>아이컨택 분석</span>
+          <span 
+            className={styles.eyeContactGrade}
+            style={{ backgroundColor: eyeContactGrade.color }}
+          >
+            {eyeContactGrade.grade}
+          </span>
+        </div>
+        
+        <div className={styles.eyeContactDetails}>
+          <div className={styles.eyeContactMainMetric}>
+            <div className={styles.eyeContactPercentage}>
+              {video.eyeContactPercentage}%
+              {process.env.NODE_ENV === 'development' && (
+                <span style={{ fontSize: '10px', color: '#999', marginLeft: '4px' }}>
+                  (원시: {video.rawEyeContact || 0})
+                </span>
+              )}
+            </div>
+            <div className={styles.eyeContactLabel}>
+              {eyeContactGrade.label}
+              {eyeContactTrend === 'up' && <span className={styles.trendUp}> ↗️</span>}
+              {eyeContactTrend === 'down' && <span className={styles.trendDown}> ↘️</span>}
+            </div>
+          </div>
+          
+          <div className={styles.eyeContactProgressBar}>
+            <div 
+              className={styles.eyeContactProgressFill}
+              style={{ 
+                width: `${video.eyeContactPercentage}%`,
+                backgroundColor: eyeContactGrade.color,
+                transition: 'width 0.5s ease, background-color 0.3s ease'
+              }}
+            />
+          </div>
+          
+          {/* 디버깅 정보 (개발 환경에서만) */}
+          {process.env.NODE_ENV === 'development' && video.rawEyeContact !== undefined && (
+            <div className={styles.eyeContactDebug}>
+              <span>원시값: {video.rawEyeContact}%</span>
+              <span>프레임: {video.eyeContactFramesCount}/{video.totalFramesCount}</span>
+            </div>
           )}
         </div>
       </div>
@@ -261,37 +440,21 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
           </div>
         </div>
 
-        {/* 영상 분석 */}
+        {/* 영상 분석 (아이컨택 제외) */}
         <div className={styles.metricSection}>
           <div className={styles.metricHeader}>
             <Eye size={14} />
-            <span>영상</span>
+            <span>기타 영상</span>
           </div>
           
           <div className={styles.metricItems}>
-            {/* 얼굴 감지 - 안정화됨 */}
+            {/* 얼굴 감지 */}
             <div className={styles.metricItem}>
               <span className={styles.metricIcon}>👤</span>
               <span>얼굴 감지</span>
-              <span className={`${styles.metricValue} ${stabilizedFaceDetected ? styles.success : styles.warning}`}>
-                {stabilizedFaceDetected ? '✓' : '✗'}
+              <span className={`${styles.metricValue} ${video.faceDetected ? styles.success : styles.warning}`}>
+                {video.faceDetected ? '✓' : '✗'}
               </span>
-            </div>
-
-            {/* 아이컨택 */}
-            <div className={styles.metricItem}>
-              <Eye size={12} />
-              <span>아이컨택</span>
-              <div className={styles.progressBar}>
-                <div 
-                  className={styles.progressFill}
-                  style={{ 
-                    width: `${video.eyeContactPercentage}%`,
-                    backgroundColor: video.eyeContactPercentage >= 60 ? '#10b981' : '#f59e0b'
-                  }}
-                />
-              </div>
-              <span className={styles.metricValue}>{video.eyeContactPercentage}%</span>
             </div>
 
             {/* 미소 */}
@@ -329,12 +492,13 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
         </div>
       </div>
 
-      {/* 실시간 팁 - 5초마다 업데이트 */}
+      {/* 실시간 팁 - 3초마다 업데이트 */}
       <div className={styles.realTimeTips}>
         {tipsToShow.map((tip, index) => (
           <div 
-            key={`${tip.type}-${index}`}
-            className={tip.type === 'success' ? styles.tipSuccess : styles.tip}
+            key={`${tip.type}-${index}-${lastTipUpdate}`} // 업데이트 시간 포함으로 키 변경
+            className={tip.type === 'success' ? styles.tipSuccess : 
+                      tip.type === 'info' ? styles.tipInfo : styles.tip}
           >
             <span className={styles.tipIcon}>{tip.icon}</span>
             <span>{tip.message}</span>
