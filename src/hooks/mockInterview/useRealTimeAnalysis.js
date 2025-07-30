@@ -315,7 +315,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     let confidence = 0;
     
     try {
-      // 🎯 방법 1: Face Landmarks를 사용한 정밀 시선 추적
+      // 🎯 방법 1: Face Landmarks를 사용한 정밀 시선 추적 (개선된 버전)
       if (landmarks && landmarks.length > 468) {
         // MediaPipe Face Mesh의 주요 랜드마크 포인트들
         const leftEye = landmarks[33];       // 왼쪽 눈 중심
@@ -323,19 +323,62 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         const noseTip = landmarks[1];        // 코끝
         const leftEyeInner = landmarks[133]; // 왼쪽 눈 안쪽 모서리
         const rightEyeInner = landmarks[362];// 오른쪽 눈 안쪽 모서리
-        const leftEyeOuter = landmarks[33];  // 왼쪽 눈 바깥쪽 모서리
-        const rightEyeOuter = landmarks[263];// 오른쪽 눈 바깥쪽 모서리
+        const leftEyeOuter = landmarks[226]; // 🔧 수정: 왼쪽 눈 바깥쪽 모서리
+        const rightEyeOuter = landmarks[446];// 🔧 수정: 오른쪽 눈 바깥쪽 모서리
         const forehead = landmarks[9];       // 이마 중앙
         const chin = landmarks[175];         // 턱 중앙
 
-        if (leftEye && rightEye && noseTip && forehead && chin) {
-          // 🎯 얼굴 중심과 방향 벡터 계산
+        if (leftEye && rightEye && noseTip && forehead && chin && 
+            leftEyeInner && rightEyeInner && leftEyeOuter && rightEyeOuter) {
+          
+          // 🎯 방법 1A: 기본 시선 벡터 계산
           const eyeCenter = {
             x: (leftEye.x + rightEye.x) / 2,
             y: (leftEye.y + rightEye.y) / 2,
             z: (leftEye.z + rightEye.z) / 2
           };
           
+          // 🎯 방법 1B: 눈의 형태를 고려한 시선 방향 계산 (새로 추가)
+          const leftEyeVector = {
+            x: leftEyeOuter.x - leftEyeInner.x,
+            y: leftEyeOuter.y - leftEyeInner.y,
+            z: leftEyeOuter.z - leftEyeInner.z
+          };
+          
+          const rightEyeVector = {
+            x: rightEyeOuter.x - rightEyeInner.x,
+            y: rightEyeOuter.y - rightEyeInner.y,
+            z: rightEyeOuter.z - rightEyeInner.z
+          };
+          
+          // 평균 눈 방향 벡터
+          const avgEyeDirection = {
+            x: (leftEyeVector.x + rightEyeVector.x) / 2,
+            y: (leftEyeVector.y + rightEyeVector.y) / 2,
+            z: (leftEyeVector.z + rightEyeVector.z) / 2
+          };
+          
+          // 🎯 눈꺼풀 개폐도 확인 (눈을 뜨고 있는지)
+          const leftEyeOpenness = Math.abs(landmarks[159].y - landmarks[145].y); // 왼쪽 눈 위아래
+          const rightEyeOpenness = Math.abs(landmarks[386].y - landmarks[374].y); // 오른쪽 눈 위아래
+          const avgEyeOpenness = (leftEyeOpenness + rightEyeOpenness) / 2;
+          const eyeOpennessScore = Math.min(1.0, avgEyeOpenness * 20); // 눈 뜸 정도 (0-1)
+          
+          // 🎯 개선된 시선 벡터 계산 (눈의 형태 + 코 방향 조합)
+          const basicGazeVector = {
+            x: eyeCenter.x - noseTip.x,
+            y: eyeCenter.y - noseTip.y,
+            z: eyeCenter.z - noseTip.z
+          };
+          
+          // 눈의 방향과 기본 시선을 가중 평균
+          const enhancedGazeVector = {
+            x: basicGazeVector.x * 0.7 + avgEyeDirection.x * 0.3,
+            y: basicGazeVector.y * 0.7 + avgEyeDirection.y * 0.3,
+            z: basicGazeVector.z * 0.7 + avgEyeDirection.z * 0.3
+          };
+          
+          // 얼굴 중심 계산
           const faceCenter = {
             x: (forehead.x + chin.x) / 2,
             y: (forehead.y + chin.y) / 2,
@@ -344,70 +387,71 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
           
           // 🎯 머리 기울기 보정
           const headTilt = Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x);
-          const tiltCompensation = Math.abs(headTilt) < 0.2 ? 1.0 : 0.8; // 20도 이내면 보정 없음
-          
-          // 🎯 시선 벡터 계산 (개선된 버전)
-          const gazeVector = {
-            x: eyeCenter.x - noseTip.x,
-            y: eyeCenter.y - noseTip.y,
-            z: eyeCenter.z - noseTip.z
-          };
+          const tiltCompensation = Math.abs(headTilt) < 0.2 ? 1.0 : 0.8;
           
           // 🎯 화면 중앙을 향하는 이상적인 벡터 (카메라 방향)
           const cameraVector = { x: 0, y: 0, z: -1 };
           
           // 정규화
-          const gazeLength = Math.sqrt(gazeVector.x ** 2 + gazeVector.y ** 2 + gazeVector.z ** 2);
+          const gazeLength = Math.sqrt(
+            enhancedGazeVector.x ** 2 + enhancedGazeVector.y ** 2 + enhancedGazeVector.z ** 2
+          );
+          
           if (gazeLength > 0) {
             const normalizedGaze = {
-              x: gazeVector.x / gazeLength,
-              y: gazeVector.y / gazeLength,
-              z: gazeVector.z / gazeLength
+              x: enhancedGazeVector.x / gazeLength,
+              y: enhancedGazeVector.y / gazeLength,
+              z: enhancedGazeVector.z / gazeLength
             };
             
-            // 🎯 각도 계산 및 가중치 적용
+            // 🎯 각도 계산
             const dotProduct = normalizedGaze.x * cameraVector.x + 
-                             normalizedGaze.y * cameraVector.y + 
-                             normalizedGaze.z * cameraVector.z;
+                            normalizedGaze.y * cameraVector.y + 
+                            normalizedGaze.z * cameraVector.z;
             
             const angle = Math.acos(Math.max(-1, Math.min(1, Math.abs(dotProduct)))) * (180 / Math.PI);
             
-            // 🎯 거리 기반 보정 (얼굴이 화면 중앙에 있을 때 보너스)
+            // 🎯 거리 기반 보정
             const faceDistanceFromCenter = Math.sqrt(
               Math.pow(faceCenter.x - 0.5, 2) + Math.pow(faceCenter.y - 0.5, 2)
             );
             const centerBonus = faceDistanceFromCenter < 0.15 ? 5 : 0;
             
             // 🎯 점수 계산 (더 세밀한 등급 구분)
-            if (angle <= 8) { // 8도 이내 - 완벽한 아이컨택
-              eyeContactScore = 95 + centerBonus;
-            } else if (angle <= 15) { // 15도 이내 - 우수한 아이컨택
-              eyeContactScore = 85 + (15 - angle) * 1.2 + centerBonus;
-            } else if (angle <= 25) { // 25도 이내 - 좋은 아이컨택
-              eyeContactScore = 70 + (25 - angle) * 1.5;
-            } else if (angle <= 35) { // 35도 이내 - 보통 아이컨택
-              eyeContactScore = 50 + (35 - angle) * 2;
-            } else if (angle <= 50) { // 50도 이내 - 부족한 아이컨택
-              eyeContactScore = 25 + (50 - angle) * 1.7;
-            } else { // 50도 초과 - 매우 부족
-              eyeContactScore = Math.max(0, 25 - (angle - 50) * 0.5);
+            if (angle <= 5) { // 5도 이내 - 완벽한 아이컨택
+              eyeContactScore = 98 + centerBonus;
+            } else if (angle <= 10) { // 10도 이내 - 매우 우수
+              eyeContactScore = 90 + (10 - angle) * 1.6 + centerBonus;
+            } else if (angle <= 18) { // 18도 이내 - 우수한 아이컨택
+              eyeContactScore = 80 + (18 - angle) * 1.25 + centerBonus;
+            } else if (angle <= 28) { // 28도 이내 - 좋은 아이컨택
+              eyeContactScore = 65 + (28 - angle) * 1.5;
+            } else if (angle <= 40) { // 40도 이내 - 보통 아이컨택
+              eyeContactScore = 45 + (40 - angle) * 1.67;
+            } else if (angle <= 55) { // 55도 이내 - 부족한 아이컨택
+              eyeContactScore = 20 + (55 - angle) * 1.67;
+            } else { // 55도 초과 - 매우 부족
+              eyeContactScore = Math.max(0, 20 - (angle - 55) * 0.5);
             }
             
-            // 머리 기울기 보정 적용
+            // 🎯 눈 뜸 정도와 머리 기울기 보정 적용
+            eyeContactScore *= eyeOpennessScore; // 눈을 감고 있으면 점수 하락
             eyeContactScore *= tiltCompensation;
             
-            confidence = 0.9; // 랜드마크 기반이므로 높은 신뢰도
-            calculationMethod = 'landmarks_enhanced';
+            confidence = 0.95; // 개선된 랜드마크 기반이므로 매우 높은 신뢰도
+            calculationMethod = 'landmarks_enhanced_v2';
             
-            // 🎯 디버깅 로그 (5초에 한 번)
+            // 🎯 디버깅 로그
             if (analysisRef.current.debugLogCount % 300 === 0) {
-              console.log('👁️ 향상된 아이컨택 분석:', {
+              console.log('👁️ 개선된 아이컨택 분석 v2:', {
                 angle: angle.toFixed(1) + '°',
                 score: Math.round(eyeContactScore),
+                eyeOpenness: eyeOpennessScore.toFixed(2),
                 headTilt: (headTilt * 180 / Math.PI).toFixed(1) + '°',
                 centerDistance: faceDistanceFromCenter.toFixed(3),
                 centerBonus,
-                confidence
+                confidence,
+                method: calculationMethod
               });
             }
           }
@@ -441,23 +485,23 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         
         // 🎯 점수 계산 (거리 기반)
         if (distanceFromCenter <= 0.08) { // 매우 중앙
-          eyeContactScore = 80 * distanceCorrection;
+          eyeContactScore = 75 * distanceCorrection; // 랜드마크보다 낮은 최대 점수
         } else if (distanceFromCenter <= 0.15) { // 중앙 근처
-          eyeContactScore = (70 + (0.15 - distanceFromCenter) * 100) * distanceCorrection;
+          eyeContactScore = (65 + (0.15 - distanceFromCenter) * 100) * distanceCorrection;
         } else if (distanceFromCenter <= 0.25) { // 중앙에서 벗어남
-          eyeContactScore = (50 + (0.25 - distanceFromCenter) * 200) * distanceCorrection;
+          eyeContactScore = (45 + (0.25 - distanceFromCenter) * 200) * distanceCorrection;
         } else if (distanceFromCenter <= 0.4) { // 많이 벗어남
-          eyeContactScore = (25 + (0.4 - distanceFromCenter) * 167) * distanceCorrection;
+          eyeContactScore = (20 + (0.4 - distanceFromCenter) * 167) * distanceCorrection;
         } else { // 매우 벗어남
-          eyeContactScore = Math.max(5, 25 - (distanceFromCenter - 0.4) * 50);
+          eyeContactScore = Math.max(5, 20 - (distanceFromCenter - 0.4) * 50);
         }
         
-        confidence = 0.6; // 바운딩박스 기반이므로 중간 신뢰도
+        confidence = 0.5; // 바운딩박스 기반이므로 중간 신뢰도
         calculationMethod = 'boundingbox_enhanced';
         
         // 🎯 디버깅 로그
-        if (analysisRef.current.debugLogCount % 360 === 0) { // 6초에 한 번
-          console.log('📦 향상된 바운딩박스 아이컨택:', {
+        if (analysisRef.current.debugLogCount % 360 === 0) {
+          console.log('📦 바운딩박스 아이컨택 (fallback):', {
             faceCenter: {
               x: faceCenter.x.toFixed(3),
               y: faceCenter.y.toFixed(3)
@@ -467,7 +511,8 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
             sizeRatio: sizeRatio.toFixed(2),
             distanceCorrection: distanceCorrection.toFixed(2),
             score: Math.round(eyeContactScore),
-            confidence
+            confidence,
+            method: calculationMethod
           });
         }
       }
@@ -1248,104 +1293,203 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   }, []);
 
   // 🎯 최종 분석 결과 생성
-  const finishAnalysis = useCallback(() => {
-    console.log('🏁 최종 분석 결과 생성...');
+  // 🎯 최종 분석 결과 생성 - 실제 데이터 기반
+  const finishAnalysis = useCallback((additionalData = {}) => {
+    console.log('🏁 최종 분석 결과 생성 시작...');
+    console.log('📊 전달받은 추가 데이터:', additionalData);
     
     const endTime = Date.now();
     const duration = analysisRef.current.startTime 
       ? Math.round((endTime - analysisRef.current.startTime) / 1000)
-      : 0;
+      : additionalData.interviewData?.totalDuration || 0;
     
-    // 🎯 점수 계산 (개선된 알고리즘)
-    let audioScore = 65; // 기본 점수 상향
-    let videoScore = 60; // 기본 점수 상향
+    // 🎯 실제 수집된 데이터 추출
+    const realTimeData = additionalData.realTimeData || analysisData;
+    const interviewData = additionalData.interviewData || {};
+    const technicalInfo = additionalData.technicalInfo || {};
     
-    // 오디오 점수 계산
-    const avgVolume = analysisData.audio.averageVolume;
-    const wpm = analysisData.audio.wordsPerMinute;
-    const speakingTime = analysisData.audio.speakingTime;
+    console.log('🔍 분석할 실시간 데이터:', realTimeData);
+    console.log('📝 면접 데이터:', interviewData);
+    
+    // 🎯 음성 분석 점수 계산 (실제 데이터 기반)
+    let audioScore = 65; // 기본 점수
+    
+    const avgVolume = realTimeData?.audio?.averageVolume || 0;
+    const speakingTime = realTimeData?.audio?.speakingTime || 0;
+    const wpm = realTimeData?.audio?.wordsPerMinute || 0;
+    const fillerWords = realTimeData?.audio?.fillerWordsCount || 0;
     const speakingRatio = duration > 0 ? (speakingTime / duration) : 0;
+    
+    console.log('🎤 음성 분석 지표:', {
+      avgVolume, speakingTime, wpm, fillerWords, speakingRatio, duration
+    });
     
     // 볼륨 점수 (최적 범위: 20-80)
     if (avgVolume >= 25 && avgVolume <= 75) {
-      audioScore += 12;
+      audioScore += 15; // 완벽한 볼륨
     } else if (avgVolume >= 15 && avgVolume <= 85) {
-      audioScore += 6;
+      audioScore += 8;  // 양호한 볼륨
     } else if (avgVolume < 10) {
-      audioScore -= 15;
+      audioScore -= 20; // 너무 작음
     } else if (avgVolume > 90) {
-      audioScore -= 10;
+      audioScore -= 15; // 너무 큼
     }
     
     // WPM 점수 (최적 범위: 130-180)
-    if (wpm >= 130 && wmp <= 180) {
-      audioScore += 15;
+    if (wpm >= 130 && wpm <= 180) {
+      audioScore += 12; // 완벽한 속도
     } else if (wpm >= 110 && wpm <= 200) {
-      audioScore += 8;
-    } else if (wpm < 90) {
-      audioScore -= 12;
+      audioScore += 6;  // 양호한 속도
+    } else if (wmp < 90 && wpm > 0) {
+      audioScore -= 15; // 너무 느림
     } else if (wpm > 220) {
-      audioScore -= 8;
+      audioScore -= 10; // 너무 빠름
     }
     
-    // 말하기 비율 점수 (적절한 말하기 시간)
+    // 말하기 비율 점수 (적절한 말하기 시간: 40-80%)
     if (speakingRatio >= 0.4 && speakingRatio <= 0.8) {
-      audioScore += 8;
+      audioScore += 10; // 적절한 비율
+    } else if (speakingRatio >= 0.2 && speakingRatio < 0.4) {
+      audioScore += 3;  // 약간 적음
     } else if (speakingRatio < 0.2) {
-      audioScore -= 10;
+      audioScore -= 15; // 너무 적게 말함
+    } else if (speakingRatio > 0.9) {
+      audioScore -= 8;  // 너무 많이 말함
     }
     
-    // 🎯 비디오 점수 계산 (아이컨택 중심)
-    const faceDetectionRate = analysisData.video.faceDetectionRate;
-    const eyeContactPercentage = analysisData.video.eyeContactPercentage;
-    const smileDetection = analysisData.video.smileDetection;
-    const postureScore = analysisData.video.postureScore;
+    // 습관어 페널티
+    if (fillerWords === 0) {
+      audioScore += 5;  // 습관어 없음
+    } else if (fillerWords <= 3) {
+      audioScore += 2;  // 적은 습관어
+    } else if (fillerWords > 10) {
+      audioScore -= 10; // 습관어 많음
+    } else if (fillerWords > 5) {
+      audioScore -= 5;  // 습관어 보통
+    }
+    
+    // 🎯 영상 분석 점수 계산 (실제 데이터 기반)
+    let videoScore = 60; // 기본 점수
+    
+    const faceDetectionRate = realTimeData?.video?.faceDetectionRate || 0;
+    const eyeContactPercentage = realTimeData?.video?.eyeContactPercentage || 0;
+    const smileDetection = realTimeData?.video?.smileDetection || 0;
+    const postureScore = realTimeData?.video?.postureScore || 0;
+    
+    console.log('👁️ 영상 분석 지표:', {
+      faceDetectionRate, eyeContactPercentage, smileDetection, postureScore
+    });
     
     // 얼굴 감지율 점수
-    if (faceDetectionRate > 85) {
-      videoScore += 15;
-    } else if (faceDetectionRate > 70) {
-      videoScore += 10;
-    } else if (faceDetectionRate > 50) {
-      videoScore += 5;
-    } else {
-      videoScore -= 20;
+    if (faceDetectionRate >= 90) {
+      videoScore += 15; // 완벽한 감지
+    } else if (faceDetectionRate >= 75) {
+      videoScore += 10; // 우수한 감지
+    } else if (faceDetectionRate >= 50) {
+      videoScore += 5;  // 보통 감지
+    } else if (faceDetectionRate < 30) {
+      videoScore -= 25; // 감지 부족
     }
     
-    // 아이컨택 점수 (가장 중요한 요소)
-    if (eyeContactPercentage > 70) {
-      videoScore += 25; // 최고 점수
-    } else if (eyeContactPercentage > 60) {
-      videoScore += 20;
-    } else if (eyeContactPercentage > 45) {
-      videoScore += 15;
-    } else if (eyeContactPercentage > 30) {
-      videoScore += 8;
-    } else if (eyeContactPercentage > 15) {
-      videoScore += 3;
+    // 🎯 아이컨택 점수 (가장 중요한 요소 - 가중치 최대)
+    if (eyeContactPercentage >= 80) {
+      videoScore += 25; // 완벽한 아이컨택
+    } else if (eyeContactPercentage >= 70) {
+      videoScore += 20; // 우수한 아이컨택
+    } else if (eyeContactPercentage >= 60) {
+      videoScore += 15; // 좋은 아이컨택
+    } else if (eyeContactPercentage >= 45) {
+      videoScore += 8;  // 보통 아이컨택
+    } else if (eyeContactPercentage >= 30) {
+      videoScore += 3;  // 부족한 아이컨택
+    } else if (eyeContactPercentage >= 15) {
+      videoScore -= 5;  // 매우 부족
     } else {
-      videoScore -= 15; // 페널티
+      videoScore -= 20; // 아이컨택 없음
     }
     
     // 미소 점수
-    if (smileDetection > 35) {
-      videoScore += 8;
-    } else if (smileDetection > 20) {
-      videoScore += 5;
+    if (smileDetection >= 40) {
+      videoScore += 10; // 매우 밝은 표정
+    } else if (smileDetection >= 25) {
+      videoScore += 6;  // 밝은 표정
+    } else if (smileDetection >= 15) {
+      videoScore += 3;  // 보통 표정
+    } else if (smileDetection < 5) {
+      videoScore -= 5;  // 표정 부족
     }
     
     // 자세 점수
-    if (postureScore > 75) {
-      videoScore += 7;
-    } else if (postureScore > 60) {
-      videoScore += 3;
+    if (postureScore >= 80) {
+      videoScore += 8;  // 완벽한 자세
+    } else if (postureScore >= 70) {
+      videoScore += 5;  // 좋은 자세
+    } else if (postureScore >= 60) {
+      videoScore += 2;  // 보통 자세
+    } else if (postureScore < 50) {
+      videoScore -= 8;  // 자세 불안정
     }
     
-    // 점수 범위 제한
-    audioScore = Math.max(25, Math.min(95, audioScore));
-    videoScore = Math.max(25, Math.min(95, videoScore));
+    // 점수 범위 제한 및 가중 평균
+    audioScore = Math.max(20, Math.min(95, audioScore));
+    videoScore = Math.max(20, Math.min(95, videoScore));
     
-    const overallScore = Math.round((audioScore + videoScore) / 2);
+    // 🎯 면접 답변 텍스트 분석
+    const answers = interviewData.answers || [];
+    const questions = interviewData.questions || [];
+    let textScore = 70; // 기본 텍스트 점수
+    
+    console.log('📝 답변 분석:', { answers: answers.length, questions: questions.length });
+    
+    // 답변 완성도 분석
+    const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+    const completionRate = questions.length > 0 ? (completedAnswers.length / questions.length) : 0;
+    
+    if (completionRate >= 1.0) {
+      textScore += 15; // 모든 질문 답변
+    } else if (completionRate >= 0.8) {
+      textScore += 10; // 80% 이상 답변
+    } else if (completionRate >= 0.6) {
+      textScore += 5;  // 60% 이상 답변
+    } else if (completionRate < 0.4) {
+      textScore -= 15; // 40% 미만 답변
+    }
+    
+    // 답변 길이 분석
+    const totalAnswerLength = answers.reduce((sum, answer) => sum + (answer?.length || 0), 0);
+    const avgAnswerLength = completedAnswers.length > 0 ? totalAnswerLength / completedAnswers.length : 0;
+    
+    if (avgAnswerLength >= 100) {
+      textScore += 8;  // 충분한 답변 길이
+    } else if (avgAnswerLength >= 50) {
+      textScore += 4;  // 적절한 답변 길이
+    } else if (avgAnswerLength < 20 && avgAnswerLength > 0) {
+      textScore -= 10; // 답변 너무 짧음
+    }
+    
+    // 답변 다양성 분석 (단어 다양성)
+    const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+    const uniqueWords = [...new Set(allWords)];
+    const vocabularyRichness = allWords.length > 0 ? (uniqueWords.length / allWords.length) : 0;
+    
+    if (vocabularyRichness >= 0.7) {
+      textScore += 6;  // 풍부한 어휘
+    } else if (vocabularyRichness >= 0.5) {
+      textScore += 3;  // 적절한 어휘
+    } else if (vocabularyRichness < 0.3) {
+      textScore -= 5;  // 단조로운 어휘
+    }
+    
+    textScore = Math.max(20, Math.min(95, textScore));
+    
+    // 🎯 종합 점수 계산 (가중 평균)
+    const overallScore = Math.round(
+      (audioScore * 0.35 + videoScore * 0.45 + textScore * 0.2) // 영상 > 음성 > 텍스트 순 가중치
+    );
+    
+    console.log('📊 점수 계산 결과:', {
+      audioScore, videoScore, textScore, overallScore
+    });
     
     // 등급 계산
     let grade;
@@ -1359,26 +1503,28 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     else if (overallScore >= 55) grade = 'D';
     else grade = 'F';
     
-    // 🎯 강점과 개선사항 분석 (MediaPipe 정보 포함)
+    // 🎯 실제 데이터 기반 강점과 개선사항 분석
     const strengths = [];
     const improvements = [];
     
     // 얼굴 감지 관련
-    if (faceDetectionRate > 80) {
+    if (faceDetectionRate >= 85) {
       strengths.push(`${isMediaPipeReady ? 'AI 분석: ' : ''}안정적인 카메라 앞 자세 유지 (${faceDetectionRate}%)`);
     } else if (faceDetectionRate < 60) {
-      improvements.push('카메라 앞에 정면으로 앉아 얼굴이 잘 보이도록 위치 조정');
+      improvements.push('카메라 앞에 정면으로 앉아 얼굴이 잘 보이도록 위치 조정 필요');
     }
     
-    // 아이컨택 관련 (상세 피드백)
-    if (eyeContactPercentage > 70) {
-      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}매우 우수한 아이컨택 (${eyeContactPercentage}%)`);
-    } else if (eyeContactPercentage > 60) {
+    // 🎯 아이컨택 관련 (상세 피드백)
+    if (eyeContactPercentage >= 80) {
+      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}탁월한 아이컨택 (${eyeContactPercentage}%) - 면접관과의 신뢰감 형성에 매우 효과적`);
+    } else if (eyeContactPercentage >= 70) {
+      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}우수한 아이컨택 (${eyeContactPercentage}%) - 자신감 있는 인상을 줌`);
+    } else if (eyeContactPercentage >= 60) {
       strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}좋은 아이컨택 유지 (${eyeContactPercentage}%)`);
-      improvements.push('아이컨택을 조금 더 자주 유지해보세요');
-    } else if (eyeContactPercentage > 45) {
+      improvements.push('아이컨택을 조금 더 자주 유지하면 더욱 완벽해집니다');
+    } else if (eyeContactPercentage >= 45) {
       improvements.push(`아이컨택 개선 필요 (현재 ${eyeContactPercentage}%) - 카메라 렌즈를 더 자주 봐주세요`);
-    } else if (eyeContactPercentage > 25) {
+    } else if (eyeContactPercentage >= 25) {
       improvements.push(`아이컨택이 부족합니다 (${eyeContactPercentage}%) - 카메라와의 시선 접촉 연습이 필요합니다`);
     } else {
       improvements.push('아이컨택이 매우 부족합니다. 카메라 렌즈를 직접 보는 연습을 집중적으로 해보세요');
@@ -1386,96 +1532,166 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     
     // 음성 관련
     if (avgVolume >= 25 && avgVolume <= 75) {
-      strengths.push('적절한 목소리 크기와 명확성');
+      strengths.push(`적절한 목소리 크기와 명확성 (볼륨 ${avgVolume})`);
     } else if (avgVolume < 20) {
-      improvements.push('목소리를 더 크고 명확하게 발음해보세요');
+      improvements.push(`목소리를 더 크고 명확하게 발음해보세요 (현재 볼륨 ${avgVolume})`);
     } else if (avgVolume > 85) {
-      improvements.push('목소리 톤을 조금 더 부드럽게 조절해보세요');
+      improvements.push(`목소리 톤을 조금 더 부드럽게 조절해보세요 (현재 볼륨 ${avgVolume})`);
     }
     
     // WPM 관련
     if (wpm >= 130 && wpm <= 180) {
-      strengths.push('적절한 말하기 속도');
-    } else if (wpm < 110) {
-      improvements.push('말하기 속도를 조금 더 빠르게 해보세요');
+      strengths.push(`적절한 말하기 속도 (${wpm} WPM)`);
+    } else if (wpm < 110 && wmp > 0) {
+      improvements.push(`말하기 속도를 조금 더 빠르게 해보세요 (현재 ${wpm} WPM)`);
     } else if (wpm > 200) {
-      improvements.push('말하기 속도를 조금 늦춰서 더 명확하게 전달해보세요');
+      improvements.push(`말하기 속도를 조금 늦춰서 더 명확하게 전달해보세요 (현재 ${wpm} WPM)`);
     }
     
     // 표정 관련
-    if (smileDetection > 30) {
-      strengths.push(`${isMediaPipeReady ? 'AI 표정 분석: ' : ''}밝고 긍정적인 표정`);
+    if (smileDetection >= 35) {
+      strengths.push(`${isMediaPipeReady ? 'AI 표정 분석: ' : ''}밝고 긍정적인 표정 (${smileDetection}%)`);
     } else if (smileDetection < 15) {
-      improvements.push('더 밝은 표정으로 긍정적인 인상을 만들어보세요');
+      improvements.push(`더 밝은 표정으로 긍정적인 인상을 만들어보세요 (현재 ${smileDetection}%)`);
     }
     
     // 말하기 비율 관련
     if (speakingRatio >= 0.5 && speakingRatio <= 0.8) {
-      strengths.push('적절한 답변 길이와 설명');
+      strengths.push(`적절한 답변 길이와 설명 (말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
     } else if (speakingRatio < 0.3) {
-      improvements.push('답변을 더 자세히 설명해보세요');
+      improvements.push(`답변을 더 자세히 설명해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
     } else if (speakingRatio > 0.85) {
-      improvements.push('더 간결하고 핵심적인 답변을 연습해보세요');
+      improvements.push(`더 간결하고 핵심적인 답변을 연습해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
     }
     
-    // 추천사항 생성
+    // 답변 완성도 관련
+    if (completionRate >= 1.0) {
+      strengths.push(`모든 질문에 성실히 답변함 (${completedAnswers.length}/${questions.length})`);
+    } else if (completionRate >= 0.8) {
+      strengths.push(`대부분의 질문에 답변함 (${completedAnswers.length}/${questions.length})`);
+    } else if (completionRate < 0.6) {
+      improvements.push(`더 많은 질문에 답변하는 연습이 필요합니다 (현재 ${completedAnswers.length}/${questions.length})`);
+    }
+    
+    // 답변 길이 관련
+    if (avgAnswerLength >= 100) {
+      strengths.push(`충분히 상세한 답변 제공 (평균 ${Math.round(avgAnswerLength)}자)`);
+    } else if (avgAnswerLength < 30 && avgAnswerLength > 0) {
+      improvements.push(`답변을 더 구체적이고 상세하게 작성해보세요 (평균 ${Math.round(avgAnswerLength)}자)`);
+    }
+    
+    // 어휘 다양성 관련
+    if (vocabularyRichness >= 0.7) {
+      strengths.push(`풍부하고 다양한 어휘 사용 (어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
+    } else if (vocabularyRichness < 0.4) {
+      improvements.push(`더 다양한 어휘를 사용해보세요 (현재 어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
+    }
+    
+    // 습관어 관련
+    if (fillerWords === 0) {
+      strengths.push('습관어 없이 명확한 발화');
+    } else if (fillerWords <= 3) {
+      strengths.push(`적은 습관어 사용으로 깔끔한 발화 (${fillerWords}회)`);
+    } else if (fillerWords > 8) {
+      improvements.push(`습관어 사용을 줄여보세요 (현재 ${fillerWords}회) - "음", "어", "그" 등의 사용 주의`);
+    }
+    
+    // 기본 강점이 없는 경우 추가
+    if (strengths.length === 0) {
+      strengths.push('면접에 성실히 참여하는 적극적인 태도');
+      strengths.push('주어진 시간 동안 꾸준히 답변하려는 노력');
+    }
+    
+    // 기본 개선사항이 없는 경우 추가
+    if (improvements.length === 0) {
+      improvements.push('현재 수준을 유지하며 더욱 자연스러운 면접 연습 계속하기');
+    }
+    
+    // 🎯 맞춤형 추천사항 생성
     let recommendation;
-    if (overallScore >= 85) {
-      recommendation = `매우 우수한 면접 태도입니다! ${isMediaPipeReady ? 'AI 분석 결과' : '분석 결과'} 모든 면에서 뛰어난 성과를 보였습니다. 자신감을 가지고 실제 면접에 임하세요.`;
-    } else if (overallScore >= 75) {
-      recommendation = `좋은 면접 실력을 보여주셨습니다. ${eyeContactPercentage < 60 ? '특히 아이컨택 부분을 더 연습하면' : '현재 수준을 유지하시면'} 더욱 완벽해질 것입니다.`;
-    } else if (overallScore >= 65) {
-      recommendation = '기본기는 잘 갖추어져 있습니다. 아이컨택과 목소리 전달력을 중점적으로 연습해보세요.';
-    } else if (overallScore >= 55) {
-      recommendation = '면접 기술 향상이 필요합니다. 특히 카메라와의 아이컨택과 자연스러운 말하기 연습을 더 해보세요.';
+    if (overallScore >= 90) {
+      recommendation = `🎉 매우 우수한 면접 태도입니다! ${isMediaPipeReady ? 'AI 분석 결과' : '분석 결과'} 모든 면에서 뛰어난 성과를 보였습니다. 특히 아이컨택(${eyeContactPercentage}%)과 말하기 태도가 훌륭합니다. 자신감을 가지고 실제 면접에 임하세요.`;
+    } else if (overallScore >= 80) {
+      recommendation = `👍 좋은 면접 실력을 보여주셨습니다. ${eyeContactPercentage < 60 ? '특히 아이컨택 부분을 더 연습하면' : avgVolume < 20 ? '목소리를 더 크게 하는 연습을 하면' : '현재 수준을 유지하시면'} 더욱 완벽해질 것입니다.`;
+    } else if (overallScore >= 70) {
+      recommendation = `📈 기본기는 잘 갖추어져 있습니다. 아이컨택(${eyeContactPercentage}%)과 목소리 전달력을 중점적으로 연습해보세요. 특히 ${completionRate < 0.8 ? '모든 질문에 답변하는 연습' : '답변의 구체성을 높이는 연습'}이 도움이 될 것입니다.`;
+    } else if (overallScore >= 60) {
+      recommendation = `💪 면접 기술 향상이 필요합니다. 특히 카메라와의 아이컨택(${eyeContactPercentage}%)과 자연스러운 말하기 연습을 더 해보세요. 충분한 연습을 통해 개선 가능합니다.`;
     } else {
-      recommendation = '체계적인 면접 준비가 필요합니다. 기본적인 아이컨택, 자세, 말하기 속도부터 차근차근 연습해보세요.';
+      recommendation = `🎯 체계적인 면접 준비가 필요합니다. 기본적인 아이컨택, 자세, 말하기 속도부터 차근차근 연습해보세요. ${avgVolume < 15 ? '먼저 목소리 크기부터' : eyeContactPercentage < 25 ? '카메라 보는 연습부터' : '기본 자세부터'} 시작하는 것을 추천합니다.`;
     }
     
     // 최종 결과 객체 생성
     const result = {
+      // 기본 점수 정보
       overallScore,
       grade,
       scores: {
         communication: audioScore,
-        appearance: videoScore
+        appearance: videoScore,
+        content: textScore
       },
+      
+      // 상세 분석 데이터 (실제 수집된 데이터)
       detailed: {
         audio: {
-          averageVolume: analysisData.audio.averageVolume,
-          speakingTime: analysisData.audio.speakingTime,
-          wordsPerMinute: analysisData.audio.wordsPerMinute,
-          fillerWords: analysisData.audio.fillerWordsCount,
-          speechClarity: analysisData.audio.speechClarity,
+          averageVolume: Math.round(avgVolume),
+          speakingTime: speakingTime,
+          wordsPerMinute: wpm,
+          fillerWords: fillerWords,
+          speechClarity: Math.min(95, Math.max(60, 85 - fillerWords * 2)), // 습관어 기반 명확도
           speakingRatio: Math.round(speakingRatio * 100)
         },
         video: {
-          faceDetectionRate: analysisData.video.faceDetectionRate,
-          eyeContactPercentage: analysisData.video.eyeContactPercentage,
-          smileFrequency: analysisData.video.smileDetection,
-          postureScore: analysisData.video.postureScore,
-          headPoseStability: analysisData.video.headPoseStability
+          faceDetectionRate: Math.round(faceDetectionRate),
+          eyeContactPercentage: Math.round(eyeContactPercentage),
+          smileFrequency: Math.round(smileDetection),
+          postureScore: Math.round(postureScore),
+          headPoseStability: Math.round(postureScore * 0.9) // 자세와 연관
+        },
+        text: {
+          completionRate: Math.round(completionRate * 100),
+          averageAnswerLength: Math.round(avgAnswerLength),
+          vocabularyRichness: Math.round(vocabularyRichness * 100),
+          totalWords: allWords.length,
+          uniqueWords: uniqueWords.length
         }
       },
+      
+      // 요약 정보
       summary: {
         strengths,
         improvements,
         recommendation
       },
+      
+      // 메타데이터
       duration,
       timestamp: endTime,
       analysisMethod: isMediaPipeReady 
-        ? 'MediaPipe AI (2024) - Enhanced Face & Eye Tracking' 
-        : 'Advanced Simulation with Realistic Patterns',
+        ? 'MediaPipe AI (2024) - Enhanced Face & Eye Tracking + Web Audio API' 
+        : 'Advanced Simulation with Realistic Patterns + Web Audio API',
+      
+      // 성능 메트릭
       performanceMetrics: {
         totalFrames: analysisRef.current.totalFrames,
         avgProcessingTime: analysisRef.current.performanceMetrics.avgProcessingTime,
         errorCount: analysisRef.current.performanceMetrics.errorCount
+      },
+      
+      // 실제 면접 데이터
+      interviewStats: {
+        questionsTotal: questions.length,
+        questionsAnswered: completedAnswers.length,
+        completionRate: Math.round(completionRate * 100),
+        totalAnswerLength: totalAnswerLength,
+        hasRecording: interviewData.hasRecording || false,
+        recordingDuration: interviewData.totalDuration || duration
       }
     };
     
     setFinalAnalysis(result);
-    console.log('✅ 최종 분석 결과 생성 완료:', result);
+    console.log('✅ 실제 데이터 기반 최종 분석 결과 생성 완료:', result);
     
     return result;
   }, [analysisData, isMediaPipeReady]);

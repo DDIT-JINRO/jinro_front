@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, CheckCircle, Play, Brain, Download, Clock } from 'lucide-react';
+import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp } from 'lucide-react';
 
 const InterviewResult = ({ 
   questions, 
@@ -9,7 +9,9 @@ const InterviewResult = ({
   onStartAIAnalysis,
   hasRecording = false,
   recordingDuration = 0,
-  hasRealTimeAnalysis = false
+  hasRealTimeAnalysis = false,
+  // 🎯 실시간 분석 데이터 추가
+  realTimeAnalysisData = null
 }) => {
   
   // 시간 포맷팅 함수
@@ -39,6 +41,30 @@ const InterviewResult = ({
       totalEstimatedTime: acc.totalEstimatedTime + stats.estimatedTime
     };
   }, { totalChars: 0, totalWords: 0, totalEstimatedTime: 0 });
+
+  // 🎯 실시간 분석 미리보기 점수 계산
+  const calculatePreviewScore = () => {
+    if (!realTimeAnalysisData) return 0;
+    
+    const { audio, video } = realTimeAnalysisData;
+    let score = 65;
+    
+    // 음성 점수
+    if (audio?.currentVolume >= 20 && audio?.currentVolume <= 80) score += 8;
+    if (audio?.wordsPerMinute >= 100 && audio?.wordsPerMinute <= 200) score += 5;
+    if (audio?.speakingTime > 30) score += 5;
+    
+    // 영상 점수
+    if (video?.faceDetected) score += 5;
+    if (video?.eyeContactPercentage >= 50) score += 10;
+    else if (video?.eyeContactPercentage >= 30) score += 5;
+    if (video?.smileDetection >= 25) score += 5;
+    if (video?.postureScore >= 70) score += 3;
+    
+    return Math.max(30, Math.min(95, score));
+  };
+
+  const previewScore = calculatePreviewScore();
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', padding: '24px' }}>
@@ -116,6 +142,151 @@ const InterviewResult = ({
           </div>
         </div>
 
+        {/* 🎯 실시간 분석 미리보기 (실시간 분석이 있는 경우) */}
+        {hasRealTimeAnalysis && realTimeAnalysisData && (
+          <div style={{ 
+            backgroundColor: 'white', 
+            borderRadius: '12px', 
+            boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', 
+            padding: '24px',
+            marginBottom: '24px',
+            border: '2px solid #10b981'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+              <BarChart3 size={32} style={{ color: '#10b981', marginRight: '12px' }} />
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1f2937', margin: 0 }}>
+                  📊 실시간 분석 미리보기
+                </h3>
+                <p style={{ color: '#6b7280', fontSize: '14px', margin: '4px 0 0 0' }}>
+                  면접 중 실시간으로 수집된 데이터 기반 예상 점수
+                </p>
+              </div>
+            </div>
+            
+            {/* 미리보기 점수 */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '24px',
+              padding: '20px',
+              backgroundColor: '#f0fdf4',
+              borderRadius: '12px',
+              marginBottom: '20px',
+              border: '1px solid #bbf7d0'
+            }}>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '80px',
+                height: '80px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                borderRadius: '50%',
+                color: 'white',
+                fontWeight: '700'
+              }}>
+                <span style={{ fontSize: '24px', lineHeight: '1' }}>{previewScore}</span>
+                <span style={{ fontSize: '12px', opacity: '0.9' }}>점</span>
+              </div>
+              
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: '0 0 8px 0', color: '#065f46', fontSize: '16px' }}>
+                  예상 종합 점수
+                </h4>
+                <p style={{ margin: '0', color: '#166534', fontSize: '14px', lineHeight: '1.5' }}>
+                  {previewScore >= 80 ? '🎉 우수한 면접 수행!' : 
+                   previewScore >= 70 ? '👍 좋은 면접 태도를 보였습니다' : 
+                   previewScore >= 60 ? '💪 기본기를 갖추고 있습니다' : 
+                   '📈 더 많은 연습이 필요합니다'}
+                  <br />
+                  <small>* 최종 AI 분석에서 더 정확한 결과를 확인하세요</small>
+                </p>
+              </div>
+            </div>
+            
+            {/* 실시간 분석 상세 지표 */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '16px',
+              marginBottom: '20px'
+            }}>
+              {/* 음성 분석 미리보기 */}
+              <div style={{
+                padding: '16px',
+                backgroundColor: '#fef9c3',
+                borderRadius: '8px',
+                border: '1px solid #fde047'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Mic size={20} style={{ color: '#ca8a04' }} />
+                  <h5 style={{ margin: 0, color: '#a16207', fontSize: '14px', fontWeight: '600' }}>음성 분석</h5>
+                </div>
+                <div style={{ fontSize: '12px', color: '#92400e', lineHeight: '1.4' }}>
+                  • 평균 볼륨: {realTimeAnalysisData.audio?.averageVolume || 0}<br />
+                  • 말하기 시간: {realTimeAnalysisData.audio?.speakingTime || 0}초<br />
+                  • 말하기 속도: {realTimeAnalysisData.audio?.wordsPerMinute || 0} WPM<br />
+                  • 습관어: {realTimeAnalysisData.audio?.fillerWordsCount || 0}회
+                </div>
+              </div>
+              
+              {/* 영상 분석 미리보기 */}
+              <div style={{
+                padding: '16px',
+                backgroundColor: '#dbeafe',
+                borderRadius: '8px',
+                border: '1px solid #93c5fd'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Eye size={20} style={{ color: '#2563eb' }} />
+                  <h5 style={{ margin: 0, color: '#1d4ed8', fontSize: '14px', fontWeight: '600' }}>영상 분석</h5>
+                </div>
+                <div style={{ fontSize: '12px', color: '#1e40af', lineHeight: '1.4' }}>
+                  • 얼굴 감지: {realTimeAnalysisData.video?.faceDetected ? '✓' : '✗'}<br />
+                  • 아이컨택: {realTimeAnalysisData.video?.eyeContactPercentage || 0}%<br />
+                  • 표정: {realTimeAnalysisData.video?.smileDetection || 0}%<br />
+                  • 자세: {realTimeAnalysisData.video?.postureScore || 0}점
+                </div>
+              </div>
+            </div>
+            
+            {/* 주요 인사이트 */}
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#f0f9ff',
+              borderRadius: '8px',
+              border: '1px solid #bfdbfe'
+            }}>
+              <h5 style={{ margin: '0 0 8px 0', color: '#1e40af', fontSize: '14px', fontWeight: '600' }}>
+                🔍 주요 인사이트
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: '16px', color: '#1e40af', fontSize: '12px', lineHeight: '1.5' }}>
+                {realTimeAnalysisData.video?.eyeContactPercentage >= 60 && (
+                  <li>우수한 아이컨택으로 자신감 있는 인상을 주었습니다</li>
+                )}
+                {realTimeAnalysisData.audio?.averageVolume >= 20 && realTimeAnalysisData.audio?.averageVolume <= 80 && (
+                  <li>적절한 목소리 크기로 명확하게 전달했습니다</li>
+                )}
+                {realTimeAnalysisData.video?.smileDetection >= 25 && (
+                  <li>밝은 표정으로 긍정적인 인상을 주었습니다</li>
+                )}
+                {realTimeAnalysisData.audio?.fillerWordsCount <= 3 && (
+                  <li>습관어 사용을 잘 자제하여 깔끔한 발화를 보였습니다</li>
+                )}
+                {/* 개선 포인트 */}
+                {realTimeAnalysisData.video?.eyeContactPercentage < 40 && (
+                  <li style={{ color: '#f59e0b' }}>💡 아이컨택을 더 자주 하면 더욱 좋을 것입니다</li>
+                )}
+                {realTimeAnalysisData.audio?.averageVolume < 15 && (
+                  <li style={{ color: '#f59e0b' }}>💡 목소리를 조금 더 크게 하면 더욱 좋을 것입니다</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* AI 분석 옵션 (실시간 분석이 있는 경우) */}
         {hasRealTimeAnalysis && onStartAIAnalysis && (
           <div style={{ 
@@ -146,11 +317,12 @@ const InterviewResult = ({
               border: '1px solid #bfdbfe'
             }}>
               <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#1e40af', margin: '0 0 8px 0' }}>
-                📊 분석 항목
+                📊 상세 분석 항목
               </h4>
               <ul style={{ margin: 0, paddingLeft: '20px', color: '#1e40af' }}>
                 <li>🎤 <strong>음성 분석:</strong> 목소리 톤, 말하기 속도, 볼륨, 습관어 사용</li>
                 <li>👁️ <strong>영상 분석:</strong> 아이컨택, 표정, 자세, 얼굴 감지</li>
+                <li>📝 <strong>답변 분석:</strong> 답변 완성도, 어휘 다양성, 답변 길이</li>
                 <li>📈 <strong>종합 평가:</strong> 개인별 맞춤 피드백 및 개선 방향</li>
                 <li>📋 <strong>상세 리포트:</strong> 다운로드 가능한 분석 보고서</li>
               </ul>
@@ -178,7 +350,7 @@ const InterviewResult = ({
               onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
             >
               <Brain size={20} />
-              AI 분석 결과 확인하기
+              상세 AI 분석 결과 확인하기
             </button>
           </div>
         )}

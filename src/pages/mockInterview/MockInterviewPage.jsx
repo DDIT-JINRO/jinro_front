@@ -223,16 +223,48 @@ const MockInterviewPage = () => {
     setShowResults(true);
   };
 
-  // AI 분석 시작
+  // 🎯 AI 분석 시작 - 실제 분석 데이터 사용
   const startAIAnalysis = async () => {
     try {
       console.log('🤖 최종 AI 분석 시작...');
+      console.log('📊 분석할 데이터:', {
+        analysisData: analysisData,
+        answers: answers,
+        questions: questions,
+        recordingDuration: recordingDuration,
+        hasRecording: hasRecording
+      });
       
       setShowAILoading(true);
       setShowResults(false);
       
-      const analysisResult = finishAnalysis();
+      // 🎯 실제 실시간 분석 데이터와 면접 데이터를 함께 전달
+      const finalResult = await finishAnalysis({
+        // 실시간 분석 데이터
+        realTimeData: analysisData,
+        
+        // 면접 관련 데이터
+        interviewData: {
+          questions: questions,
+          answers: answers,
+          totalDuration: recordingDuration,
+          hasRecording: hasRecording,
+          questionsCompleted: currentQuestion + 1,
+          totalQuestions: totalQuestions
+        },
+        
+        // 기술 정보
+        technicalInfo: {
+          isMediaPipeReady: isMediaPipeReady,
+          speechSupported: speechSupported,
+          audioInitialized: audioInitialized,
+          cameraPermissionGranted: cameraPermissionGranted
+        }
+      });
       
+      console.log('✅ 최종 분석 결과:', finalResult);
+      
+      // 분석 진행률 시뮬레이션
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setShowAILoading(false);
@@ -251,11 +283,16 @@ const MockInterviewPage = () => {
     setShowResults(true);
   };
 
-  // AI 분석 보고서 다운로드
+  // 🎯 AI 분석 보고서 다운로드 - 실제 데이터 사용
   const handleDownloadReport = () => {
     console.log('📋 분석 보고서 다운로드:', finalAnalysis);
     
-    const reportContent = generateTextReport(finalAnalysis);
+    if (!finalAnalysis) {
+      alert('분석 결과가 없습니다.');
+      return;
+    }
+    
+    const reportContent = generateDetailedReport(finalAnalysis, analysisData, answers, questions);
     const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -267,43 +304,74 @@ const MockInterviewPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  // 텍스트 보고서 생성
-  const generateTextReport = (analysis) => {
+  // 🎯 상세한 텍스트 보고서 생성 함수 - 실제 데이터 사용
+  const generateDetailedReport = (analysis, realTimeData, interviewAnswers, interviewQuestions) => {
     if (!analysis) return '분석 데이터가 없습니다.';
     
+    const reportDate = new Date().toLocaleString('ko-KR');
+    
     return `
-=== 🤖 AI 면접 분석 보고서 ===
+=== 🤖 AI 모의면접 분석 보고서 ===
 
-📊 종합 점수: ${analysis.overallScore}점 (${analysis.grade})
-📅 분석 일시: ${new Date(analysis.timestamp).toLocaleString()}
-⏱️ 면접 시간: ${analysis.duration}초
-🔬 분석 방법: ${analysis.analysisMethod || 'MediaPipe AI'}
+📅 분석 일시: ${reportDate}
+🎯 분석 방법: ${analysis.analysisMethod || 'MediaPipe AI + Web Audio API'}
+⏱️ 면접 시간: ${Math.floor(analysis.duration / 60)}분 ${analysis.duration % 60}초
+📝 완료 질문: ${interviewAnswers.length}개 / ${interviewQuestions.length}개
 
-=== 📈 세부 점수 ===
-🎤 음성 분석: ${analysis.scores.communication}점
-👁️ 영상 분석: ${analysis.scores.appearance}점
+=== 📊 종합 점수 ===
+🏆 총점: ${analysis.overallScore}점 (${analysis.grade})
+🎤 음성 표현: ${analysis.scores.communication}점
+👁️ 시각적 인상: ${analysis.scores.appearance}점
 
 === 🎤 음성 분석 상세 ===
-- 평균 볼륨: ${analysis.detailed.audio.averageVolume}
-- 말하기 시간: ${analysis.detailed.audio.speakingTime}초
-- 분당 단어수: ${analysis.detailed.audio.wordsPerMinute}
-- 습관어 사용: ${analysis.detailed.audio.fillerWords}회
-- 음성 명확도: ${analysis.detailed.audio.speechClarity}점
+• 평균 볼륨: ${realTimeData?.audio?.averageVolume || 0}
+• 말하기 시간: ${realTimeData?.audio?.speakingTime || 0}초
+• 분당 단어수: ${realTimeData?.audio?.wordsPerMinute || 0} WPM
+• 습관어 사용: ${realTimeData?.audio?.fillerWordsCount || 0}회
+• 음성 명확도: ${analysis.detailed?.audio?.speechClarity || 0}점
 
 === 👁️ 영상 분석 상세 ===
-- 얼굴 감지율: ${analysis.detailed.video.faceDetectionRate}%
-- 아이컨택: ${analysis.detailed.video.eyeContactPercentage}%
-- 미소 빈도: ${analysis.detailed.video.smileFrequency}%
-- 자세 안정성: ${analysis.detailed.video.postureScore}점
+• 얼굴 감지율: ${realTimeData?.video?.faceDetectionRate || 0}%
+• 아이컨택: ${realTimeData?.video?.eyeContactPercentage || 0}%
+• 미소 빈도: ${realTimeData?.video?.smileDetection || 0}%
+• 자세 안정성: ${realTimeData?.video?.postureScore || 0}점
 
-=== 💪 강점 ===
-${analysis.summary.strengths.map(s => `- ${s}`).join('\n')}
+=== 📝 질문별 답변 분석 ===
+${interviewQuestions.map((question, index) => {
+  const answer = interviewAnswers[index] || '답변 없음';
+  const wordCount = answer ? answer.split(/\s+/).filter(word => word.length > 0).length : 0;
+  
+  return `
+[질문 ${index + 1}]
+Q: ${question}
+A: ${answer}
+• 답변 길이: ${answer.length}자
+• 단어 수: ${wordCount}개
+• 완성도: ${answer ? '완료' : '미완료'}
+`;
+}).join('')}
+
+=== 💪 강점 분석 ===
+${analysis.summary?.strengths?.map(s => `• ${s}`).join('\n') || '• 데이터 없음'}
 
 === 🔧 개선사항 ===
-${analysis.summary.improvements.map(i => `- ${i}`).join('\n')}
+${analysis.summary?.improvements?.map(i => `• ${i}`).join('\n') || '• 데이터 없음'}
 
-=== 💡 추천사항 ===
-${analysis.summary.recommendation}
+=== 💡 맞춤형 추천사항 ===
+${analysis.summary?.recommendation || '추천사항 없음'}
+
+=== 📈 성능 메트릭 ===
+• 총 프레임 수: ${analysis.performanceMetrics?.totalFrames || 0}
+• 평균 처리 시간: ${analysis.performanceMetrics?.avgProcessingTime?.toFixed(2) || 0}ms
+• 오류 발생 횟수: ${analysis.performanceMetrics?.errorCount || 0}
+
+=== 🔒 개인정보 보호 ===
+본 분석은 모두 브라우저에서 처리되었으며, 
+어떠한 개인정보도 외부 서버로 전송되지 않았습니다.
+
+---
+보고서 생성 시간: ${reportDate}
+분석 엔진: ${isMediaPipeReady ? 'MediaPipe AI' : 'Advanced Simulation'}
 `;
   };
 
@@ -385,6 +453,8 @@ ${analysis.summary.recommendation}
         hasRecording={hasRecording}
         recordingDuration={recordingDuration}
         hasRealTimeAnalysis={true}
+        // 🎯 실시간 분석 데이터 전달
+        realTimeAnalysisData={analysisData}
       />
     );
   }
