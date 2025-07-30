@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/ProgressBar.module.css';
 
 const ProgressBar = ({
   currentQuestion,
@@ -27,7 +28,7 @@ const ProgressBar = ({
           {/* 면접 종료 버튼 */}
           <button
             onClick={onEndInterview}
-            className={`${styles.btn} ${styles.btnDanger}`}
+            className={`${commonStyles.btn} ${commonStyles.btnDanger}`}
           >
             <X size={16} />
             면접 종료

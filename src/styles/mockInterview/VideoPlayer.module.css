@@ -1,0 +1,115 @@
+/* VideoPlayer.module.css */
+
+.videoPlayer {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  height: 100%;
+}
+
+.videoPlayerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.videoPlayerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.videoPlayerControls {
+  display: flex;
+  gap: 8px;
+}
+
+.videoPlayerButton {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: white;
+}
+
+.videoPlayerButton.on {
+  background-color: #3b82f6;
+}
+
+.videoPlayerButton.off {
+  background-color: #ef4444;
+}
+
+.videoPlayerScreen {
+  position: relative;
+  background-color: #111827;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  margin-bottom: 16px;
+}
+
+.videoPlayerVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoPlayerOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoPlayerOverlayContent {
+  text-align: center;
+  color: white;
+}
+
+.videoPlayerOverlayIcon {
+  margin: 0 auto 8px;
+  opacity: 0.5;
+}
+
+.videoPlayerOverlayText {
+  font-size: 14px;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* 녹화 관련 스타일 */
+.recordingIndicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(239, 68, 68, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  animation: mockInterviewPulse 1s infinite;
+}
+
+.recordingTime {
+  font-family: monospace;
+}

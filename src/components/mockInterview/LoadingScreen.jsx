@@ -1,6 +1,5 @@
 import React from 'react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
-
+import styles from '../../styles/mockInterview/LoadingScreen.module.css';
 const LoadingScreen = () => {
   return (
     <div className={styles.loadingScreen}>

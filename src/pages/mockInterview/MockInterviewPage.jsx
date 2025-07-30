@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
 
 // 기존 훅들
 import {
@@ -24,7 +24,7 @@ import {
 } from '../../components/mockInterview';
 
 // 새로운 컴포넌트 임포트 (Enhanced VideoPlayer로 교체)
-import EnhancedVideoPlayer from '../../components/mockInterview/VideoPlayer';
+import EnhancedVideoPlayer from '../../components/mockInterview/EnhancedVideoPlayer';
 import AIAnalysisLoading from '../../components/mockInterview/AIAnalysisLoading';
 import AIAnalysisResult from '../../components/mockInterview/AIAnalysisResult';
 import RealTimeAnalysisOverlay from '../../components/mockInterview/RealTimeAnalysisOverlay';
@@ -490,7 +490,7 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
   const { circumference, strokeDashoffset } = calculateCircularProgress(timerProgress);
 
   return (
-    <div className={`${styles.mockInterviewContainer} ${styles.mockInterviewPage}`}>
+    <div className={`${commonStyles.mockInterviewContainer} ${commonStyles.mockInterviewPage}`}>
       
       {/* 🎯 면접 시작 전 안내 메시지 */}
       {showStartupGuide && questionsLoaded && cameraPermissionGranted && (
@@ -570,14 +570,14 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
       />
 
       {/* 메인 컨텐츠 */}
-      <div className={styles.mainContent}>
+      <div className={commonStyles.mainContent}>
         <div className={`
-          ${styles.mainGrid} 
-          ${window.innerWidth >= 1024 ? styles.mainGridDesktop : styles.mainGridMobile}
+          ${commonStyles.mainGrid} 
+          ${window.innerWidth >= 1024 ? commonStyles.mainGridDesktop : commonStyles.mainGridMobile}
         `}>
           
           {/* 왼쪽: 타이머 및 질문 */}
-          <div className={styles.leftColumn}>
+          <div className={commonStyles.leftColumn}>
             
             {/* 원형 타이머 */}
             <CircularTimer
@@ -608,7 +608,7 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
           </div>
 
           {/* 오른쪽: 웹캠 화면 */}
-          <div className={styles.rightColumn}>
+          <div className={commonStyles.rightColumn}>
             
             {/* 🎯 Enhanced VideoPlayer (얼굴 감지 가이드 포함) */}
             <div style={{ position: 'relative' }}>
@@ -639,7 +639,7 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
             </div>
 
             {/* 오디오 비주얼라이저 */}
-            <div className={styles.audioVisualizerContainer}>
+            <div className={commonStyles.audioVisualizerContainer}>
               <AudioVisualizer
                 analyser={analyser}
                 dataArray={dataArray}

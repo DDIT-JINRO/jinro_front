@@ -15,7 +15,8 @@ import {
   Users,
   Clock
 } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/AIAnalysisResult.module.css';
 
 const AIAnalysisResult = ({ 
   analysisResult, 
@@ -31,7 +32,7 @@ const AIAnalysisResult = ({
       <div className={styles.analysisError}>
         <Brain size={48} />
         <h2>분석 결과를 불러올 수 없습니다</h2>
-        <button onClick={onBack} className={`${styles.btn} ${styles.btnPrimary}`}>
+        <button onClick={onBack} className={`${commonStyles.btn} ${styles.btnPrimary}`}>
           돌아가기
         </button>
       </div>
@@ -105,7 +106,7 @@ const AIAnalysisResult = ({
         <div className={styles.aiAnalysisHeader}>
           <button 
             onClick={onBack}
-            className={`${styles.btn} ${styles.btnSecondary}`}
+            className={`${commonStyles.btn} ${commonStyles.btnSecondary}`}
           >
             <ArrowLeft size={16} />
             면접 결과로 돌아가기
@@ -121,7 +122,7 @@ const AIAnalysisResult = ({
 
           <button 
             onClick={onDownloadReport}
-            className={`${styles.btn} ${styles.btnPrimary}`}
+            className={`${commonStyles.btn} ${commonStyles.btnPrimary}`}
           >
             <Download size={16} />
             분석 보고서 다운로드
@@ -169,14 +170,14 @@ const AIAnalysisResult = ({
         <div className={styles.analysisTabMenu}>
           <button 
             onClick={() => setActiveTab('overview')}
-            className={`${styles.tabButton} ${activeTab === 'overview' ? styles.active : ''}`}
+            className={`${commonStyles.tabButton} ${activeTab === 'overview' ? styles.active : ''}`}
           >
             <BarChart3 size={16} />
             종합 분석
           </button>
           <button 
             onClick={() => setActiveTab('detailed')}
-            className={`${styles.tabButton} ${activeTab === 'detailed' ? styles.active : ''}`}
+            className={`${commonStyles.tabButton} ${activeTab === 'detailed' ? styles.active : ''}`}
           >
             <Brain size={16} />
             세부 분석
@@ -184,7 +185,7 @@ const AIAnalysisResult = ({
           {recordedVideoURL && (
             <button 
               onClick={() => setActiveTab('video')}
-              className={`${styles.tabButton} ${activeTab === 'video' ? styles.active : ''}`}
+              className={`${commonStyles.tabButton} ${activeTab === 'video' ? styles.active : ''}`}
             >
               <Play size={16} />
               녹화 영상

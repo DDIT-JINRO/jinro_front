@@ -1,5 +1,7 @@
 import React from 'react';
 import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp } from 'lucide-react';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/InterviewResult.module.css';
 
 const InterviewResult = ({ 
   questions, 

@@ -1,0 +1,448 @@
+/* AIAnalysisResult.module.css */
+
+.aiAnalysisResult {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 24px;
+}
+
+.aiAnalysisContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.aiAnalysisHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.aiAnalysisTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.aiIcon {
+  color: #3b82f6;
+}
+
+.aiAnalysisTitle h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.aiAnalysisTitle p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.aiScoreSummary {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.overallScoreCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.circularScore {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.circularScoreText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.circularScoreValue {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.circularScoreLabel {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.gradeInfo {
+  text-align: center;
+}
+
+.grade {
+  font-size: 48px;
+  font-weight: bold;
+  color: #3b82f6;
+  margin-bottom: 16px;
+}
+
+.recommendation {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.scoreBreakdown {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.scoreItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.scoreItem svg {
+  color: #3b82f6;
+}
+
+.scoreValue {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.analysisTabMenu {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tabButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background-color: #f3f4f6;
+}
+
+.tabButton.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.analysisTabContent {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.analysisSection {
+  margin-bottom: 32px;
+}
+
+.analysisSection:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.strengthIcon {
+  color: #10b981;
+}
+
+.improvementIcon {
+  color: #f59e0b;
+}
+
+.strengthsList {
+  display: grid;
+  gap: 12px;
+}
+
+.strengthItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #d1fae5;
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+}
+
+.strengthItem svg {
+  color: #059669;
+}
+
+.improvementsList {
+  display: grid;
+  gap: 12px;
+}
+
+.improvementItem {
+  padding: 12px 16px;
+  background-color: #fef3c7;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+
+.progressList {
+  display: grid;
+  gap: 16px;
+}
+
+.progressItem {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.progressItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.progressScore {
+  margin-left: auto;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.progressBarContainer {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+.detailedScores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detailedScoreItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.videoContainer {
+  text-align: center;
+}
+
+.recordedVideo {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.videoNote {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+.noVideo {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.noVideo svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.analysisError {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.analysisError svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.analysisError h2 {
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+/* 음성/영상 분석 시각화 */
+.audioAnalysisVisual,
+.videoAnalysisVisual {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.audioAnalysisVisual h4,
+.videoAnalysisVisual h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.audioMetrics,
+.videoMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audioMetric,
+.videoMetric {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.audioMetric span:first-of-type,
+.videoMetric span:first-of-type {
+  flex: 0 0 100px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.audioMetric span:last-of-type,
+.videoMetric span:last-of-type {
+  flex: 0 0 50px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-align: right;
+}
+
+.metricBar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metricBarFill {
+  height: 100%;
+  transition: width 1s ease-in-out;
+  border-radius: 4px;
+}
+
+/* 분석 방법 안내 */
+.analysisMethodInfo {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  border: 1px solid #e0f2fe;
+}
+
+.analysisMethodInfo h3 {
+  margin: 0 0 16px 0;
+  color: #0c4a6e;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.methodGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.methodItem {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0f2fe;
+}
+
+.methodItem svg {
+  color: #0284c7;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.methodItem h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0c4a6e;
+}
+
+.methodItem p {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}

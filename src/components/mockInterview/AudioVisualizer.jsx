@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAudioVisualizer } from '../../hooks/mockInterview/useAudioVisualizer';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import styles from '../../styles/mockInterview/AudioVisualizer.module.css';
 
 const AudioVisualizer = ({
   analyser,

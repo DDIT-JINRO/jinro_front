@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Brain, Eye, Mic, MessageSquare } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/AIAnalysisLoading.module.css';
 
 const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -166,7 +167,7 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
         {onCancel && (
           <button 
             onClick={onCancel}
-            className={`${styles.btn} ${styles.btnSecondary} ${styles.cancelButton}`}
+            className={`${commonStyles.btn} ${commonStyles.btnSecondary} ${commonStyles.cancelButton}`}
           >
             분석 취소
           </button>

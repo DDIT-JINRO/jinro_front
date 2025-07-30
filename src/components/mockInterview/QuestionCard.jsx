@@ -1,6 +1,7 @@
 import React from 'react';
 import { SkipForward, CheckCircle } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/QuestionCard.module.css';
 
 const QuestionCard = ({
   currentQuestionText,
@@ -60,7 +61,7 @@ const QuestionCard = ({
         {isLastQuestion ? (
           <button
             onClick={onNext}
-            className={`${styles.btn} ${styles.btnSuccess}`}
+            className={`${commonStyles.btn} ${commonStyles.btnSuccess}`}
           >
             <CheckCircle size={16} />
             면접 완료
@@ -68,7 +69,7 @@ const QuestionCard = ({
         ) : (
           <button
             onClick={onNext}
-            className={`${styles.btn} ${styles.btnPrimary}`}
+            className={`${commonStyles.btn} ${commonStyles.btnPrimary}`}
           >
             <SkipForward size={16} />
             다음 질문

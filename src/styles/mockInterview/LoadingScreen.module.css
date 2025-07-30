@@ -1,0 +1,32 @@
+/* LoadingScreen.module.css */
+
+.loadingScreen {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContent {
+  text-align: center;
+}
+
+.loadingTitle {
+  color: #1f2937;
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.loadingDescription {
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.loadingSubtext {
+  color: #9d9d9d;
+  font-size: 12px;
+  margin: 0;
+}

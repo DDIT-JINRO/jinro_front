@@ -1,6 +1,7 @@
 import React from 'react';
 import { Play, Pause } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import commonStyles from '../../styles/mockInterview/Common.module.css';
+import styles from '../../styles/mockInterview/CircularTimer.module.css';
 
 const CircularTimer = ({
   timeLeft,
@@ -62,8 +63,8 @@ const CircularTimer = ({
           <button
             onClick={onStart}
             className={`
-              ${styles.btn} 
-              ${speechSupported && isMicOn ? styles.btnSuccess : styles.btnSecondary}
+              ${commonStyles.btn} 
+              ${speechSupported && isMicOn ? commonStyles.btnSuccess : commonStyles.btnSecondary}
             `}
             disabled={!speechSupported || !isMicOn}
             title={!speechSupported ? '음성 인식이 지원되지 않습니다' : 
@@ -75,7 +76,7 @@ const CircularTimer = ({
         ) : (
           <button
             onClick={onPause}
-            className={`${styles.btn} ${styles.btnWarning}`}
+            className={`${commonStyles.btn} ${commonStyles.btnWarning}`}
           >
             <Pause size={16} />
             일시정지
@@ -83,7 +84,7 @@ const CircularTimer = ({
         )}
         <button
           onClick={onReset}
-          className={`${styles.btn} ${styles.btnSecondary}`}
+          className={`${commonStyles.btn} ${commonStyles.btnSecondary}`}
         >
           리셋
         </button>

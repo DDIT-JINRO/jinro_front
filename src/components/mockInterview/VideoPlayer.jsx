@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, Mic, MicOff, CameraOff, Settings, Target } from 'lucide-react';
 import FaceDetectionGuide from './FaceDetectionGuide';
 import MediaPipeDebugPanel from './MediaPipeDebugPanel';
+import styles from '../../styles/mockInterview/VideoPlayer.module.css';
 
 const VideoPlayer = ({
   videoRef,

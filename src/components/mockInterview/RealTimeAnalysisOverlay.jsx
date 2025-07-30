@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Eye, Mic, Volume2, Smile, Users, TrendingUp, TrendingDown, BarChart3, Target } from 'lucide-react';
-import styles from '../../styles/mockInterview/MockInterview.module.css';
+import styles from '../../styles/mockInterview/RealTimeAnalysisOverlay.module.css';
 
 const RealTimeAnalysisOverlay = ({ analysisData }) => {
   const [isMinimized, setIsMinimized] = useState(false);
