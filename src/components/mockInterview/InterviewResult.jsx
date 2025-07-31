@@ -1,7 +1,5 @@
 import React from 'react';
-import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp } from 'lucide-react';
-import commonStyles from '../../styles/mockInterview/Common.module.css';
-import styles from '../../styles/mockInterview/InterviewResult.module.css';
+import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp, Database } from 'lucide-react';
 
 const InterviewResult = ({ 
   questions, 
@@ -35,7 +33,7 @@ const InterviewResult = ({
   };
 
   // 전체 면접 통계
-  const totalStats = answers.reduce((acc, answer) => {
+  const totalStats = (answers || []).reduce((acc, answer) => {
     const stats = calculateAnswerStats(answer);
     return {
       totalChars: acc.totalChars + stats.length,
@@ -64,6 +62,347 @@ const InterviewResult = ({
     if (video?.postureScore >= 70) score += 3;
     
     return Math.max(30, Math.min(95, score));
+  };
+
+  // 🎯 개발자 데이터를 새 창으로 여는 함수
+  const openDeveloperDataWindow = () => {
+    const developerData = {
+      sessionInfo: {
+        timestamp: new Date().toISOString(),
+        sessionId: `interview_${Date.now()}`,
+        totalDuration: recordingDuration || 0,
+        questionsCount: questions?.length || 0,
+        answersCount: answers?.filter(a => a && a.trim()).length || 0,
+        completionRate: questions?.length ? (answers?.filter(a => a && a.trim()).length / questions.length * 100).toFixed(1) : 0,
+        hasRecording,
+        hasRealTimeAnalysis,
+        previewScore: calculatePreviewScore()
+      },
+      
+      // 실시간 분석 Raw 데이터
+      realTimeAnalysisData: realTimeAnalysisData || {},
+      
+      // 면접 내용
+      interviewContent: {
+        questions: questions || [],
+        answers: answers || [],
+        questionAnswerPairs: questions?.map((q, i) => ({
+          questionIndex: i,
+          question: q,
+          answer: answers[i] || '',
+          answerLength: answers[i]?.length || 0,
+          wordCount: answers[i] ? answers[i].split(/\s+/).filter(w => w.length > 0).length : 0,
+          completed: !!(answers[i] && answers[i].trim())
+        })) || []
+      },
+      
+      // 계산된 메트릭스
+      calculatedMetrics: {
+        averageAnswerLength: (answers && answers.length) ? 
+          (answers || []).reduce((sum, a) => sum + (a?.length || 0), 0) / answers.length : 0,
+        totalWords: (answers || []).reduce((sum, a) => 
+          sum + (a ? a.split(/\s+/).filter(w => w.length > 0).length : 0), 0) || 0,
+        averageWordsPerAnswer: (answers && answers.length) ? 
+          ((answers || []).reduce((sum, a) => 
+            sum + (a ? a.split(/\s+/).filter(w => w.length > 0).length : 0), 0) / answers.length) : 0,
+        speakingTimePercentage: realTimeAnalysisData?.audio?.speakingTime && recordingDuration ? 
+          (realTimeAnalysisData.audio.speakingTime / recordingDuration * 100).toFixed(1) : 0,
+        completionRate: (questions && questions.length) ? ((answers || []).filter(a => a && a.trim()).length / questions.length * 100).toFixed(1) : 0
+      },
+
+      // 성능 및 기술 정보
+      technicalInfo: {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        screenResolution: `${screen.width}x${screen.height}`,
+        viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+        timestamp: new Date().toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      }
+    };
+
+    // 새 창으로 개발자 데이터 표시
+    const newWindow = window.open('', '_blank', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+    if (newWindow) {
+      newWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>🔬 면접 개발자 데이터 - ${developerData.sessionInfo.sessionId}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+              font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+              background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+              color: #f9fafb;
+              padding: 20px;
+              line-height: 1.6;
+            }
+            .container { max-width: 1200px; margin: 0 auto; }
+            h1 { 
+              color: #60a5fa; 
+              font-size: 24px; 
+              margin-bottom: 20px; 
+              padding-bottom: 10px;
+              border-bottom: 2px solid #374151;
+            }
+            h2 { 
+              color: #34d399; 
+              font-size: 18px; 
+              margin: 30px 0 15px 0;
+              padding: 10px;
+              background: rgba(16, 185, 129, 0.1);
+              border-left: 4px solid #10b981;
+            }
+            .metrics-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 15px;
+              margin: 20px 0;
+            }
+            .metric-card {
+              background: rgba(55, 65, 81, 0.5);
+              padding: 15px;
+              border-radius: 8px;
+              border: 1px solid #374151;
+            }
+            .metric-label { 
+              font-size: 12px; 
+              color: #9ca3af; 
+              margin-bottom: 5px; 
+            }
+            .metric-value { 
+              font-size: 20px; 
+              font-weight: bold; 
+              color: #60a5fa; 
+            }
+            .action-buttons {
+              position: sticky;
+              top: 0;
+              background: rgba(31, 41, 55, 0.95);
+              padding: 15px 0;
+              margin-bottom: 20px;
+              border-bottom: 1px solid #374151;
+              backdrop-filter: blur(10px);
+              z-index: 100;
+            }
+            .btn {
+              padding: 8px 16px;
+              margin-right: 10px;
+              background: #3b82f6;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 500;
+              transition: all 0.2s;
+            }
+            .btn:hover { background: #2563eb; transform: translateY(-1px); }
+            .btn.success { background: #10b981; }
+            .btn.success:hover { background: #059669; }
+            .btn.warning { background: #f59e0b; }
+            .btn.warning:hover { background: #d97706; }
+            pre {
+              background: rgba(0, 0, 0, 0.3);
+              padding: 20px;
+              border-radius: 8px;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+              font-size: 12px;
+              line-height: 1.4;
+              border: 1px solid #374151;
+              max-height: 400px;
+              overflow-y: auto;
+            }
+            .section {
+              background: rgba(55, 65, 81, 0.3);
+              margin: 20px 0;
+              border-radius: 12px;
+              border: 1px solid #374151;
+              overflow: hidden;
+            }
+            .section-header {
+              background: rgba(59, 130, 246, 0.1);
+              padding: 15px 20px;
+              border-bottom: 1px solid #374151;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            .status-good { color: #10b981; }
+            .status-warning { color: #f59e0b; }
+            .status-error { color: #ef4444; }
+            .footer {
+              margin-top: 40px;
+              padding: 20px;
+              background: rgba(55, 65, 81, 0.3);
+              border-radius: 8px;
+              text-align: center;
+              font-size: 12px;
+              color: #9ca3af;
+              border: 1px solid #374151;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>🔬 면접 개발자 데이터 분석</h1>
+            
+            <div class="action-buttons">
+              <button class="btn success" onclick="copyAllData()">📋 전체 데이터 복사</button>
+              <button class="btn warning" onclick="downloadJSON()">💾 JSON 다운로드</button>
+              <button class="btn" onclick="window.print()">🖨️ 인쇄</button>
+              <span style="margin-left: 20px; color: #9ca3af; font-size: 12px;">
+                생성 시간: ${new Date().toLocaleString('ko-KR')}
+              </span>
+            </div>
+
+            <!-- 핵심 메트릭스 -->
+            <h2>📊 핵심 메트릭스</h2>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-label">완료율</div>
+                <div class="metric-value">${developerData.calculatedMetrics.completionRate}%</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">총 단어 수</div>
+                <div class="metric-value">${developerData.calculatedMetrics.totalWords}</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">평균 답변 길이</div>
+                <div class="metric-value">${Math.round(developerData.calculatedMetrics.averageAnswerLength)}자</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">말하기 비율</div>
+                <div class="metric-value">${developerData.calculatedMetrics.speakingTimePercentage}%</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">예상 점수</div>
+                <div class="metric-value">${developerData.sessionInfo.previewScore}점</div>
+              </div>
+            </div>
+
+            <!-- 세션 정보 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">🗂️ 세션 정보</h2>
+                <button class="btn" onclick="copySection('sessionInfo')">복사</button>
+              </div>
+              <pre id="sessionInfo">${JSON.stringify(developerData.sessionInfo, null, 2)}</pre>
+            </div>
+
+            <!-- 실시간 분석 데이터 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">📈 실시간 분석 데이터</h2>
+                <button class="btn" onclick="copySection('realTimeData')">복사</button>
+              </div>
+              <pre id="realTimeData">${JSON.stringify(developerData.realTimeAnalysisData, null, 2)}</pre>
+            </div>
+
+            <!-- 면접 내용 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">💬 면접 내용</h2>
+                <button class="btn" onclick="copySection('interviewContent')">복사</button>
+              </div>
+              <pre id="interviewContent">${JSON.stringify(developerData.interviewContent, null, 2)}</pre>
+            </div>
+
+            <!-- 계산된 메트릭스 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">🧮 계산된 메트릭스</h2>
+                <button class="btn" onclick="copySection('calculatedMetrics')">복사</button>
+              </div>
+              <pre id="calculatedMetrics">${JSON.stringify(developerData.calculatedMetrics, null, 2)}</pre>
+            </div>
+
+            <!-- 기술 정보 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">⚙️ 기술 정보</h2>
+                <button class="btn" onclick="copySection('technicalInfo')">복사</button>
+              </div>
+              <pre id="technicalInfo">${JSON.stringify(developerData.technicalInfo, null, 2)}</pre>
+            </div>
+
+            <!-- 전체 Raw 데이터 -->
+            <div class="section">
+              <div class="section-header">
+                <h2 style="margin: 0;">🔍 전체 Raw 데이터</h2>
+                <button class="btn" onclick="copySection('allData')">복사</button>
+              </div>
+              <pre id="allData">${JSON.stringify(developerData, null, 2)}</pre>
+            </div>
+
+            <div class="footer">
+              <p>🔒 <strong>개인정보 보호:</strong> 모든 데이터는 브라우저에서 처리되었으며 외부로 전송되지 않았습니다.</p>
+              <p>세션 ID: ${developerData.sessionInfo.sessionId}</p>
+            </div>
+          </div>
+
+          <script>
+            const fullData = ${JSON.stringify(developerData, null, 2)};
+
+            function copyAllData() {
+              navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(developerData)}, null, 2))
+                .then(() => alert('✅ 전체 데이터가 클립보드에 복사되었습니다!'))
+                .catch(err => alert('❌ 복사 실패: ' + err));
+            }
+
+            function copySection(sectionId) {
+              const element = document.getElementById(sectionId);
+              if (element) {
+                navigator.clipboard.writeText(element.textContent)
+                  .then(() => alert('✅ ' + sectionId + ' 데이터가 복사되었습니다!'))
+                  .catch(err => alert('❌ 복사 실패: ' + err));
+              }
+            }
+
+            function downloadJSON() {
+              const blob = new Blob([JSON.stringify(${JSON.stringify(developerData)}, null, 2)], 
+                { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = '${developerData.sessionInfo.sessionId}_developer_data.json';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              alert('✅ JSON 파일이 다운로드되었습니다!');
+            }
+
+            // 키보드 단축키
+            document.addEventListener('keydown', function(e) {
+              if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                  case 's':
+                    e.preventDefault();
+                    downloadJSON();
+                    break;
+                  case 'a':
+                    e.preventDefault();
+                    copyAllData();
+                    break;
+                }
+              }
+            });
+          </script>
+        </body>
+        </html>
+      `);
+      
+      // 새 창 포커스
+      newWindow.focus();
+    } else {
+      alert('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
+    }
   };
 
   const previewScore = calculatePreviewScore();
@@ -102,7 +441,7 @@ const InterviewResult = ({
             🎉 면접이 완료되었습니다!
           </h1>
           <p style={{ color: '#6b7280', fontSize: '16px', margin: '0 0 16px 0' }}>
-            총 {questions.length}개의 질문에 대한 답변이 기록되었습니다.
+            총 {(questions || []).length}개의 질문에 대한 답변이 기록되었습니다.
           </p>
           
           {/* 면접 통계 요약 */}
@@ -392,8 +731,8 @@ const InterviewResult = ({
         )}
 
         {/* 질문별 답변 결과 */}
-        {questions.map((question, index) => {
-          const answerStats = calculateAnswerStats(answers[index]);
+        {(questions || []).map((question, index) => {
+          const answerStats = calculateAnswerStats((answers || [])[index]);
           
           return (
             <div key={index} style={{ 
@@ -482,7 +821,7 @@ const InterviewResult = ({
                   margin: '0 0 12px 0',
                   whiteSpace: 'pre-wrap'
                 }}>
-                  {answers[index] || '답변이 기록되지 않았습니다.'}
+                  {(answers || [])[index] || '답변이 기록되지 않았습니다.'}
                 </p>
                 
                 {/* 답변 통계 */}
@@ -498,7 +837,7 @@ const InterviewResult = ({
                   <div>📊 답변 길이: <strong>{answerStats.length}자</strong></div>
                   <div>📝 단어 수: <strong>{answerStats.wordCount}개</strong></div>
                   <div>🕐 예상 시간: <strong>{answerStats.estimatedTime}분</strong></div>
-                  <div>📈 완성도: <strong>{answers[index] ? '완료' : '미완료'}</strong></div>
+                  <div>📈 완성도: <strong>{(answers || [])[index] ? '완료' : '미완료'}</strong></div>
                 </div>
               </div>
             </div>
@@ -539,6 +878,34 @@ const InterviewResult = ({
           >
             🔄 다시 면접 보기
           </button>
+
+          {/* 🎯 개발자 데이터 버튼 추가 (개발 모드에서만) */}
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={openDeveloperDataWindow}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 24px',
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+                transition: 'background-color 0.2s',
+                minWidth: '160px',
+                justifyContent: 'center'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
+            >
+              <Database size={16} />
+              🔬 개발자 데이터
+            </button>
+          )}
           
           <button
             onClick={onClose}
