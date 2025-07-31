@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// AIAnalysisResult.jsx - 각 영역별 피드백 표시 추가
+
+import React, { useState, useEffect } from 'react';
 import { 
   Brain, 
   Eye, 
@@ -13,7 +15,12 @@ import {
   Volume2,
   Smile,
   Users,
-  Clock
+  Clock,
+  MessageSquare,
+  Target,
+  CheckCircle,
+  AlertCircle,
+  Info
 } from 'lucide-react';
 import commonStyles from '../../styles/mockInterview/Common.module.css';
 import styles from '../../styles/mockInterview/AIAnalysisResult.module.css';
@@ -27,6 +34,32 @@ const AIAnalysisResult = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
+  // 🎯 컴포넌트 마운트 시 데이터 구조 확인
+  useEffect(() => {
+    console.log('🔍 AIAnalysisResult에서 받은 analysisResult:', analysisResult);
+    
+    if (analysisResult) {
+      console.log('📊 분석 결과 구조 확인:');
+      console.log('  - overallScore:', analysisResult.overallScore);
+      console.log('  - grade:', analysisResult.grade);
+      console.log('  - scores:', analysisResult.scores);
+      console.log('  - detailed:', analysisResult.detailed);
+      console.log('  - summary:', analysisResult.summary);
+      
+      if (analysisResult.detailed) {
+        console.log('  - detailed.audio.feedback:', analysisResult.detailed.audio?.feedback);
+        console.log('  - detailed.video.feedback:', analysisResult.detailed.video?.feedback);
+        console.log('  - detailed.text.feedback:', analysisResult.detailed.text?.feedback);
+      }
+      
+      if (analysisResult.summary) {
+        console.log('  - strengths count:', analysisResult.summary.strengths?.length);
+        console.log('  - improvements count:', analysisResult.summary.improvements?.length);
+        console.log('  - recommendation:', analysisResult.summary.recommendation?.substring(0, 50) + '...');
+      }
+    }
+  }, [analysisResult]);
+
   if (!analysisResult) {
     return (
       <div className={styles.analysisError}>
@@ -39,7 +72,12 @@ const AIAnalysisResult = ({
     );
   }
 
-  const { overallScore, grade, scores, detailed, summary } = analysisResult;
+  // 🎯 안전한 데이터 추출
+  const overallScore = analysisResult.overallScore || 0;
+  const grade = analysisResult.grade || 'N/A';
+  const scores = analysisResult.scores || { communication: 0, appearance: 0, content: 0 };
+  const detailed = analysisResult.detailed || {};
+  const summary = analysisResult.summary || { strengths: [], improvements: [], recommendation: '' };
 
   // 원형 점수 표시 컴포넌트
   const CircularScore = ({ score, label, color = '#3b82f6' }) => {
@@ -78,7 +116,42 @@ const AIAnalysisResult = ({
     );
   };
 
-  // 진행 바 컴포넌트
+  // 🎯 피드백이 포함된 진행 바 컴포넌트
+  const ProgressBarWithFeedback = ({ score, label, icon: Icon, feedback, maxValue = 100 }) => (
+    <div className={styles.progressItemWithFeedback}>
+      <div className={styles.progressItem}>
+        <div className={styles.progressItemHeader}>
+          <Icon size={20} />
+          <span>{label}</span>
+          <span className={styles.progressScore}>{score}{typeof score === 'number' && score <= 100 ? '점' : ''}</span>
+        </div>
+        <div className={styles.progressBarContainer}>
+          <div 
+            className={styles.progressBarFill}
+            style={{ 
+              width: `${Math.min(100, (score / maxValue) * 100)}%`,
+              backgroundColor: score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#ef4444'
+            }}
+          />
+        </div>
+      </div>
+      
+      {/* 🎯 Gemini AI 피드백 표시 */}
+      {feedback && (
+        <div className={styles.feedbackBox}>
+          <div className={styles.feedbackHeader}>
+            <Brain size={16} style={{ color: '#3b82f6' }} />
+            <span>🤖 Gemini AI 전문가 피드백</span>
+          </div>
+          <div className={styles.feedbackContent}>
+            <p>{feedback}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // 진행 바 컴포넌트 (기본형)
   const ProgressBar = ({ score, label, icon: Icon, maxValue = 100 }) => (
     <div className={styles.progressItem}>
       <div className={styles.progressItemHeader}>
@@ -99,23 +172,20 @@ const AIAnalysisResult = ({
   );
 
   return (
-    <div className={styles.aiAnalysisResult}>
-      <div className={styles.aiAnalysisContainer}>
-        
+    <div className={`${commonStyles.mockInterviewContainer} ${styles.aiAnalysisResult}`}>
+      <div className={styles.analysisContent}>
         {/* 헤더 */}
-        <div className={styles.aiAnalysisHeader}>
-          <button 
-            onClick={onBack}
-            className={`${commonStyles.btn} ${commonStyles.btnSecondary}`}
-          >
-            <ArrowLeft size={16} />
-            면접 결과로 돌아가기
+        <div className={styles.analysisHeader}>
+          <button onClick={onBack} className={styles.backButton}>
+            <ArrowLeft size={20} />
           </button>
           
-          <div className={styles.aiAnalysisTitle}>
-            <Brain size={32} className={styles.aiIcon} />
-            <div>
-              <h1>🎯 {isRealTimeAnalysis ? '실시간' : 'AI'} 면접 분석 결과</h1>
+          <div className={styles.headerContent}>
+            <div className={styles.headerIcon}>
+              <Brain size={32} style={{ color: '#3b82f6' }} />
+            </div>
+            <div className={styles.headerText}>
+              <h1>🤖 {analysisResult.analysisMethod?.includes('Gemini') ? 'Gemini AI 전문가' : '실시간'} 면접 분석 결과</h1>
               <p>음성과 영상을 종합적으로 분석했습니다</p>
             </div>
           </div>
@@ -136,7 +206,7 @@ const AIAnalysisResult = ({
             <div className={styles.gradeInfo}>
               <div className={styles.grade}>{grade}</div>
               <div className={styles.recommendation}>
-                {summary.recommendation}
+                {summary.recommendation || '분석 완료'}
               </div>
             </div>
           </div>
@@ -145,21 +215,28 @@ const AIAnalysisResult = ({
             <div className={styles.scoreItem}>
               <Mic size={24} />
               <div>
-                <div className={styles.scoreValue}>{scores.communication}</div>
+                <div className={styles.scoreValue}>{scores.communication || 0}</div>
                 <div className={styles.scoreLabel}>음성 표현</div>
               </div>
             </div>
             <div className={styles.scoreItem}>
               <Eye size={24} />
               <div>
-                <div className={styles.scoreValue}>{scores.appearance}</div>
+                <div className={styles.scoreValue}>{scores.appearance || 0}</div>
                 <div className={styles.scoreLabel}>시각적 인상</div>
+              </div>
+            </div>
+            <div className={styles.scoreItem}>
+              <MessageSquare size={24} />
+              <div>
+                <div className={styles.scoreValue}>{scores.content || 0}</div>
+                <div className={styles.scoreLabel}>답변 내용</div>
               </div>
             </div>
             <div className={styles.scoreItem}>
               <Clock size={24} />
               <div>
-                <div className={styles.scoreValue}>{Math.floor(analysisResult.duration / 60)}분</div>
+                <div className={styles.scoreValue}>{Math.floor((analysisResult.duration || 0) / 60)}분</div>
                 <div className={styles.scoreLabel}>면접 시간</div>
               </div>
             </div>
@@ -188,233 +265,239 @@ const AIAnalysisResult = ({
               className={`${commonStyles.tabButton} ${activeTab === 'video' ? styles.active : ''}`}
             >
               <Play size={16} />
-              녹화 영상
+              면접 영상
             </button>
           )}
         </div>
 
-        {/* 탭 컨텐츠 */}
-        <div className={styles.analysisTabContent}>
-          
-          {/* 종합 분석 탭 */}
+        {/* 탭 내용 */}
+        <div className={styles.tabContent}>
           {activeTab === 'overview' && (
             <div className={styles.overviewTab}>
-              
-              {/* 강점 분석 */}
-              <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>
-                  <TrendingUp size={20} className={styles.strengthIcon} />
-                  강점 분석
-                </h3>
-                <div className={styles.strengthsList}>
-                  {summary.strengths.map((strength, index) => (
-                    <div key={index} className={styles.strengthItem}>
-                      <Star size={16} />
-                      <span>{strength}</span>
-                    </div>
-                  ))}
+              {/* 🎯 강점과 개선사항 - Gemini 분석 결과 표시 */}
+              <div className={styles.summarySection}>
+                <div className={styles.strengthsCard}>
+                  <div className={styles.cardHeader}>
+                    <TrendingUp size={24} style={{ color: '#10b981' }} />
+                    <h3>강점</h3>
+                  </div>
+                  <div className={styles.itemList}>
+                    {summary.strengths && summary.strengths.length > 0 ? (
+                      summary.strengths.map((strength, index) => (
+                        <div key={index} className={styles.listItem}>
+                          <Star size={16} style={{ color: '#10b981' }} />
+                          <span>{strength}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className={styles.listItem}>
+                        <Star size={16} style={{ color: '#10b981' }} />
+                        <span>면접에 성실히 참여하는 적극적인 태도</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.improvementsCard}>
+                  <div className={styles.cardHeader}>
+                    <TrendingDown size={24} style={{ color: '#f59e0b' }} />
+                    <h3>개선사항</h3>
+                  </div>
+                  <div className={styles.itemList}>
+                    {summary.improvements && summary.improvements.length > 0 ? (
+                      summary.improvements.map((improvement, index) => (
+                        <div key={index} className={styles.listItem}>
+                          <Target size={16} style={{ color: '#f59e0b' }} />
+                          <span>{improvement}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className={styles.listItem}>
+                        <Target size={16} style={{ color: '#f59e0b' }} />
+                        <span>현재 수준을 유지하며 더욱 자연스러운 면접 연습 계속하기</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* 개선사항 */}
-              <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>
-                  <TrendingDown size={20} className={styles.improvementIcon} />
-                  개선사항
-                </h3>
-                <div className={styles.improvementsList}>
-                  {summary.improvements.map((improvement, index) => (
-                    <div key={index} className={styles.improvementItem}>
-                      <span>{improvement}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 점수별 세부 분석 */}
-              <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>영역별 점수</h3>
-                <div className={styles.progressList}>
-                  <ProgressBar 
-                    score={scores.communication} 
+              {/* 🎯 점수 상세 - 피드백 포함 */}
+              <div className={styles.scoreDetails}>
+                <h3>📊 점수 상세 및 전문가 피드백</h3>
+                <div className={styles.progressListWithFeedback}>
+                  
+                  {/* 🎤 음성 표현력 + Gemini 피드백 */}
+                  <ProgressBarWithFeedback 
+                    score={scores.communication || 0} 
                     label="음성 표현력" 
-                    icon={Mic} 
+                    icon={Mic}
+                    feedback={detailed.audio?.feedback}
                   />
-                  <ProgressBar 
-                    score={scores.appearance} 
+                  
+                  {/* 👁️ 시각적 인상 + Gemini 피드백 */}
+                  <ProgressBarWithFeedback 
+                    score={scores.appearance || 0} 
                     label="시각적 인상" 
-                    icon={Eye} 
+                    icon={Eye}
+                    feedback={detailed.video?.feedback}
+                  />
+                  
+                  {/* 📝 답변 내용 + Gemini 피드백 */}
+                  <ProgressBarWithFeedback 
+                    score={scores.content || 0} 
+                    label="답변 내용" 
+                    icon={MessageSquare}
+                    feedback={detailed.text?.feedback}
+                  />
+                  
+                  {/* 종합 점수 (피드백 없음) */}
+                  <ProgressBar 
+                    score={overallScore} 
+                    label="종합 점수" 
+                    icon={BarChart3} 
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* 세부 분석 탭 */}
           {activeTab === 'detailed' && (
             <div className={styles.detailedTab}>
-              
-              {/* 음성 분석 */}
+              {/* 🎯 음성 분석 상세 - Gemini 피드백 표시 */}
               <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>
-                  <Mic size={20} />
-                  음성 분석 결과
-                </h3>
-                <div className={styles.detailedScores}>
-                  <div className={styles.detailedScoreItem}>
-                    <span>평균 볼륨</span>
-                    <span>{detailed.audio.averageVolume}</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>말하기 시간</span>
-                    <span>{detailed.audio.speakingTime}초</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>분당 단어수</span>
-                    <span>{detailed.audio.wordsPerMinute} wpm</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>습관어 사용</span>
-                    <span>{detailed.audio.fillerWords}회</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>음성 명확도</span>
-                    <span>{detailed.audio.speechClarity}점</span>
-                  </div>
+                <div className={styles.sectionHeader}>
+                  <Mic size={24} style={{ color: '#3b82f6' }} />
+                  <h3>음성 분석 상세</h3>
                 </div>
-
-                {/* 음성 분석 시각화 */}
-                <div className={styles.audioAnalysisVisual}>
-                  <h4>음성 특성 분석</h4>
-                  <div className={styles.audioMetrics}>
-                    <div className={styles.audioMetric}>
-                      <Volume2 size={16} />
-                      <span>볼륨 레벨</span>
-                      <div className={styles.metricBar}>
-                        <div 
-                          className={styles.metricBarFill}
-                          style={{ 
-                            width: `${Math.min(100, detailed.audio.averageVolume)}%`,
-                            backgroundColor: '#3b82f6'
-                          }}
-                        />
-                      </div>
-                      <span>{detailed.audio.averageVolume}</span>
+                <div className={styles.sectionContent}>
+                  <div className={styles.feedbackBox}>
+                    <h4>🎤 전문가 피드백</h4>
+                    <p>{detailed.audio?.feedback || '음성 분석이 완료되었습니다.'}</p>
+                  </div>
+                  <div className={styles.metricsGrid}>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>발음 명확도</div>
+                      <div className={styles.metricValue}>{detailed.audio?.speechClarity || 0}점</div>
                     </div>
-                    <div className={styles.audioMetric}>
-                      <Clock size={16} />
-                      <span>말하기 비율</span>
-                      <div className={styles.metricBar}>
-                        <div 
-                          className={styles.metricBarFill}
-                          style={{ 
-                            width: `${(detailed.audio.speakingTime / analysisResult.duration) * 100}%`,
-                            backgroundColor: '#10b981'
-                          }}
-                        />
-                      </div>
-                      <span>{Math.round((detailed.audio.speakingTime / analysisResult.duration) * 100)}%</span>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>말하기 속도</div>
+                      <div className={styles.metricValue}>{detailed.audio?.paceAppropriate || 0}점</div>
                     </div>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>볼륨 일관성</div>
+                      <div className={styles.metricValue}>{detailed.audio?.volumeConsistency || 0}점</div>
+                    </div>
+                    {detailed.audio?.averageVolume && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>평균 볼륨</div>
+                        <div className={styles.metricValue}>{detailed.audio.averageVolume}</div>
+                      </div>
+                    )}
+                    {detailed.audio?.wordsPerMinute && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>말하기 속도</div>
+                        <div className={styles.metricValue}>{detailed.audio.wordsPerMinute} WPM</div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* 영상 분석 */}
+              {/* 🎯 영상 분석 상세 - Gemini 피드백 표시 */}
               <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>
-                  <Eye size={20} />
-                  영상 분석 결과
-                </h3>
-                <div className={styles.detailedScores}>
-                  <div className={styles.detailedScoreItem}>
-                    <span>얼굴 감지율</span>
-                    <span>{detailed.video.faceDetectionRate}%</span>
+                <div className={styles.sectionHeader}>
+                  <Eye size={24} style={{ color: '#10b981' }} />
+                  <h3>영상 분석 상세</h3>
+                </div>
+                <div className={styles.sectionContent}>
+                  <div className={styles.feedbackBox}>
+                    <h4>👁️ 전문가 피드백</h4>
+                    <p>{detailed.video?.feedback || '영상 분석이 완료되었습니다.'}</p>
                   </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>아이컨택</span>
-                    <span>{detailed.video.eyeContactPercentage}%</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>미소 빈도</span>
-                    <span>{detailed.video.smileFrequency}%</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>자세 안정성</span>
-                    <span>{detailed.video.postureScore}점</span>
-                  </div>
-                  <div className={styles.detailedScoreItem}>
-                    <span>머리 자세</span>
-                    <span>{detailed.video.headPoseStability}점</span>
+                  <div className={styles.metricsGrid}>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>아이컨택</div>
+                      <div className={styles.metricValue}>{detailed.video?.eyeContact || 0}점</div>
+                    </div>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>표정</div>
+                      <div className={styles.metricValue}>{detailed.video?.facialExpression || 0}점</div>
+                    </div>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>자세</div>
+                      <div className={styles.metricValue}>{detailed.video?.posture || 0}점</div>
+                    </div>
+                    {detailed.video?.eyeContactPercentage !== undefined && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>아이컨택 비율</div>
+                        <div className={styles.metricValue}>{detailed.video.eyeContactPercentage}%</div>
+                      </div>
+                    )}
+                    {detailed.video?.smileFrequency !== undefined && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>미소 빈도</div>
+                        <div className={styles.metricValue}>{detailed.video.smileFrequency}%</div>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
 
-                {/* 영상 분석 시각화 */}
-                <div className={styles.videoAnalysisVisual}>
-                  <h4>시각적 인상 분석</h4>
-                  <div className={styles.videoMetrics}>
-                    <div className={styles.videoMetric}>
-                      <Eye size={16} />
-                      <span>아이컨택</span>
-                      <div className={styles.metricBar}>
-                        <div 
-                          className={styles.metricBarFill}
-                          style={{ 
-                            width: `${detailed.video.eyeContactPercentage}%`,
-                            backgroundColor: detailed.video.eyeContactPercentage >= 60 ? '#10b981' : '#f59e0b'
-                          }}
-                        />
-                      </div>
-                      <span>{detailed.video.eyeContactPercentage}%</span>
+              {/* 🎯 텍스트 분석 상세 - Gemini 피드백 표시 */}
+              <div className={styles.analysisSection}>
+                <div className={styles.sectionHeader}>
+                  <MessageSquare size={24} style={{ color: '#f59e0b' }} />
+                  <h3>답변 내용 분석 상세</h3>
+                </div>
+                <div className={styles.sectionContent}>
+                  <div className={styles.feedbackBox}>
+                    <h4>📝 전문가 피드백</h4>
+                    <p>{detailed.text?.feedback || '답변 내용 분석이 완료되었습니다.'}</p>
+                  </div>
+                  <div className={styles.metricsGrid}>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>내용 품질</div>
+                      <div className={styles.metricValue}>{detailed.text?.contentQuality || 0}점</div>
                     </div>
-                    <div className={styles.videoMetric}>
-                      <Smile size={16} />
-                      <span>표정 밝기</span>
-                      <div className={styles.metricBar}>
-                        <div 
-                          className={styles.metricBarFill}
-                          style={{ 
-                            width: `${detailed.video.smileFrequency}%`,
-                            backgroundColor: '#3b82f6'
-                          }}
-                        />
-                      </div>
-                      <span>{detailed.video.smileFrequency}%</span>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>논리 구조</div>
+                      <div className={styles.metricValue}>{detailed.text?.structureLogic || 0}점</div>
                     </div>
-                    <div className={styles.videoMetric}>
-                      <Users size={16} />
-                      <span>자세 안정성</span>
-                      <div className={styles.metricBar}>
-                        <div 
-                          className={styles.metricBarFill}
-                          style={{ 
-                            width: `${detailed.video.postureScore}%`,
-                            backgroundColor: detailed.video.postureScore >= 70 ? '#10b981' : '#f59e0b'
-                          }}
-                        />
-                      </div>
-                      <span>{detailed.video.postureScore}점</span>
+                    <div className={styles.metricItem}>
+                      <div className={styles.metricLabel}>관련성</div>
+                      <div className={styles.metricValue}>{detailed.text?.relevance || 0}점</div>
                     </div>
+                    {detailed.text?.completionRate !== undefined && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>답변 완성도</div>
+                        <div className={styles.metricValue}>{detailed.text.completionRate}%</div>
+                      </div>
+                    )}
+                    {detailed.text?.averageAnswerLength !== undefined && (
+                      <div className={styles.metricItem}>
+                        <div className={styles.metricLabel}>평균 답변 길이</div>
+                        <div className={styles.metricValue}>{detailed.text.averageAnswerLength}자</div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* 녹화 영상 탭 */}
           {activeTab === 'video' && recordedVideoURL && (
             <div className={styles.videoTab}>
-              <div className={styles.analysisSection}>
-                <h3 className={styles.sectionTitle}>
-                  <Play size={20} />
-                  면접 녹화 영상
-                </h3>
+              <div className={styles.videoSection}>
+                <h3>📹 면접 영상 재생</h3>
                 <div className={styles.videoContainer}>
                   <video 
                     controls 
-                    className={styles.recordedVideo}
-                    src={recordedVideoURL}
+                    width="100%" 
+                    height="400px"
+                    style={{ borderRadius: '8px' }}
                   >
-                    이 브라우저는 비디오를 지원하지 않습니다.
+                    <source src={recordedVideoURL} type="video/webm" />
+                    브라우저가 비디오를 지원하지 않습니다.
                   </video>
                   <p className={styles.videoNote}>
                     📹 녹화된 면접 영상을 통해 본인의 모습을 객관적으로 확인해보세요.
@@ -430,6 +513,18 @@ const AIAnalysisResult = ({
           <h3>🔬 분석 방법</h3>
           <div className={styles.methodGrid}>
             <div className={styles.methodItem}>
+              <Brain size={20} />
+              <div>
+                <h4>🤖 {analysisResult.analysisMethod?.includes('Gemini') ? 'Gemini AI 전문가 분석' : 'AI 분석'}</h4>
+                <p>
+                  {analysisResult.analysisMethod?.includes('Gemini') 
+                    ? 'Google Gemini AI가 15년 경력의 면접 전문가로서 종합적인 분석을 수행했습니다.'
+                    : '실시간 AI 분석으로 면접 태도를 평가했습니다.'
+                  }
+                </p>
+              </div>
+            </div>
+            <div className={styles.methodItem}>
               <Mic size={20} />
               <div>
                 <h4>음성 분석</h4>
@@ -444,7 +539,7 @@ const AIAnalysisResult = ({
               </div>
             </div>
             <div className={styles.methodItem}>
-              <Brain size={20} />
+              <CheckCircle size={20} />
               <div>
                 <h4>개인정보 보호</h4>
                 <p>모든 분석은 브라우저에서 처리되어 외부로 전송되지 않습니다.</p>

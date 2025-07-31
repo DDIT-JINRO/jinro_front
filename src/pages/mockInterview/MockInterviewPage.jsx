@@ -267,58 +267,139 @@ const MockInterviewPage = () => {
       // 🎯 백엔드 Gemini API 호출
       const geminiResponse = await interviewAnalysisApi.requestDetailedAnalysis(requestData);
       
-      // 🎯 기존 finishAnalysis 결과와 Gemini 결과를 통합
+      console.log('✅ 백엔드에서 받은 Gemini 응답:', geminiResponse);
+      
+      // 🎯 AIAnalysisResult가 기대하는 구조로 변환
       const enhancedAnalysisResult = {
-        // Gemini AI 분석 결과
+        // 기본 점수 정보
         overallScore: geminiResponse.overallScore || 75,
         grade: geminiResponse.grade || 'B',
         timestamp: geminiResponse.timestamp || new Date().toISOString(),
         duration: recordingDuration,
-        analysisMethod: 'Gemini AI Expert Analysis',
+        analysisMethod: geminiResponse.analysisMethod || 'Gemini AI Expert Analysis',
         
-        // 상세 분석 (Gemini 결과 우선 사용)
+        // 🎯 detailed 구조 - AIAnalysisResult가 기대하는 형식으로 매핑
         detailed: {
+          // 🎤 음성 분석 (Gemini + 실시간 데이터 결합)
           audio: {
+            // Gemini 전문가 분석 점수
             speechClarity: geminiResponse.detailed?.audio?.speechClarity || 75,
             paceAppropriate: geminiResponse.detailed?.audio?.paceAppropriate || 75,
             volumeConsistency: geminiResponse.detailed?.audio?.volumeConsistency || 75,
             feedback: geminiResponse.detailed?.audio?.feedback || '음성 분석이 완료되었습니다.',
+            
+            // 실시간 수집 데이터 추가
+            averageVolume: Math.round(analysisData?.audio?.averageVolume || 0),
+            speakingTime: analysisData?.audio?.speakingTime || 0,
+            wordsPerMinute: analysisData?.audio?.wordsPerMinute || 0,
+            fillerWords: analysisData?.audio?.fillerWordsCount || 0,
+            speakingRatio: recordingDuration > 0 ? 
+              Math.round((analysisData?.audio?.speakingTime || 0) / recordingDuration * 100) : 0,
+            
+            // 종합 점수 (Gemini 기준)
             overall: geminiResponse.detailed?.audio?.speechClarity || 75
           },
+          
+          // 👁️ 영상 분석 (Gemini + 실시간 데이터 결합)
           video: {
+            // Gemini 전문가 분석 점수
             eyeContact: geminiResponse.detailed?.video?.eyeContact || 75,
             facialExpression: geminiResponse.detailed?.video?.facialExpression || 75,
             posture: geminiResponse.detailed?.video?.posture || 75,
             feedback: geminiResponse.detailed?.video?.feedback || '비언어적 소통 분석이 완료되었습니다.',
+            
+            // 실시간 수집 데이터 추가
+            faceDetectionRate: Math.round(analysisData?.video?.faceDetectionRate || 0),
+            eyeContactPercentage: Math.round(analysisData?.video?.eyeContactPercentage || 0),
+            smileFrequency: Math.round(analysisData?.video?.smileDetection || 0),
+            postureScore: Math.round(analysisData?.video?.postureScore || 0),
+            headPoseStability: Math.round((analysisData?.video?.postureScore || 0) * 0.9),
+            
+            // 종합 점수 (Gemini 기준)
             overall: geminiResponse.detailed?.video?.eyeContact || 75
           },
+          
+          // 📝 텍스트 분석 (Gemini + 계산된 데이터 결합)
           text: {
+            // Gemini 전문가 분석 점수
             contentQuality: geminiResponse.detailed?.text?.contentQuality || 75,
             structureLogic: geminiResponse.detailed?.text?.structureLogic || 75,
             relevance: geminiResponse.detailed?.text?.relevance || 75,
             feedback: geminiResponse.detailed?.text?.feedback || '답변 내용 분석이 완료되었습니다.',
+            
+            // 계산된 텍스트 메트릭 추가  
+            completionRate: (() => {
+              const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+              return questions.length > 0 ? Math.round((completedAnswers.length / questions.length) * 100) : 0;
+            })(),
+            averageAnswerLength: (() => {
+              const totalLength = answers.reduce((sum, answer) => sum + (answer?.length || 0), 0);
+              const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+              return completedAnswers.length > 0 ? Math.round(totalLength / completedAnswers.length) : 0;
+            })(),
+            vocabularyRichness: (() => {
+              const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+              const uniqueWords = [...new Set(allWords)];
+              return allWords.length > 0 ? Math.round((uniqueWords.length / allWords.length) * 100) : 0;
+            })(),
+            totalWords: answers.join(' ').split(/\s+/).filter(word => word.length > 0).length,
+            uniqueWords: (() => {
+              const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+              return [...new Set(allWords)].length;
+            })(),
+            
+            // 종합 점수 (Gemini 기준)
             overall: geminiResponse.detailed?.text?.contentQuality || 75
           }
         },
         
-        // 요약 정보 (Gemini 결과 사용)
+        // 🎯 summary 정보 (Gemini 분석 결과 사용)
         summary: {
           strengths: geminiResponse.summary?.strengths || ['성실한 태도', '기본기 보유'],
           improvements: geminiResponse.summary?.improvements || ['답변 구체화', '자신감 향상'],
           recommendation: geminiResponse.summary?.recommendation || '지속적인 연습을 통해 더욱 발전하실 수 있습니다!'
         },
         
-        // 점수 분석
+        // 🎯 scores 정보 (Gemini 점수 기준)
         scores: {
-          communication: geminiResponse.scores?.communication || 75,
-          appearance: geminiResponse.scores?.appearance || 75,
-          content: geminiResponse.scores?.content || 75,
+          communication: geminiResponse.scores?.communication || geminiResponse.detailed?.audio?.speechClarity || 75,
+          appearance: geminiResponse.scores?.appearance || geminiResponse.detailed?.video?.eyeContact || 75,
+          content: geminiResponse.scores?.content || geminiResponse.detailed?.text?.contentQuality || 75,
           overall: geminiResponse.overallScore || 75
+        },
+        
+        // 🎯 성능 메트릭 - 안전하게 처리
+        performanceMetrics: {
+          totalFrames: 0,
+          avgProcessingTime: 0,
+          errorCount: 0
+        },
+        
+        // 실제 면접 데이터
+        interviewStats: {
+          questionsTotal: questions.length,
+          questionsAnswered: answers.filter(a => a && a.trim()).length,
+          completionRate: questions.length > 0 ? 
+            Math.round((answers.filter(a => a && a.trim()).length / questions.length) * 100) : 0,
+          totalAnswerLength: answers.reduce((sum, a) => sum + (a?.length || 0), 0),
+          hasRecording: hasRecording,
+          recordingDuration: recordingDuration
         }
       };
 
-      // 🎯 finishAnalysis 호출해서 기존 시스템과 통합
-      await finishAnalysis({
+      console.log('🎯 변환된 최종 분석 결과:', enhancedAnalysisResult);
+      console.log('📊 구조 확인:');
+      console.log('  - overallScore:', enhancedAnalysisResult.overallScore);
+      console.log('  - grade:', enhancedAnalysisResult.grade);
+      console.log('  - detailed.audio.feedback:', enhancedAnalysisResult.detailed?.audio?.feedback?.substring(0, 50) + '...');
+      console.log('  - detailed.video.feedback:', enhancedAnalysisResult.detailed?.video?.feedback?.substring(0, 50) + '...');
+      console.log('  - detailed.text.feedback:', enhancedAnalysisResult.detailed?.text?.feedback?.substring(0, 50) + '...');
+      console.log('  - summary.strengths:', enhancedAnalysisResult.summary?.strengths);
+      console.log('  - summary.improvements:', enhancedAnalysisResult.summary?.improvements);
+      console.log('  - summary.recommendation:', enhancedAnalysisResult.summary?.recommendation?.substring(0, 50) + '...');
+
+      // 🎯 finishAnalysis 호출해서 기존 시스템과 통합 (analysisRef 없이)
+      const finalResult = await finishAnalysis({
         // 실시간 분석 데이터
         realTimeData: analysisData,
         
@@ -340,11 +421,11 @@ const MockInterviewPage = () => {
           cameraPermissionGranted: cameraPermissionGranted
         },
         
-        // 🎯 Gemini 분석 결과 추가
+        // 🎯 Gemini 분석 결과 전달 (이미 변환된 형태)
         geminiAnalysis: enhancedAnalysisResult
       });
       
-      console.log('✅ Gemini AI 분석 결과 통합 완료:', enhancedAnalysisResult);
+      console.log('✅ Gemini AI 분석 결과 통합 완료:', finalResult);
       
       // 분석 진행률 시뮬레이션
       await new Promise(resolve => setTimeout(resolve, 1000));

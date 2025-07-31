@@ -446,3 +446,200 @@
   color: #475569;
   line-height: 1.4;
 }
+
+.progressItemWithFeedback {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.progressItemWithFeedback:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* 피드백 리스트 컨테이너 */
+.progressListWithFeedback {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+/* 피드백 박스 */
+.feedbackBox {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fefefe 0%, #f9fafb 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+  position: relative;
+  animation: feedbackFadeIn 0.5s ease-out;
+}
+
+@keyframes feedbackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 피드백 헤더 */
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.feedbackHeader span {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* 피드백 내용 */
+.feedbackContent {
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.feedbackContent p {
+  margin: 0;
+  font-size: 14px;
+  text-align: justify;
+  word-break: keep-all;
+  hyphens: auto;
+}
+
+/* 피드백 박스 호버 효과 */
+.feedbackBox:hover {
+  border-left-color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+/* 점수에 따른 피드백 박스 색상 변화 */
+.progressItemWithFeedback[data-score="high"] .feedbackBox {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f7fee7 100%);
+}
+
+.progressItemWithFeedback[data-score="medium"] .feedbackBox {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.progressItemWithFeedback[data-score="low"] .feedbackBox {
+  border-left-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .progressItemWithFeedback {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .feedbackBox {
+    padding: 12px;
+    margin-top: 12px;
+  }
+  
+  .feedbackContent p {
+    font-size: 13px;
+  }
+  
+  .progressListWithFeedback {
+    gap: 16px;
+  }
+}
+
+/* 기존 progressItem과의 호환성 */
+.progressItemWithFeedback .progressItem {
+  background: transparent;
+  padding: 0;
+  border: none;
+  margin-bottom: 0;
+}
+
+/* 피드백 박스 내 강조 텍스트 */
+.feedbackContent strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* 피드백 박스 내 링크 스타일 */
+.feedbackContent a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.feedbackContent a:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+/* 피드백 아이콘 애니메이션 */
+.feedbackHeader svg {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 점수 상세 섹션 개선 */
+.scoreDetails h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* 피드백 품질 표시기 */
+.feedbackQuality {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: auto;
+}
+
+.feedbackQuality.expert {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1d4ed8;
+}
+
+.feedbackQuality.ai {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  color: #7c3aed;
+}
