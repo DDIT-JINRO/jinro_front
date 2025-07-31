@@ -28,6 +28,7 @@ import EnhancedVideoPlayer from '../../components/mockInterview/EnhancedVideoPla
 import AIAnalysisLoading from '../../components/mockInterview/AIAnalysisLoading';
 import AIAnalysisResult from '../../components/mockInterview/AIAnalysisResult';
 import RealTimeAnalysisOverlay from '../../components/mockInterview/RealTimeAnalysisOverlay';
+import { interviewAnalysisApi } from '../../api/mockInterview/interviewAnalysisApi';
 
 // 유틸리티 임포트
 import { TIMER_DEFAULTS, calculateCircularProgress } from '../../utils/mockInterview';
@@ -226,7 +227,7 @@ const MockInterviewPage = () => {
   // 🎯 AI 분석 시작 - 실제 분석 데이터 사용
   const startAIAnalysis = async () => {
     try {
-      console.log('🤖 최종 AI 분석 시작...');
+      console.log('🤖 Gemini AI 분석 시작...');
       console.log('📊 분석할 데이터:', {
         analysisData: analysisData,
         answers: answers,
@@ -238,8 +239,86 @@ const MockInterviewPage = () => {
       setShowAILoading(true);
       setShowResults(false);
       
-      // 🎯 실제 실시간 분석 데이터와 면접 데이터를 함께 전달
-      const finalResult = await finishAnalysis({
+      // 🎯 백엔드 API 요청 데이터 구성
+      const requestData = {
+        interview_data: {
+          questions: questions || [],
+          answers: answers || [],
+          duration: recordingDuration || 0,
+          sessionId: `interview_${Date.now()}`
+        },
+        realtime_analysis: {
+          audio: {
+            averageVolume: analysisData?.audio?.averageVolume || 0,
+            speakingTime: analysisData?.audio?.speakingTime || 0,
+            wordsPerMinute: analysisData?.audio?.wordsPerMinute || 0,
+            fillerWordsCount: analysisData?.audio?.fillerWordsCount || 0
+          },
+          video: {
+            faceDetected: analysisData?.video?.faceDetected || false,
+            eyeContactPercentage: analysisData?.video?.eyeContactPercentage || 0,
+            smileDetection: analysisData?.video?.smileDetection || 0,
+            postureScore: analysisData?.video?.postureScore || 0,
+            faceDetectionRate: analysisData?.video?.faceDetectionRate || 0
+          }
+        }
+      };
+
+      // 🎯 백엔드 Gemini API 호출
+      const geminiResponse = await interviewAnalysisApi.requestDetailedAnalysis(requestData);
+      
+      // 🎯 기존 finishAnalysis 결과와 Gemini 결과를 통합
+      const enhancedAnalysisResult = {
+        // Gemini AI 분석 결과
+        overallScore: geminiResponse.overallScore || 75,
+        grade: geminiResponse.grade || 'B',
+        timestamp: geminiResponse.timestamp || new Date().toISOString(),
+        duration: recordingDuration,
+        analysisMethod: 'Gemini AI Expert Analysis',
+        
+        // 상세 분석 (Gemini 결과 우선 사용)
+        detailed: {
+          audio: {
+            speechClarity: geminiResponse.detailed?.audio?.speechClarity || 75,
+            paceAppropriate: geminiResponse.detailed?.audio?.paceAppropriate || 75,
+            volumeConsistency: geminiResponse.detailed?.audio?.volumeConsistency || 75,
+            feedback: geminiResponse.detailed?.audio?.feedback || '음성 분석이 완료되었습니다.',
+            overall: geminiResponse.detailed?.audio?.speechClarity || 75
+          },
+          video: {
+            eyeContact: geminiResponse.detailed?.video?.eyeContact || 75,
+            facialExpression: geminiResponse.detailed?.video?.facialExpression || 75,
+            posture: geminiResponse.detailed?.video?.posture || 75,
+            feedback: geminiResponse.detailed?.video?.feedback || '비언어적 소통 분석이 완료되었습니다.',
+            overall: geminiResponse.detailed?.video?.eyeContact || 75
+          },
+          text: {
+            contentQuality: geminiResponse.detailed?.text?.contentQuality || 75,
+            structureLogic: geminiResponse.detailed?.text?.structureLogic || 75,
+            relevance: geminiResponse.detailed?.text?.relevance || 75,
+            feedback: geminiResponse.detailed?.text?.feedback || '답변 내용 분석이 완료되었습니다.',
+            overall: geminiResponse.detailed?.text?.contentQuality || 75
+          }
+        },
+        
+        // 요약 정보 (Gemini 결과 사용)
+        summary: {
+          strengths: geminiResponse.summary?.strengths || ['성실한 태도', '기본기 보유'],
+          improvements: geminiResponse.summary?.improvements || ['답변 구체화', '자신감 향상'],
+          recommendation: geminiResponse.summary?.recommendation || '지속적인 연습을 통해 더욱 발전하실 수 있습니다!'
+        },
+        
+        // 점수 분석
+        scores: {
+          communication: geminiResponse.scores?.communication || 75,
+          appearance: geminiResponse.scores?.appearance || 75,
+          content: geminiResponse.scores?.content || 75,
+          overall: geminiResponse.overallScore || 75
+        }
+      };
+
+      // 🎯 finishAnalysis 호출해서 기존 시스템과 통합
+      await finishAnalysis({
         // 실시간 분석 데이터
         realTimeData: analysisData,
         
@@ -259,21 +338,55 @@ const MockInterviewPage = () => {
           speechSupported: speechSupported,
           audioInitialized: audioInitialized,
           cameraPermissionGranted: cameraPermissionGranted
-        }
+        },
+        
+        // 🎯 Gemini 분석 결과 추가
+        geminiAnalysis: enhancedAnalysisResult
       });
       
-      console.log('✅ 최종 분석 결과:', finalResult);
+      console.log('✅ Gemini AI 분석 결과 통합 완료:', enhancedAnalysisResult);
       
       // 분석 진행률 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       setShowAILoading(false);
       setShowAIAnalysis(true);
       
     } catch (error) {
-      console.error('❌ AI 분석 실패:', error);
+      console.error('❌ Gemini AI 분석 실패:', error);
       setShowAILoading(false);
-      alert('AI 분석 중 오류가 발생했습니다. 다시 시도해주세요.');
+      
+      // 에러 발생 시 기존 분석 방식으로 fallback
+      alert(`AI 분석 중 문제가 발생했습니다: ${error.message}\n\n기본 분석으로 진행합니다.`);
+      
+      try {
+        // 기존 방식으로 fallback
+        const fallbackResult = await finishAnalysis({
+          realTimeData: analysisData,
+          interviewData: {
+            questions: questions,
+            answers: answers,
+            totalDuration: recordingDuration,
+            hasRecording: hasRecording,
+            questionsCompleted: currentQuestion + 1,
+            totalQuestions: totalQuestions
+          },
+          technicalInfo: {
+            isMediaPipeReady: isMediaPipeReady,
+            speechSupported: speechSupported,
+            audioInitialized: audioInitialized,
+            cameraPermissionGranted: cameraPermissionGranted
+          }
+        });
+        
+        setShowAILoading(false);
+        setShowAIAnalysis(true);
+        
+      } catch (fallbackError) {
+        console.error('❌ Fallback 분석도 실패:', fallbackError);
+        setShowResults(true);
+        alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
     }
   };
 

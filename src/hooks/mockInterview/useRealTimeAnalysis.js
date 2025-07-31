@@ -1293,8 +1293,8 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   }, []);
 
   // 🎯 최종 분석 결과 생성
-  // 🎯 최종 분석 결과 생성 - 실제 데이터 기반
-  const finishAnalysis = useCallback((additionalData = {}) => {
+  // 🎯 최종 분석 결과 생성 (Gemini API 연동 버전)
+  const finishAnalysis = useCallback(async (additionalData = {}) => {
     console.log('🏁 최종 분석 결과 생성 시작...');
     console.log('📊 전달받은 추가 데이터:', additionalData);
     
@@ -1307,391 +1307,519 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     const realTimeData = additionalData.realTimeData || analysisData;
     const interviewData = additionalData.interviewData || {};
     const technicalInfo = additionalData.technicalInfo || {};
+    const geminiAnalysis = additionalData.geminiAnalysis; // 🎯 Gemini 분석 결과
     
     console.log('🔍 분석할 실시간 데이터:', realTimeData);
     console.log('📝 면접 데이터:', interviewData);
+    console.log('🤖 Gemini 분석 결과:', geminiAnalysis);
     
-    // 🎯 음성 분석 점수 계산 (실제 데이터 기반)
-    let audioScore = 65; // 기본 점수
+    let result;
     
-    const avgVolume = realTimeData?.audio?.averageVolume || 0;
-    const speakingTime = realTimeData?.audio?.speakingTime || 0;
-    const wpm = realTimeData?.audio?.wordsPerMinute || 0;
-    const fillerWords = realTimeData?.audio?.fillerWordsCount || 0;
-    const speakingRatio = duration > 0 ? (speakingTime / duration) : 0;
-    
-    console.log('🎤 음성 분석 지표:', {
-      avgVolume, speakingTime, wpm, fillerWords, speakingRatio, duration
-    });
-    
-    // 볼륨 점수 (최적 범위: 20-80)
-    if (avgVolume >= 25 && avgVolume <= 75) {
-      audioScore += 15; // 완벽한 볼륨
-    } else if (avgVolume >= 15 && avgVolume <= 85) {
-      audioScore += 8;  // 양호한 볼륨
-    } else if (avgVolume < 10) {
-      audioScore -= 20; // 너무 작음
-    } else if (avgVolume > 90) {
-      audioScore -= 15; // 너무 큼
-    }
-    
-    // WPM 점수 (최적 범위: 130-180)
-    if (wpm >= 130 && wpm <= 180) {
-      audioScore += 12; // 완벽한 속도
-    } else if (wpm >= 110 && wpm <= 200) {
-      audioScore += 6;  // 양호한 속도
-    } else if (wmp < 90 && wpm > 0) {
-      audioScore -= 15; // 너무 느림
-    } else if (wpm > 220) {
-      audioScore -= 10; // 너무 빠름
-    }
-    
-    // 말하기 비율 점수 (적절한 말하기 시간: 40-80%)
-    if (speakingRatio >= 0.4 && speakingRatio <= 0.8) {
-      audioScore += 10; // 적절한 비율
-    } else if (speakingRatio >= 0.2 && speakingRatio < 0.4) {
-      audioScore += 3;  // 약간 적음
-    } else if (speakingRatio < 0.2) {
-      audioScore -= 15; // 너무 적게 말함
-    } else if (speakingRatio > 0.9) {
-      audioScore -= 8;  // 너무 많이 말함
-    }
-    
-    // 습관어 페널티
-    if (fillerWords === 0) {
-      audioScore += 5;  // 습관어 없음
-    } else if (fillerWords <= 3) {
-      audioScore += 2;  // 적은 습관어
-    } else if (fillerWords > 10) {
-      audioScore -= 10; // 습관어 많음
-    } else if (fillerWords > 5) {
-      audioScore -= 5;  // 습관어 보통
-    }
-    
-    // 🎯 영상 분석 점수 계산 (실제 데이터 기반)
-    let videoScore = 60; // 기본 점수
-    
-    const faceDetectionRate = realTimeData?.video?.faceDetectionRate || 0;
-    const eyeContactPercentage = realTimeData?.video?.eyeContactPercentage || 0;
-    const smileDetection = realTimeData?.video?.smileDetection || 0;
-    const postureScore = realTimeData?.video?.postureScore || 0;
-    
-    console.log('👁️ 영상 분석 지표:', {
-      faceDetectionRate, eyeContactPercentage, smileDetection, postureScore
-    });
-    
-    // 얼굴 감지율 점수
-    if (faceDetectionRate >= 90) {
-      videoScore += 15; // 완벽한 감지
-    } else if (faceDetectionRate >= 75) {
-      videoScore += 10; // 우수한 감지
-    } else if (faceDetectionRate >= 50) {
-      videoScore += 5;  // 보통 감지
-    } else if (faceDetectionRate < 30) {
-      videoScore -= 25; // 감지 부족
-    }
-    
-    // 🎯 아이컨택 점수 (가장 중요한 요소 - 가중치 최대)
-    if (eyeContactPercentage >= 80) {
-      videoScore += 25; // 완벽한 아이컨택
-    } else if (eyeContactPercentage >= 70) {
-      videoScore += 20; // 우수한 아이컨택
-    } else if (eyeContactPercentage >= 60) {
-      videoScore += 15; // 좋은 아이컨택
-    } else if (eyeContactPercentage >= 45) {
-      videoScore += 8;  // 보통 아이컨택
-    } else if (eyeContactPercentage >= 30) {
-      videoScore += 3;  // 부족한 아이컨택
-    } else if (eyeContactPercentage >= 15) {
-      videoScore -= 5;  // 매우 부족
-    } else {
-      videoScore -= 20; // 아이컨택 없음
-    }
-    
-    // 미소 점수
-    if (smileDetection >= 40) {
-      videoScore += 10; // 매우 밝은 표정
-    } else if (smileDetection >= 25) {
-      videoScore += 6;  // 밝은 표정
-    } else if (smileDetection >= 15) {
-      videoScore += 3;  // 보통 표정
-    } else if (smileDetection < 5) {
-      videoScore -= 5;  // 표정 부족
-    }
-    
-    // 자세 점수
-    if (postureScore >= 80) {
-      videoScore += 8;  // 완벽한 자세
-    } else if (postureScore >= 70) {
-      videoScore += 5;  // 좋은 자세
-    } else if (postureScore >= 60) {
-      videoScore += 2;  // 보통 자세
-    } else if (postureScore < 50) {
-      videoScore -= 8;  // 자세 불안정
-    }
-    
-    // 점수 범위 제한 및 가중 평균
-    audioScore = Math.max(20, Math.min(95, audioScore));
-    videoScore = Math.max(20, Math.min(95, videoScore));
-    
-    // 🎯 면접 답변 텍스트 분석
-    const answers = interviewData.answers || [];
-    const questions = interviewData.questions || [];
-    let textScore = 70; // 기본 텍스트 점수
-    
-    console.log('📝 답변 분석:', { answers: answers.length, questions: questions.length });
-    
-    // 답변 완성도 분석
-    const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
-    const completionRate = questions.length > 0 ? (completedAnswers.length / questions.length) : 0;
-    
-    if (completionRate >= 1.0) {
-      textScore += 15; // 모든 질문 답변
-    } else if (completionRate >= 0.8) {
-      textScore += 10; // 80% 이상 답변
-    } else if (completionRate >= 0.6) {
-      textScore += 5;  // 60% 이상 답변
-    } else if (completionRate < 0.4) {
-      textScore -= 15; // 40% 미만 답변
-    }
-    
-    // 답변 길이 분석
-    const totalAnswerLength = answers.reduce((sum, answer) => sum + (answer?.length || 0), 0);
-    const avgAnswerLength = completedAnswers.length > 0 ? totalAnswerLength / completedAnswers.length : 0;
-    
-    if (avgAnswerLength >= 100) {
-      textScore += 8;  // 충분한 답변 길이
-    } else if (avgAnswerLength >= 50) {
-      textScore += 4;  // 적절한 답변 길이
-    } else if (avgAnswerLength < 20 && avgAnswerLength > 0) {
-      textScore -= 10; // 답변 너무 짧음
-    }
-    
-    // 답변 다양성 분석 (단어 다양성)
-    const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
-    const uniqueWords = [...new Set(allWords)];
-    const vocabularyRichness = allWords.length > 0 ? (uniqueWords.length / allWords.length) : 0;
-    
-    if (vocabularyRichness >= 0.7) {
-      textScore += 6;  // 풍부한 어휘
-    } else if (vocabularyRichness >= 0.5) {
-      textScore += 3;  // 적절한 어휘
-    } else if (vocabularyRichness < 0.3) {
-      textScore -= 5;  // 단조로운 어휘
-    }
-    
-    textScore = Math.max(20, Math.min(95, textScore));
-    
-    // 🎯 종합 점수 계산 (가중 평균)
-    const overallScore = Math.round(
-      (audioScore * 0.35 + videoScore * 0.45 + textScore * 0.2) // 영상 > 음성 > 텍스트 순 가중치
-    );
-    
-    console.log('📊 점수 계산 결과:', {
-      audioScore, videoScore, textScore, overallScore
-    });
-    
-    // 등급 계산
-    let grade;
-    if (overallScore >= 90) grade = 'A+';
-    else if (overallScore >= 85) grade = 'A';
-    else if (overallScore >= 80) grade = 'B+';
-    else if (overallScore >= 75) grade = 'B';
-    else if (overallScore >= 70) grade = 'C+';
-    else if (overallScore >= 65) grade = 'C';
-    else if (overallScore >= 60) grade = 'D+';
-    else if (overallScore >= 55) grade = 'D';
-    else grade = 'F';
-    
-    // 🎯 실제 데이터 기반 강점과 개선사항 분석
-    const strengths = [];
-    const improvements = [];
-    
-    // 얼굴 감지 관련
-    if (faceDetectionRate >= 85) {
-      strengths.push(`${isMediaPipeReady ? 'AI 분석: ' : ''}안정적인 카메라 앞 자세 유지 (${faceDetectionRate}%)`);
-    } else if (faceDetectionRate < 60) {
-      improvements.push('카메라 앞에 정면으로 앉아 얼굴이 잘 보이도록 위치 조정 필요');
-    }
-    
-    // 🎯 아이컨택 관련 (상세 피드백)
-    if (eyeContactPercentage >= 80) {
-      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}탁월한 아이컨택 (${eyeContactPercentage}%) - 면접관과의 신뢰감 형성에 매우 효과적`);
-    } else if (eyeContactPercentage >= 70) {
-      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}우수한 아이컨택 (${eyeContactPercentage}%) - 자신감 있는 인상을 줌`);
-    } else if (eyeContactPercentage >= 60) {
-      strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}좋은 아이컨택 유지 (${eyeContactPercentage}%)`);
-      improvements.push('아이컨택을 조금 더 자주 유지하면 더욱 완벽해집니다');
-    } else if (eyeContactPercentage >= 45) {
-      improvements.push(`아이컨택 개선 필요 (현재 ${eyeContactPercentage}%) - 카메라 렌즈를 더 자주 봐주세요`);
-    } else if (eyeContactPercentage >= 25) {
-      improvements.push(`아이컨택이 부족합니다 (${eyeContactPercentage}%) - 카메라와의 시선 접촉 연습이 필요합니다`);
-    } else {
-      improvements.push('아이컨택이 매우 부족합니다. 카메라 렌즈를 직접 보는 연습을 집중적으로 해보세요');
-    }
-    
-    // 음성 관련
-    if (avgVolume >= 25 && avgVolume <= 75) {
-      strengths.push(`적절한 목소리 크기와 명확성 (볼륨 ${avgVolume})`);
-    } else if (avgVolume < 20) {
-      improvements.push(`목소리를 더 크고 명확하게 발음해보세요 (현재 볼륨 ${avgVolume})`);
-    } else if (avgVolume > 85) {
-      improvements.push(`목소리 톤을 조금 더 부드럽게 조절해보세요 (현재 볼륨 ${avgVolume})`);
-    }
-    
-    // WPM 관련
-    if (wpm >= 130 && wpm <= 180) {
-      strengths.push(`적절한 말하기 속도 (${wpm} WPM)`);
-    } else if (wpm < 110 && wmp > 0) {
-      improvements.push(`말하기 속도를 조금 더 빠르게 해보세요 (현재 ${wpm} WPM)`);
-    } else if (wpm > 200) {
-      improvements.push(`말하기 속도를 조금 늦춰서 더 명확하게 전달해보세요 (현재 ${wpm} WPM)`);
-    }
-    
-    // 표정 관련
-    if (smileDetection >= 35) {
-      strengths.push(`${isMediaPipeReady ? 'AI 표정 분석: ' : ''}밝고 긍정적인 표정 (${smileDetection}%)`);
-    } else if (smileDetection < 15) {
-      improvements.push(`더 밝은 표정으로 긍정적인 인상을 만들어보세요 (현재 ${smileDetection}%)`);
-    }
-    
-    // 말하기 비율 관련
-    if (speakingRatio >= 0.5 && speakingRatio <= 0.8) {
-      strengths.push(`적절한 답변 길이와 설명 (말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
-    } else if (speakingRatio < 0.3) {
-      improvements.push(`답변을 더 자세히 설명해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
-    } else if (speakingRatio > 0.85) {
-      improvements.push(`더 간결하고 핵심적인 답변을 연습해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
-    }
-    
-    // 답변 완성도 관련
-    if (completionRate >= 1.0) {
-      strengths.push(`모든 질문에 성실히 답변함 (${completedAnswers.length}/${questions.length})`);
-    } else if (completionRate >= 0.8) {
-      strengths.push(`대부분의 질문에 답변함 (${completedAnswers.length}/${questions.length})`);
-    } else if (completionRate < 0.6) {
-      improvements.push(`더 많은 질문에 답변하는 연습이 필요합니다 (현재 ${completedAnswers.length}/${questions.length})`);
-    }
-    
-    // 답변 길이 관련
-    if (avgAnswerLength >= 100) {
-      strengths.push(`충분히 상세한 답변 제공 (평균 ${Math.round(avgAnswerLength)}자)`);
-    } else if (avgAnswerLength < 30 && avgAnswerLength > 0) {
-      improvements.push(`답변을 더 구체적이고 상세하게 작성해보세요 (평균 ${Math.round(avgAnswerLength)}자)`);
-    }
-    
-    // 어휘 다양성 관련
-    if (vocabularyRichness >= 0.7) {
-      strengths.push(`풍부하고 다양한 어휘 사용 (어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
-    } else if (vocabularyRichness < 0.4) {
-      improvements.push(`더 다양한 어휘를 사용해보세요 (현재 어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
-    }
-    
-    // 습관어 관련
-    if (fillerWords === 0) {
-      strengths.push('습관어 없이 명확한 발화');
-    } else if (fillerWords <= 3) {
-      strengths.push(`적은 습관어 사용으로 깔끔한 발화 (${fillerWords}회)`);
-    } else if (fillerWords > 8) {
-      improvements.push(`습관어 사용을 줄여보세요 (현재 ${fillerWords}회) - "음", "어", "그" 등의 사용 주의`);
-    }
-    
-    // 기본 강점이 없는 경우 추가
-    if (strengths.length === 0) {
-      strengths.push('면접에 성실히 참여하는 적극적인 태도');
-      strengths.push('주어진 시간 동안 꾸준히 답변하려는 노력');
-    }
-    
-    // 기본 개선사항이 없는 경우 추가
-    if (improvements.length === 0) {
-      improvements.push('현재 수준을 유지하며 더욱 자연스러운 면접 연습 계속하기');
-    }
-    
-    // 🎯 맞춤형 추천사항 생성
-    let recommendation;
-    if (overallScore >= 90) {
-      recommendation = `🎉 매우 우수한 면접 태도입니다! ${isMediaPipeReady ? 'AI 분석 결과' : '분석 결과'} 모든 면에서 뛰어난 성과를 보였습니다. 특히 아이컨택(${eyeContactPercentage}%)과 말하기 태도가 훌륭합니다. 자신감을 가지고 실제 면접에 임하세요.`;
-    } else if (overallScore >= 80) {
-      recommendation = `👍 좋은 면접 실력을 보여주셨습니다. ${eyeContactPercentage < 60 ? '특히 아이컨택 부분을 더 연습하면' : avgVolume < 20 ? '목소리를 더 크게 하는 연습을 하면' : '현재 수준을 유지하시면'} 더욱 완벽해질 것입니다.`;
-    } else if (overallScore >= 70) {
-      recommendation = `📈 기본기는 잘 갖추어져 있습니다. 아이컨택(${eyeContactPercentage}%)과 목소리 전달력을 중점적으로 연습해보세요. 특히 ${completionRate < 0.8 ? '모든 질문에 답변하는 연습' : '답변의 구체성을 높이는 연습'}이 도움이 될 것입니다.`;
-    } else if (overallScore >= 60) {
-      recommendation = `💪 면접 기술 향상이 필요합니다. 특히 카메라와의 아이컨택(${eyeContactPercentage}%)과 자연스러운 말하기 연습을 더 해보세요. 충분한 연습을 통해 개선 가능합니다.`;
-    } else {
-      recommendation = `🎯 체계적인 면접 준비가 필요합니다. 기본적인 아이컨택, 자세, 말하기 속도부터 차근차근 연습해보세요. ${avgVolume < 15 ? '먼저 목소리 크기부터' : eyeContactPercentage < 25 ? '카메라 보는 연습부터' : '기본 자세부터'} 시작하는 것을 추천합니다.`;
-    }
-    
-    // 최종 결과 객체 생성
-    const result = {
-      // 기본 점수 정보
-      overallScore,
-      grade,
-      scores: {
-        communication: audioScore,
-        appearance: videoScore,
-        content: textScore
-      },
+    // 🎯 Gemini 분석 결과가 있으면 우선 사용
+    if (geminiAnalysis) {
+      console.log('🎯 Gemini AI 전문가 분석 결과 사용');
       
-      // 상세 분석 데이터 (실제 수집된 데이터)
-      detailed: {
-        audio: {
-          averageVolume: Math.round(avgVolume),
-          speakingTime: speakingTime,
-          wordsPerMinute: wpm,
-          fillerWords: fillerWords,
-          speechClarity: Math.min(95, Math.max(60, 85 - fillerWords * 2)), // 습관어 기반 명확도
-          speakingRatio: Math.round(speakingRatio * 100)
+      // Gemini 분석 결과를 기본으로 하되, 실시간 데이터도 포함
+      result = {
+        // Gemini 분석 기본 정보
+        overallScore: geminiAnalysis.overallScore,
+        grade: geminiAnalysis.grade,
+        scores: {
+          communication: geminiAnalysis.scores?.communication || 75,
+          appearance: geminiAnalysis.scores?.appearance || 75,
+          content: geminiAnalysis.scores?.content || 75
         },
-        video: {
-          faceDetectionRate: Math.round(faceDetectionRate),
-          eyeContactPercentage: Math.round(eyeContactPercentage),
-          smileFrequency: Math.round(smileDetection),
-          postureScore: Math.round(postureScore),
-          headPoseStability: Math.round(postureScore * 0.9) // 자세와 연관
+        
+        // 🎯 Gemini 상세 분석 + 실시간 데이터 통합
+        detailed: {
+          audio: {
+            // Gemini 분석 결과
+            speechClarity: geminiAnalysis.detailed?.audio?.speechClarity || 75,
+            paceAppropriate: geminiAnalysis.detailed?.audio?.paceAppropriate || 75,
+            volumeConsistency: geminiAnalysis.detailed?.audio?.volumeConsistency || 75,
+            feedback: geminiAnalysis.detailed?.audio?.feedback || '음성 분석이 완료되었습니다.',
+            
+            // 실시간 데이터 추가
+            averageVolume: Math.round(realTimeData?.audio?.averageVolume || 0),
+            speakingTime: realTimeData?.audio?.speakingTime || 0,
+            wordsPerMinute: realTimeData?.audio?.wordsPerMinute || 0,
+            fillerWords: realTimeData?.audio?.fillerWordsCount || 0,
+            speakingRatio: duration > 0 ? Math.round((realTimeData?.audio?.speakingTime || 0) / duration * 100) : 0
+          },
+          video: {
+            // Gemini 분석 결과
+            eyeContact: geminiAnalysis.detailed?.video?.eyeContact || 75,
+            facialExpression: geminiAnalysis.detailed?.video?.facialExpression || 75,
+            posture: geminiAnalysis.detailed?.video?.posture || 75,
+            feedback: geminiAnalysis.detailed?.video?.feedback || '비언어적 소통 분석이 완료되었습니다.',
+            
+            // 실시간 데이터 추가
+            faceDetectionRate: Math.round(realTimeData?.video?.faceDetectionRate || 0),
+            eyeContactPercentage: Math.round(realTimeData?.video?.eyeContactPercentage || 0),
+            smileFrequency: Math.round(realTimeData?.video?.smileDetection || 0),
+            postureScore: Math.round(realTimeData?.video?.postureScore || 0),
+            headPoseStability: Math.round((realTimeData?.video?.postureScore || 0) * 0.9)
+          },
+          text: {
+            // Gemini 분석 결과
+            contentQuality: geminiAnalysis.detailed?.text?.contentQuality || 75,
+            structureLogic: geminiAnalysis.detailed?.text?.structureLogic || 75,
+            relevance: geminiAnalysis.detailed?.text?.relevance || 75,
+            feedback: geminiAnalysis.detailed?.text?.feedback || '답변 내용 분석이 완료되었습니다.',
+            
+            // 실시간 계산 데이터 추가
+            completionRate: (() => {
+              const answers = interviewData.answers || [];
+              const questions = interviewData.questions || [];
+              const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+              return questions.length > 0 ? Math.round((completedAnswers.length / questions.length) * 100) : 0;
+            })(),
+            averageAnswerLength: (() => {
+              const answers = interviewData.answers || [];
+              const totalLength = answers.reduce((sum, answer) => sum + (answer?.length || 0), 0);
+              const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+              return completedAnswers.length > 0 ? Math.round(totalLength / completedAnswers.length) : 0;
+            })(),
+            vocabularyRichness: (() => {
+              const answers = interviewData.answers || [];
+              const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+              const uniqueWords = [...new Set(allWords)];
+              return allWords.length > 0 ? Math.round((uniqueWords.length / allWords.length) * 100) : 0;
+            })(),
+            totalWords: (() => {
+              const answers = interviewData.answers || [];
+              return answers.join(' ').split(/\s+/).filter(word => word.length > 0).length;
+            })(),
+            uniqueWords: (() => {
+              const answers = interviewData.answers || [];
+              const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+              return [...new Set(allWords)].length;
+            })()
+          }
         },
-        text: {
-          completionRate: Math.round(completionRate * 100),
-          averageAnswerLength: Math.round(avgAnswerLength),
-          vocabularyRichness: Math.round(vocabularyRichness * 100),
-          totalWords: allWords.length,
-          uniqueWords: uniqueWords.length
+        
+        // Gemini 요약 정보 사용
+        summary: {
+          strengths: geminiAnalysis.summary?.strengths || ['성실한 태도', '기본기 보유'],
+          improvements: geminiAnalysis.summary?.improvements || ['답변 구체화', '자신감 향상'],
+          recommendation: geminiAnalysis.summary?.recommendation || '지속적인 연습을 통해 더욱 발전하실 수 있습니다!'
+        },
+        
+        // 메타데이터
+        duration,
+        timestamp: geminiAnalysis.timestamp || new Date().toISOString(),
+        analysisMethod: geminiAnalysis.analysisMethod || 'Gemini AI Expert Analysis',
+        
+        // 성능 메트릭 (기존 유지)
+        performanceMetrics: {
+          totalFrames: analysisRef.current.totalFrames,
+          avgProcessingTime: analysisRef.current.performanceMetrics.avgProcessingTime,
+          errorCount: analysisRef.current.performanceMetrics.errorCount
+        },
+        
+        // 실제 면접 데이터
+        interviewStats: {
+          questionsTotal: (interviewData.questions || []).length,
+          questionsAnswered: (interviewData.answers || []).filter(a => a && a.trim()).length,
+          completionRate: (() => {
+            const questions = interviewData.questions || [];
+            const answers = interviewData.answers || [];
+            const completed = answers.filter(a => a && a.trim()).length;
+            return questions.length > 0 ? Math.round((completed / questions.length) * 100) : 0;
+          })(),
+          totalAnswerLength: (interviewData.answers || []).reduce((sum, a) => sum + (a?.length || 0), 0),
+          hasRecording: interviewData.hasRecording || false,
+          recordingDuration: interviewData.totalDuration || duration
         }
-      },
+      };
       
-      // 요약 정보
-      summary: {
-        strengths,
-        improvements,
-        recommendation
-      },
+    } else {
+      // 🎯 Gemini 분석이 없는 경우 기존 로직 사용
+      console.log('🔄 기존 분석 방식 사용 (Gemini 분석 없음)');
       
-      // 메타데이터
-      duration,
-      timestamp: endTime,
-      analysisMethod: isMediaPipeReady 
-        ? 'MediaPipe AI (2024) - Enhanced Face & Eye Tracking + Web Audio API' 
-        : 'Advanced Simulation with Realistic Patterns + Web Audio API',
+      // 🎯 음성 분석 점수 계산 (실제 데이터 기반)
+      let audioScore = 65; // 기본 점수
       
-      // 성능 메트릭
-      performanceMetrics: {
-        totalFrames: analysisRef.current.totalFrames,
-        avgProcessingTime: analysisRef.current.performanceMetrics.avgProcessingTime,
-        errorCount: analysisRef.current.performanceMetrics.errorCount
-      },
+      const avgVolume = realTimeData?.audio?.averageVolume || 0;
+      const speakingTime = realTimeData?.audio?.speakingTime || 0;
+      const wpm = realTimeData?.audio?.wordsPerMinute || 0;
+      const fillerWords = realTimeData?.audio?.fillerWordsCount || 0;
+      const speakingRatio = duration > 0 ? (speakingTime / duration) : 0;
       
-      // 실제 면접 데이터
-      interviewStats: {
-        questionsTotal: questions.length,
-        questionsAnswered: completedAnswers.length,
-        completionRate: Math.round(completionRate * 100),
-        totalAnswerLength: totalAnswerLength,
-        hasRecording: interviewData.hasRecording || false,
-        recordingDuration: interviewData.totalDuration || duration
+      console.log('🎤 음성 분석 지표:', {
+        avgVolume, speakingTime, wpm, fillerWords, speakingRatio, duration
+      });
+      
+      // 볼륨 점수 (최적 범위: 20-80)
+      if (avgVolume >= 25 && avgVolume <= 75) {
+        audioScore += 15; // 완벽한 볼륨
+      } else if (avgVolume >= 15 && avgVolume <= 85) {
+        audioScore += 8;  // 양호한 볼륨
+      } else if (avgVolume < 10) {
+        audioScore -= 20; // 너무 작음
+      } else if (avgVolume > 90) {
+        audioScore -= 15; // 너무 큼
       }
-    };
+      
+      // WPM 점수 (최적 범위: 130-180) - 🎯 오타 수정: wmp -> wpm
+      if (wpm >= 130 && wpm <= 180) {
+        audioScore += 12; // 완벽한 속도
+      } else if (wpm >= 110 && wpm <= 200) {
+        audioScore += 6;  // 양호한 속도
+      } else if (wpm < 90 && wpm > 0) { // 🎯 오타 수정
+        audioScore -= 15; // 너무 느림
+      } else if (wpm > 220) {
+        audioScore -= 10; // 너무 빠름
+      }
+      
+      // 말하기 비율 점수 (적절한 말하기 시간: 40-80%)
+      if (speakingRatio >= 0.4 && speakingRatio <= 0.8) {
+        audioScore += 10; // 적절한 비율
+      } else if (speakingRatio >= 0.2 && speakingRatio < 0.4) {
+        audioScore += 3;  // 약간 적음
+      } else if (speakingRatio < 0.2) {
+        audioScore -= 15; // 너무 적게 말함
+      } else if (speakingRatio > 0.9) {
+        audioScore -= 8;  // 너무 많이 말함
+      }
+      
+      // 습관어 페널티
+      if (fillerWords === 0) {
+        audioScore += 5;  // 습관어 없음
+      } else if (fillerWords <= 3) {
+        audioScore += 2;  // 적은 습관어
+      } else if (fillerWords > 10) {
+        audioScore -= 10; // 습관어 많음
+      } else if (fillerWords > 5) {
+        audioScore -= 5;  // 습관어 보통
+      }
+      
+      // 🎯 영상 분석 점수 계산 (실제 데이터 기반)
+      let videoScore = 60; // 기본 점수
+      
+      const faceDetectionRate = realTimeData?.video?.faceDetectionRate || 0;
+      const eyeContactPercentage = realTimeData?.video?.eyeContactPercentage || 0;
+      const smileDetection = realTimeData?.video?.smileDetection || 0;
+      const postureScore = realTimeData?.video?.postureScore || 0;
+      
+      console.log('👁️ 영상 분석 지표:', {
+        faceDetectionRate, eyeContactPercentage, smileDetection, postureScore
+      });
+      
+      // 얼굴 감지율 점수
+      if (faceDetectionRate >= 90) {
+        videoScore += 15; // 완벽한 감지
+      } else if (faceDetectionRate >= 75) {
+        videoScore += 10; // 우수한 감지
+      } else if (faceDetectionRate >= 50) {
+        videoScore += 5;  // 보통 감지
+      } else if (faceDetectionRate < 30) {
+        videoScore -= 25; // 감지 부족
+      }
+      
+      // 🎯 아이컨택 점수 (가장 중요한 요소 - 가중치 최대)
+      if (eyeContactPercentage >= 80) {
+        videoScore += 25; // 완벽한 아이컨택
+      } else if (eyeContactPercentage >= 70) {
+        videoScore += 20; // 우수한 아이컨택
+      } else if (eyeContactPercentage >= 60) {
+        videoScore += 15; // 좋은 아이컨택
+      } else if (eyeContactPercentage >= 45) {
+        videoScore += 8;  // 보통 아이컨택
+      } else if (eyeContactPercentage >= 30) {
+        videoScore += 3;  // 부족한 아이컨택
+      } else if (eyeContactPercentage >= 15) {
+        videoScore -= 5;  // 매우 부족
+      } else {
+        videoScore -= 20; // 아이컨택 없음
+      }
+      
+      // 미소 점수
+      if (smileDetection >= 40) {
+        videoScore += 10; // 매우 밝은 표정
+      } else if (smileDetection >= 25) {
+        videoScore += 6;  // 밝은 표정
+      } else if (smileDetection >= 15) {
+        videoScore += 3;  // 보통 표정
+      } else if (smileDetection < 5) {
+        videoScore -= 5;  // 표정 부족
+      }
+      
+      // 자세 점수
+      if (postureScore >= 80) {
+        videoScore += 8;  // 완벽한 자세
+      } else if (postureScore >= 70) {
+        videoScore += 5;  // 좋은 자세
+      } else if (postureScore >= 60) {
+        videoScore += 2;  // 보통 자세
+      } else if (postureScore < 50) {
+        videoScore -= 8;  // 자세 불안정
+      }
+      
+      // 점수 범위 제한 및 가중 평균
+      audioScore = Math.max(20, Math.min(95, audioScore));
+      videoScore = Math.max(20, Math.min(95, videoScore));
+      
+      // 🎯 면접 답변 텍스트 분석
+      const answers = interviewData.answers || [];
+      const questions = interviewData.questions || [];
+      let textScore = 70; // 기본 텍스트 점수
+      
+      console.log('📝 답변 분석:', { answers: answers.length, questions: questions.length });
+      
+      // 답변 완성도 분석
+      const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
+      const completionRate = questions.length > 0 ? (completedAnswers.length / questions.length) : 0;
+      
+      if (completionRate >= 1.0) {
+        textScore += 15; // 모든 질문 답변
+      } else if (completionRate >= 0.8) {
+        textScore += 10; // 80% 이상 답변
+      } else if (completionRate >= 0.6) {
+        textScore += 5;  // 60% 이상 답변
+      } else if (completionRate < 0.4) {
+        textScore -= 15; // 40% 미만 답변
+      }
+      
+      // 답변 길이 분석
+      const totalAnswerLength = answers.reduce((sum, answer) => sum + (answer?.length || 0), 0);
+      const avgAnswerLength = completedAnswers.length > 0 ? totalAnswerLength / completedAnswers.length : 0;
+      
+      if (avgAnswerLength >= 100) {
+        textScore += 8;  // 충분한 답변 길이
+      } else if (avgAnswerLength >= 50) {
+        textScore += 4;  // 적절한 답변 길이
+      } else if (avgAnswerLength < 20 && avgAnswerLength > 0) {
+        textScore -= 10; // 답변 너무 짧음
+      }
+      
+      // 답변 다양성 분석 (단어 다양성)
+      const allWords = answers.join(' ').toLowerCase().split(/\s+/).filter(word => word.length > 2);
+      const uniqueWords = [...new Set(allWords)];
+      const vocabularyRichness = allWords.length > 0 ? (uniqueWords.length / allWords.length) : 0;
+      
+      if (vocabularyRichness >= 0.7) {
+        textScore += 6;  // 풍부한 어휘
+      } else if (vocabularyRichness >= 0.5) {
+        textScore += 3;  // 적절한 어휘
+      } else if (vocabularyRichness < 0.3) {
+        textScore -= 5;  // 단조로운 어휘
+      }
+      
+      textScore = Math.max(20, Math.min(95, textScore));
+      
+      // 🎯 종합 점수 계산 (가중 평균)
+      const overallScore = Math.round(
+        (audioScore * 0.35 + videoScore * 0.45 + textScore * 0.2) // 영상 > 음성 > 텍스트 순 가중치
+      );
+      
+      console.log('📊 점수 계산 결과:', {
+        audioScore, videoScore, textScore, overallScore
+      });
+      
+      // 등급 계산
+      let grade;
+      if (overallScore >= 90) grade = 'A+';
+      else if (overallScore >= 85) grade = 'A';
+      else if (overallScore >= 80) grade = 'B+';
+      else if (overallScore >= 75) grade = 'B';
+      else if (overallScore >= 70) grade = 'C+';
+      else if (overallScore >= 65) grade = 'C';
+      else if (overallScore >= 60) grade = 'D+';
+      else if (overallScore >= 55) grade = 'D';
+      else grade = 'F';
+      
+      // 🎯 실제 데이터 기반 강점과 개선사항 분석
+      const strengths = [];
+      const improvements = [];
+      
+      // 얼굴 감지 관련
+      if (faceDetectionRate >= 85) {
+        strengths.push(`${isMediaPipeReady ? 'AI 분석: ' : ''}안정적인 카메라 앞 자세 유지 (${faceDetectionRate}%)`);
+      } else if (faceDetectionRate < 60) {
+        improvements.push('카메라 앞에 정면으로 앉아 얼굴이 잘 보이도록 위치 조정 필요');
+      }
+      
+      // 🎯 아이컨택 관련 (상세 피드백)
+      if (eyeContactPercentage >= 80) {
+        strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}탁월한 아이컨택 (${eyeContactPercentage}%) - 면접관과의 신뢰감 형성에 매우 효과적`);
+      } else if (eyeContactPercentage >= 70) {
+        strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}우수한 아이컨택 (${eyeContactPercentage}%) - 자신감 있는 인상을 줌`);
+      } else if (eyeContactPercentage >= 60) {
+        strengths.push(`${isMediaPipeReady ? 'AI 시선 추적: ' : ''}좋은 아이컨택 유지 (${eyeContactPercentage}%)`);
+        improvements.push('아이컨택을 조금 더 자주 유지하면 더욱 완벽해집니다');
+      } else if (eyeContactPercentage >= 45) {
+        improvements.push(`아이컨택 개선 필요 (현재 ${eyeContactPercentage}%) - 카메라 렌즈를 더 자주 봐주세요`);
+      } else if (eyeContactPercentage >= 25) {
+        improvements.push(`아이컨택이 부족합니다 (${eyeContactPercentage}%) - 카메라와의 시선 접촉 연습이 필요합니다`);
+      } else {
+        improvements.push('아이컨택이 매우 부족합니다. 카메라 렌즈를 직접 보는 연습을 집중적으로 해보세요');
+      }
+      
+      // 음성 관련
+      if (avgVolume >= 25 && avgVolume <= 75) {
+        strengths.push(`적절한 목소리 크기와 명확성 (볼륨 ${avgVolume})`);
+      } else if (avgVolume < 20) {
+        improvements.push(`목소리를 더 크고 명확하게 발음해보세요 (현재 볼륨 ${avgVolume})`);
+      } else if (avgVolume > 85) {
+        improvements.push(`목소리 톤을 조금 더 부드럽게 조절해보세요 (현재 볼륨 ${avgVolume})`);
+      }
+      
+      // WPM 관련
+      if (wpm >= 130 && wpm <= 180) {
+        strengths.push(`적절한 말하기 속도 (${wpm} WPM)`);
+      } else if (wpm < 110 && wpm > 0) {
+        improvements.push(`말하기 속도를 조금 더 빠르게 해보세요 (현재 ${wpm} WPM)`);
+      } else if (wpm > 200) {
+        improvements.push(`말하기 속도를 조금 늦춰서 더 명확하게 전달해보세요 (현재 ${wpm} WPM)`);
+      }
+      
+      // 표정 관련
+      if (smileDetection >= 35) {
+        strengths.push(`${isMediaPipeReady ? 'AI 표정 분석: ' : ''}밝고 긍정적인 표정 (${smileDetection}%)`);
+      } else if (smileDetection < 15) {
+        improvements.push(`더 밝은 표정으로 긍정적인 인상을 만들어보세요 (현재 ${smileDetection}%)`);
+      }
+      
+      // 말하기 비율 관련
+      if (speakingRatio >= 0.5 && speakingRatio <= 0.8) {
+        strengths.push(`적절한 답변 길이와 설명 (말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
+      } else if (speakingRatio < 0.3) {
+        improvements.push(`답변을 더 자세히 설명해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
+      } else if (speakingRatio > 0.85) {
+        improvements.push(`더 간결하고 핵심적인 답변을 연습해보세요 (현재 말하기 비율 ${Math.round(speakingRatio * 100)}%)`);
+      }
+      
+      // 답변 완성도 관련
+      if (completionRate >= 1.0) {
+        strengths.push(`모든 질문에 성실히 답변함 (${completedAnswers.length}/${questions.length})`);
+      } else if (completionRate >= 0.8) {
+        strengths.push(`대부분의 질문에 답변함 (${completedAnswers.length}/${questions.length})`);
+      } else if (completionRate < 0.6) {
+        improvements.push(`더 많은 질문에 답변하는 연습이 필요합니다 (현재 ${completedAnswers.length}/${questions.length})`);
+      }
+      
+      // 답변 길이 관련
+      if (avgAnswerLength >= 100) {
+        strengths.push(`충분히 상세한 답변 제공 (평균 ${Math.round(avgAnswerLength)}자)`);
+      } else if (avgAnswerLength < 30 && avgAnswerLength > 0) {
+        improvements.push(`답변을 더 구체적이고 상세하게 작성해보세요 (평균 ${Math.round(avgAnswerLength)}자)`);
+      }
+      
+      // 어휘 다양성 관련
+      if (vocabularyRichness >= 0.7) {
+        strengths.push(`풍부하고 다양한 어휘 사용 (어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
+      } else if (vocabularyRichness < 0.4) {
+        improvements.push(`더 다양한 어휘를 사용해보세요 (현재 어휘 다양성 ${Math.round(vocabularyRichness * 100)}%)`);
+      }
+      
+      // 습관어 관련
+      if (fillerWords === 0) {
+        strengths.push('습관어 없이 명확한 발화');
+      } else if (fillerWords <= 3) {
+        strengths.push(`적은 습관어 사용으로 깔끔한 발화 (${fillerWords}회)`);
+      } else if (fillerWords > 8) {
+        improvements.push(`습관어 사용을 줄여보세요 (현재 ${fillerWords}회) - "음", "어", "그" 등의 사용 주의`);
+      }
+      
+      // 기본 강점이 없는 경우 추가
+      if (strengths.length === 0) {
+        strengths.push('면접에 성실히 참여하는 적극적인 태도');
+        strengths.push('주어진 시간 동안 꾸준히 답변하려는 노력');
+      }
+      
+      // 기본 개선사항이 없는 경우 추가
+      if (improvements.length === 0) {
+        improvements.push('현재 수준을 유지하며 더욱 자연스러운 면접 연습 계속하기');
+      }
+      
+      // 🎯 맞춤형 추천사항 생성
+      let recommendation;
+      if (overallScore >= 90) {
+        recommendation = `🎉 매우 우수한 면접 태도입니다! ${isMediaPipeReady ? 'AI 분석 결과' : '분석 결과'} 모든 면에서 뛰어난 성과를 보였습니다. 특히 아이컨택(${eyeContactPercentage}%)과 말하기 태도가 훌륭합니다. 자신감을 가지고 실제 면접에 임하세요.`;
+      } else if (overallScore >= 80) {
+        recommendation = `👍 좋은 면접 실력을 보여주셨습니다. ${eyeContactPercentage < 60 ? '특히 아이컨택 부분을 더 연습하면' : avgVolume < 20 ? '목소리를 더 크게 하는 연습을 하면' : '현재 수준을 유지하시면'} 더욱 완벽해질 것입니다.`;
+      } else if (overallScore >= 70) {
+        recommendation = `📈 기본기는 잘 갖추어져 있습니다. 아이컨택(${eyeContactPercentage}%)과 목소리 전달력을 중점적으로 연습해보세요. 특히 ${completionRate < 0.8 ? '모든 질문에 답변하는 연습' : '답변의 구체성을 높이는 연습'}이 도움이 될 것입니다.`;
+      } else if (overallScore >= 60) {
+        recommendation = `💪 면접 기술 향상이 필요합니다. 특히 카메라와의 아이컨택(${eyeContactPercentage}%)과 자연스러운 말하기 연습을 더 해보세요. 충분한 연습을 통해 개선 가능합니다.`;
+      } else {
+        recommendation = `🎯 체계적인 면접 준비가 필요합니다. 기본적인 아이컨택, 자세, 말하기 속도부터 차근차근 연습해보세요. ${avgVolume < 15 ? '먼저 목소리 크기부터' : eyeContactPercentage < 25 ? '카메라 보는 연습부터' : '기본 자세부터'} 시작하는 것을 추천합니다.`;
+      }
+      
+      // 최종 결과 객체 생성 (기존 로직)
+      result = {
+        // 기본 점수 정보
+        overallScore,
+        grade,
+        scores: {
+          communication: audioScore,
+          appearance: videoScore,
+          content: textScore
+        },
+        
+        // 상세 분석 데이터 (실제 수집된 데이터)
+        detailed: {
+          audio: {
+            averageVolume: Math.round(avgVolume),
+            speakingTime: speakingTime,
+            wordsPerMinute: wpm,
+            fillerWords: fillerWords,
+            speechClarity: Math.min(95, Math.max(60, 85 - fillerWords * 2)), // 습관어 기반 명확도
+            speakingRatio: Math.round(speakingRatio * 100)
+          },
+          video: {
+            faceDetectionRate: Math.round(faceDetectionRate),
+            eyeContactPercentage: Math.round(eyeContactPercentage),
+            smileFrequency: Math.round(smileDetection),
+            postureScore: Math.round(postureScore),
+            headPoseStability: Math.round(postureScore * 0.9) // 자세와 연관
+          },
+          text: {
+            completionRate: Math.round(completionRate * 100),
+            averageAnswerLength: Math.round(avgAnswerLength),
+            vocabularyRichness: Math.round(vocabularyRichness * 100),
+            totalWords: allWords.length,
+            uniqueWords: uniqueWords.length
+          }
+        },
+        
+        // 요약 정보
+        summary: {
+          strengths,
+          improvements,
+          recommendation
+        },
+        
+        // 메타데이터
+        duration,
+        timestamp: endTime,
+        analysisMethod: isMediaPipeReady 
+          ? 'MediaPipe AI (2024) - Enhanced Face & Eye Tracking + Web Audio API' 
+          : 'Advanced Simulation with Realistic Patterns + Web Audio API',
+        
+        // 성능 메트릭
+        performanceMetrics: {
+          totalFrames: analysisRef.current.totalFrames,
+          avgProcessingTime: analysisRef.current.performanceMetrics.avgProcessingTime,
+          errorCount: analysisRef.current.performanceMetrics.errorCount
+        },
+        
+        // 실제 면접 데이터
+        interviewStats: {
+          questionsTotal: questions.length,
+          questionsAnswered: completedAnswers.length,
+          completionRate: Math.round(completionRate * 100),
+          totalAnswerLength: totalAnswerLength,
+          hasRecording: interviewData.hasRecording || false,
+          recordingDuration: interviewData.totalDuration || duration
+        }
+      };
+    }
     
     setFinalAnalysis(result);
-    console.log('✅ 실제 데이터 기반 최종 분석 결과 생성 완료:', result);
+    console.log('✅ 최종 분석 결과 생성 완료:', result);
+    console.log(`🎯 분석 방식: ${geminiAnalysis ? 'Gemini AI 전문가 분석' : '기존 실시간 분석'}`);
     
     return result;
   }, [analysisData, isMediaPipeReady]);
