@@ -1,4 +1,4 @@
-import { valueMap } from "../../data/aptiTest/aptitestData.js";
+import { valueMap } from "../../data/aptiTest/aptiTestData.js";
 
 export const useTestList = () => {
     const getValue = (qno, ageGroup) => {
