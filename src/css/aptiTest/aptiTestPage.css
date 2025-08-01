@@ -1,0 +1,64 @@
+.apti-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.age-button-group {
+    margin-top: 30px;
+}
+
+.age-btn {
+    width: 200px;
+    padding: 15px 30px;
+    margin: 40px 15px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+}
+
+.age-btn:hover {
+    background-color: #5c68d9;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.age-btn.selected {
+    background-color: #7881f5;
+    color: white;
+}
+
+.next-btn {
+    background-color: #7881f5;
+    width: 200px;
+    padding: 15px 30px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    color: white;
+    position: fixed;
+    bottom: 50px;
+    left: calc(50% - 100px);
+}
+
+.next-btn:hover {
+    background-color: #5c68d9;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.block {
+    width: 100px;
+    bottom: 191px;
+    left: 547px;
+    height: 50px;
+    position: absolute;
+    background-color: white;
+    z-index: 999;
+}

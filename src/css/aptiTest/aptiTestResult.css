@@ -1,0 +1,28 @@
+.result-btn {
+    width: 200px;
+    padding: 15px 30px;
+    margin: 60px 15px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    background-color: #7881f5;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    color: white;
+    position: relative;
+    right: 15%;
+}
+
+.result-btn:hover {
+    background-color: #5c68d9;
+    transform: scale(1.05);
+
+}
+
+.moveGif {
+    width: 30%;
+    position: relative;
+    left: 100px;
+    bottom: 60px;
+}
