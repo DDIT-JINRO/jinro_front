@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import '../../css/aptiTest/aptiTestList.css';
+import '../../css/aptiTest/AptiTestPage.css';
 import axios from "axios";
 import { useTestList } from "../../hooks/aptiTest/useTestList";
 import parse from 'html-react-parser';
+import { useNavigate } from "react-router-dom";
 
 function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
     const { getValue, getTitle } = useTestList();
@@ -12,30 +14,30 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
     const [testList, setTestList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
 
-    console.log(answers);
-
-    const isSubmitEnabled = Object.keys(answers).length === testList.length;
+    const navigate = useNavigate();
     const itemsPerPage = 5;
+    const isSubmitEnabled = Object.keys(answers).length === testList.length;
 
     useEffect(() => {
-
         const fetchData = async () => {
             try {
                 let url = "";
+                let fetchedQuestions = [];
+
                 if (qno === "2") {
                     url = `https://www.career.go.kr/inspct/openapi/v2/test?apikey=acf4d87308c1a831bb63f1273b6ecd6a&q=${testNo}`;
                     const res = await axios.get(url);
-                    setTestList(res.data.result.questions);
-                    console.log(testList);
-
+                    fetchedQuestions = res.data.result.questions;
                 } else {
                     url = `https://www.career.go.kr/inspct/openapi/test/questions?apikey=acf4d87308c1a831bb63f1273b6ecd6a&q=${testNo}`;
                     const res = await axios.get(url);
-                    setTestList(res.data.RESULT);
-
+                    fetchedQuestions = res.data.RESULT;
                 }
-                setCurrentPage(1);
-                // setAnswers({});
+
+                setTestList(fetchedQuestions);
+
+                setTimeout(() => moveToLastAnsweredPage(fetchedQuestions), 0);
+
             } catch (error) {
                 console.error("문항 가져오기 실패", error);
             }
@@ -43,6 +45,33 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
         fetchData();
     }, [qno, testNo]);
+
+    const moveToLastAnsweredPage = (list) => {
+        if (!answers || Object.keys(answers).length === 0) return;
+
+        let lastQuestionIndex = -1;
+
+        list.forEach((q, idx) => {
+            let id = null;
+
+            if (qno === "5") {
+                id = q.qitemNo.toString();
+            } else if (qno === "2") {
+                id = q.no.toString();
+            } else {
+                id = (idx + 1).toString();
+            }
+
+            if (answers[id] !== undefined) {
+                lastQuestionIndex = idx;
+            }
+        });
+
+        if (lastQuestionIndex !== -1) {
+            const lastPage = Math.floor(lastQuestionIndex / itemsPerPage) + 1;
+            setCurrentPage(lastPage);
+        }
+    };
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentQuestions = testList.slice(startIndex, startIndex + itemsPerPage);
@@ -52,8 +81,6 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
         : 0;
 
     const handleSelect = (questionId, value) => {
-        console.log("select : ", answers);
-
         setAnswers(prev => ({
             ...prev,
             [questionId.toString()]: value.toString()
@@ -82,45 +109,37 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
     };
 
     const saveButton = () => {
-        let data = {
+        const data = {
             ageGroup: ageGroup,
             testNo: testNo,
             answers: answers
-        }
+        };
 
-        axios.post("http://localhost:8080/pse/cat/aptiTestSave.do", data, { withCredentials: true }).then(res => {
+        axios.post("http://localhost/pse/cat/aptiTestSave.do", data, { withCredentials: true }).then(res => {
             if (res.data === "success") {
                 alert("임시저장이 완료되었습니다.");
                 window.close();
             } else {
-                alert("임시저장중 에러발생");
+                alert("임시저장 중 에러 발생");
                 window.close();
             }
-        })
-    }
+        });
+    };
 
-    const handleSubmit = (qno) => {
-        if (qno !== '2') {
-            let data = {
-                ageGroup: ageGroup,
-                testNo: testNo,
-                answers: answers
-            };
+    const handleSubmit = () => {
+        const data = {
+            ageGroup: ageGroup,
+            testNo: testNo,
+            answers: answers
+        };
 
-            axios.post("http://localhost:8080/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
-
-            })
-        } else {
-            let data = {
-                ageGroup: ageGroup,
-                testNo: testNo,
-                answers: answers
+        axios.post("http://localhost/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
+            if (res.data.result.msg == "success") {
+                navigate("/aptiTest/result", { state: { resultData: res.data.result.reportUrl } });
+            } else {
+                window.close();
             }
-
-            axios.post("http://localhost:8080/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
-
-            })
-        }
+        });
     };
 
     return (
@@ -214,16 +233,12 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
                     <button className="page-btn next" onClick={handleNextPage}>다음</button>
                 )}
             </div>
+
             <div className="submit-button-wrap">
-                <button className="temp-btn" onClick={() => saveButton()}>임시 저장</button>
-                {/* {isSubmitEnabled && ( */}
-                <button
-                    className="submit-btn"
-                    onClick={() => handleSubmit(qno)}
-                >
-                    결과 제출
-                </button>
-                {/* )} */}
+                <button className="temp-btn" onClick={saveButton}>임시 저장</button>
+                {isSubmitEnabled && (
+                    <button className="submit-btn" onClick={handleSubmit}>결과 제출</button>
+                )}
             </div>
         </div>
     );

@@ -6,6 +6,7 @@ import RoadmapPage from "./pages/roadmap/roadMapPage";
 import RoadmapResultPage from "./pages/roadmap/roadmapResultPage";
 import RoadmapErrorPage from "./pages/roadmap/roadmapErrorPage";
 import AptiTestPage from "./pages/aptitestPage";
+import AptitestResult from "./components/aptiTest/aptiTestResult";
 
 const router = createBrowserRouter([
     {
@@ -35,7 +36,11 @@ const router = createBrowserRouter([
     {
         path: "/aptiTest/:qno",
         element: <AptiTestPage />
-    }
+    },
+    {
+        path: "/aptiTest/result",
+        element: <AptitestResult />
+    },
 ]);
 
 export default router;
