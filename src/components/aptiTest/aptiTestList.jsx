@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import '../../css/aptiTest/aptiTestList.css';
-import '../../css/aptiTest/AptiTestPage.css';
+import '../../css/aptiTest/aptiTestPage.css';
 import axios from "axios";
 import { useTestList } from "../../hooks/aptiTest/useTestList";
 import parse from 'html-react-parser';
 import { useNavigate } from "react-router-dom";
+const backUrl = import.meta.env.VITE_BACK_END_URL;
 
 function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
+
+
+
     const { getValue, getTitle } = useTestList();
     const testNo = getValue(qno, ageGroup);
     const title = getTitle(qno);
@@ -115,7 +119,7 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
             answers: answers
         };
 
-        axios.post("http://localhost/pse/cat/aptiTestSave.do", data, { withCredentials: true }).then(res => {
+        axios.post(`${backUrl}/pse/cat/aptiTestSave.do`, data, { withCredentials: true }).then(res => {
             if (res.data === "success") {
                 alert("임시저장이 완료되었습니다.");
                 window.close();
@@ -133,7 +137,7 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
             answers: answers
         };
 
-        axios.post("http://localhost/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
+        axios.post(backUrl + "/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
             if (res.data.result.msg == "success") {
                 navigate("/aptiTest/result", { state: { resultData: res.data.result.reportUrl } });
             } else {

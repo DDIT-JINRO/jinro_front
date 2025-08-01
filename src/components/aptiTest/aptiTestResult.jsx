@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
-import '../../css/aptiTest/AptiTestPage.css';
-import '../../css/aptiTest/AptitestResult.css';
+import '../../css/aptiTest/aptiTestPage.css';
+import '../../css/aptiTest/aptiTestResult.css';
 import resultGif from '../../assets/charactor_jump.gif';
 
 function AptitestResult() {

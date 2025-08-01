@@ -3,6 +3,7 @@ import AptiTestList from "../../components/aptiTest/aptiTestList"
 import Submenu from "../../components/aptiTest/submenu";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+const backUrl = import.meta.env.VITE_BACK_END_URL;
 
 function AptiTestPage() {
 
@@ -18,15 +19,15 @@ function AptiTestPage() {
 
         console.log(qno);
 
-        axios.post("http://localhost/pse/cat/getSavingTest.do", qno, { withCredentials: true }).then(res => {
+        axios.post(backUrl + "/pse/cat/getSavingTest.do", qno, { withCredentials: true }).then(res => {
             if (res.data.msg === "success") {
                 if (confirm("임시저장된 기록이 있습니다. 불러오시겠습니까?")) {
                     setAgeGroup(res.data.ageGroup);
                     setAnswers(res.data.answers);
                     setIsNext(true);
-                    axios.post("http://localhost/pse/cat/delTempSaveTest.do", qno, { withCredentials: true });
+                    axios.post(backUrl + "/pse/cat/delTempSaveTest.do", qno, { withCredentials: true });
                 } else {
-                    axios.post("http://localhost/pse/cat/delTempSaveTest.do", qno, { withCredentials: true });
+                    axios.post(backUrl + "/pse/cat/delTempSaveTest.do", qno, { withCredentials: true });
                 }
             }
 
