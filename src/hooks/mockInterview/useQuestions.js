@@ -10,6 +10,8 @@ export const useQuestions = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const questionsInitialized = useRef(false);
 
+  const backUrl = import.meta.env.VITE_BACK_END_URL;
+
   // 랜덤 질문 선택 함수
   const selectRandomQuestions = (questionsArray, count = 3) => {
     console.log(`🎲 전체 ${questionsArray.length}개 질문 중 랜덤으로 ${count}개 선택`);
@@ -82,7 +84,7 @@ export const useQuestions = () => {
       }
       
       // Spring Boot 서버에 API 요청
-      const apiUrl = `http://localhost:8080/imtintrvw/aiimtintrvw/api/getInterviewQuestions?${apiParams.toString()}`;
+      const apiUrl = `${backUrl}/cdp/imtintrvw/aiimtintrvw/api/getInterviewQuestions?${apiParams.toString()}`;
       console.log('🌐 API 요청 URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
@@ -146,7 +148,7 @@ export const useQuestions = () => {
         return;
       }
       
-      if (event.origin !== 'http://localhost:8080') {
+      if (event.origin !== backUrl) {
         console.warn('⚠️ 허용되지 않은 Origin:', event.origin);
         return;
       }

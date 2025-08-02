@@ -7,7 +7,7 @@ import RoadmapResultPage from "./pages/roadmap/roadmapResultPage";
 import RoadmapErrorPage from "./pages/roadmap/roadmapErrorPage";
 import AptiTestPage from "./pages/aptiTest/aptitestPage";
 import AptitestResult from "./components/aptiTest/aptiTestResult";
-import MockInterviewScreen from "./MockInterviewScreen";
+import MockInterviewPage from "./pages/mockInterview/MockInterviewPage";
 
 const router = createBrowserRouter([
     {
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/mock-interview",
-        element: <MockInterviewScreen />,
+        element: <MockInterviewPage />,
     },
 ]);
 

@@ -1,3 +1,5 @@
+const backUrl = import.meta.env.VITE_BACK_END_URL;
+
 export const interviewAnalysisApi = {
   
   /**
@@ -9,7 +11,7 @@ export const interviewAnalysisApi = {
     try {
       console.log('🚀 Gemini AI 분석 요청 시작:', analysisData);
       
-      const response = await fetch('http://localhost:8080/api/interview/detailed-analysis', {
+      const response = await fetch(`${backUrl}/api/interview/detailed-analysis`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +40,7 @@ export const interviewAnalysisApi = {
    */
   async checkHealth() {
     try {
-      const response = await fetch('http://localhost:8080/api/interview/health');
+      const response = await fetch(`${backUrl}/api/interview/health`);
       return await response.json();
     } catch (error) {
       console.error('Health check failed:', error);
