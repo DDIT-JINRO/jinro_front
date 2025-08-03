@@ -673,7 +673,7 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
         analysisResult={finalAnalysis}
         recordedVideoURL={getRecordedVideoURL()}
         onBack={handleBackFromAI}
-        onDownloadReport={handleDownloadReport}
+        handleDownloadReport={handleDownloadReport}
         isRealTimeAnalysis={true}
         // 🎯 개발자 데이터를 위한 추가 props
         realTimeAnalysisData={analysisData}
