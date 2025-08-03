@@ -59,7 +59,7 @@ const AIAnalysisResult = ({
 
       const pageWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm
-      const margin = 10;
+      const margin = 20;
       const contentWidth = pageWidth - (margin * 2);
 
       // PDF 다운로드 버튼 숨기기 (직접적인 방법)
@@ -73,105 +73,6 @@ const AIAnalysisResult = ({
       if (downloadButton) {
         downloadButton.style.display = 'none';
       }
-
-      // 전문가 피드백 색상을 검정색으로 변경 (강력한 디버깅 버전)
-      const changeFeedbackColorsToBlack = () => {
-        console.log('=== 피드백 색상 변경 시작 ===');
-        
-        // 모든 요소를 실제 클래스 이름으로 찾기
-        console.log('1. 실제 DOM 구조 분석...');
-        
-        // 모든 피드백 관련 텍스트를 포함하는 p 태그들을 찾기
-        const allParagraphs = Array.from(document.querySelectorAll('p'));
-        const feedbackParagraphs = allParagraphs.filter(p => {
-          const text = p.textContent || '';
-          return text.includes('말투') || 
-                 text.includes('목소리') || 
-                 text.includes('습관어') ||
-                 text.includes('자신감') ||
-                 text.includes('명확') ||
-                 text.includes('발음') ||
-                 text.includes('아이컨택') ||
-                 text.includes('표정') ||
-                 text.includes('답변') ||
-                 text.includes('내용') ||
-                 text.includes('논리') ||
-                 text.includes('구조') ||
-                 text.length > 20; // 긴 텍스트는 피드백일 가능성이 높음
-        });
-        
-        console.log('텍스트 내용으로 찾은 피드백 p 태그:', feedbackParagraphs.length);
-        
-        // 모든 피드백 관련 헤더 찾기
-        const allHeaders = Array.from(document.querySelectorAll('h4, span'));
-        const feedbackHeaders = allHeaders.filter(h => {
-          const text = h.textContent || '';
-          return text.includes('전문가') || text.includes('피드백') || text.includes('Gemini');
-        });
-        
-        console.log('텍스트 내용으로 찾은 피드백 헤더:', feedbackHeaders.length);
-        
-        // 실제 클래스 이름으로도 찾기 (CSS 모듈이 해시화되었을 수 있음)
-        const allDivs = Array.from(document.querySelectorAll('div'));
-        const feedbackBoxes = allDivs.filter(div => {
-          const className = div.className || '';
-          return className.includes('feedback') || className.includes('Feedback');
-        });
-        
-        console.log('클래스 이름으로 찾은 feedbackBox들:', feedbackBoxes.length);
-        feedbackBoxes.forEach((box, index) => {
-          console.log(`feedbackBox ${index + 1} 클래스:`, box.className);
-        });
-        
-        // feedbackBox 안의 모든 p 태그들
-        const feedbackBoxParagraphs = [];
-        feedbackBoxes.forEach(box => {
-          const paragraphs = box.querySelectorAll('p');
-          feedbackBoxParagraphs.push(...paragraphs);
-        });
-        
-        console.log('feedbackBox 안의 p 태그들:', feedbackBoxParagraphs.length);
-        
-        // 모든 피드백 요소들 합치기
-        const allFeedbackElements = [
-          ...feedbackParagraphs,
-          ...feedbackHeaders,
-          ...feedbackBoxParagraphs
-        ];
-        
-        // 중복 제거
-        const uniqueElements = [...new Set(allFeedbackElements)];
-        console.log('중복 제거 후 총 피드백 요소:', uniqueElements.length);
-        
-        const originalColors = [];
-        
-        // 각 요소의 색상 변경 및 검증
-        uniqueElements.forEach((el, index) => {
-          if (el && el.style !== undefined) {
-            const originalColor = window.getComputedStyle(el).color;
-            originalColors[index] = el.style.color || originalColor;
-            
-            console.log(`요소 ${index + 1}:`);
-            console.log(`  텍스트: "${el.textContent?.substring(0, 30)}..."`);
-            console.log(`  원래 색상: ${originalColor}`);
-            console.log(`  태그: ${el.tagName}`);
-            console.log(`  클래스: ${el.className}`);
-            
-            // 여러 방법으로 색상 강제 적용
-            el.style.color = '#000000';
-            el.style.setProperty('color', '#000000', 'important');
-            el.setAttribute('style', (el.getAttribute('style') || '') + '; color: #000000 !important;');
-            
-            // 변경 후 색상 확인
-            const newColor = window.getComputedStyle(el).color;
-            console.log(`  변경 후 색상: ${newColor}`);
-            console.log(`  색상 변경 성공: ${newColor === 'rgb(0, 0, 0)' ? '✅' : '❌'}`);
-            console.log('---');
-          }
-        });
-        
-        return { elements: uniqueElements, colors: originalColors };
-      };
 
       // 색상 복원 함수 (강화된 버전)
       const restoreFeedbackColors = (colorData) => {
@@ -197,63 +98,6 @@ const AIAnalysisResult = ({
         analysisMethodSection.style.display = 'none';
       }
 
-      // 전문가 피드백 색상 변경 (첫 번째 페이지)
-      const colorData1 = changeFeedbackColorsToBlack();
-      
-      // 추가적인 강제 스타일 적용 (모든 가능한 선택자)
-      const styleElement = document.createElement('style');
-      styleElement.id = 'pdf-feedback-style';
-      styleElement.innerHTML = `
-        /* 모든 피드백 관련 텍스트를 강제로 검정색으로 */
-        p:contains("말투"),
-        p:contains("목소리"),
-        p:contains("습관어"),
-        p:contains("자신감"),
-        p:contains("발음"),
-        p:contains("아이컨택"),
-        p:contains("표정"),
-        div[class*="feedback"] *,
-        div[class*="Feedback"] *,
-        [class*="feedbackBox"] *,
-        [class*="feedbackContent"] *,
-        [class*="feedbackHeader"] *,
-        [class*="progressItemWithFeedback"] p,
-        [class*="analysisSection"] p {
-          color: #000000 !important;
-          -webkit-text-fill-color: #000000 !important;
-        }
-        
-        /* 백업 선택자 - 모든 긴 텍스트 */
-        p {
-          color: #000000 !important;
-        }
-      `;
-      document.head.appendChild(styleElement);
-      
-      console.log('강제 CSS 스타일 추가됨');
-
-      // 색상 변경 후 더 긴 대기 시간 및 강제 리플로우
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 2초로 증가
-      
-      // 강제 리플로우 트리거
-      document.body.style.display = 'none';
-      document.body.offsetHeight; // 강제 리플로우
-      document.body.style.display = '';
-      
-      // 추가 대기
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // 실제로 색상이 변경되었는지 최종 확인
-      const finalCheck = document.querySelectorAll('p');
-      let blackTextCount = 0;
-      finalCheck.forEach(p => {
-        const computedColor = window.getComputedStyle(p).color;
-        if (computedColor === 'rgb(0, 0, 0)') {
-          blackTextCount++;
-        }
-      });
-      console.log(`최종 확인: ${blackTextCount}개의 p 태그가 검정색으로 변경됨`);
-
       // html2canvas에 더 강력한 옵션 적용
       const overviewCanvas = await html2canvas(reportRef.current, {
         scale: 1.5,
@@ -268,58 +112,7 @@ const AIAnalysisResult = ({
         foreignObjectRendering: false,
         removeContainer: true,
         async: true,
-        allowTaint: true,
-        useCORS: true,
-        onclone: (clonedDoc) => {
-          // 클론된 문서에서도 강제로 색상 적용
-          console.log('클론된 문서에서 색상 재적용...');
-          
-          const clonedParagraphs = clonedDoc.querySelectorAll('p');
-          clonedParagraphs.forEach(p => {
-            const text = p.textContent || '';
-            if (text.includes('말투') || text.includes('목소리') || text.includes('습관어') ||
-                text.includes('자신감') || text.includes('발음') || text.includes('아이컨택') ||
-                text.includes('표정') || text.includes('답변') || text.includes('내용') ||
-                text.includes('논리') || text.includes('구조') || text.length > 20) {
-              p.style.color = '#000000';
-              p.style.setProperty('color', '#000000', 'important');
-              p.setAttribute('style', (p.getAttribute('style') || '') + '; color: #000000 !important;');
-            }
-          });
-          
-          // 클론된 문서의 헤더들도 처리
-          const clonedHeaders = clonedDoc.querySelectorAll('h4, span');
-          clonedHeaders.forEach(h => {
-            const text = h.textContent || '';
-            if (text.includes('전문가') || text.includes('피드백') || text.includes('Gemini')) {
-              h.style.color = '#000000';
-              h.style.setProperty('color', '#000000', 'important');
-              h.setAttribute('style', (h.getAttribute('style') || '') + '; color: #000000 !important;');
-            }
-          });
-          
-          // 클론된 문서에 강제 스타일 추가
-          const clonedStyleElement = clonedDoc.createElement('style');
-          clonedStyleElement.innerHTML = `
-            p, h4, span {
-              color: #000000 !important;
-              -webkit-text-fill-color: #000000 !important;
-            }
-          `;
-          clonedDoc.head.appendChild(clonedStyleElement);
-          
-          console.log('클론된 문서 색상 재적용 완료');
-        }
       });
-
-      // 스타일 요소 제거
-      const tempStyleElement = document.getElementById('pdf-feedback-style');
-      if (tempStyleElement) {
-        tempStyleElement.remove();
-      }
-
-      // 색상 복원
-      restoreFeedbackColors(colorData1);
 
       // 분석 방법 섹션 복원
       if (analysisMethodSection) {
@@ -344,63 +137,6 @@ const AIAnalysisResult = ({
       if (analysisHeader) analysisHeader.style.display = 'none';
       if (aiScoreSummary) aiScoreSummary.style.display = 'none';
 
-      // 전문가 피드백 색상 변경 (두 번째 페이지)
-      const colorData2 = changeFeedbackColorsToBlack();
-      
-      // 추가적인 강제 스타일 적용 (두 번째 페이지)
-      const styleElement2 = document.createElement('style');
-      styleElement2.id = 'pdf-feedback-style-2';
-      styleElement2.innerHTML = `
-        /* 모든 피드백 관련 텍스트를 강제로 검정색으로 */
-        p:contains("말투"),
-        p:contains("목소리"),
-        p:contains("습관어"),
-        p:contains("자신감"),
-        p:contains("발음"),
-        p:contains("아이컨택"),
-        p:contains("표정"),
-        div[class*="feedback"] *,
-        div[class*="Feedback"] *,
-        [class*="feedbackBox"] *,
-        [class*="feedbackContent"] *,
-        [class*="feedbackHeader"] *,
-        [class*="progressItemWithFeedback"] p,
-        [class*="analysisSection"] p {
-          color: #000000 !important;
-          -webkit-text-fill-color: #000000 !important;
-        }
-        
-        /* 백업 선택자 - 모든 긴 텍스트 */
-        p {
-          color: #000000 !important;
-        }
-      `;
-      document.head.appendChild(styleElement2);
-      
-      console.log('두 번째 페이지 강제 CSS 스타일 추가됨');
-
-      // 색상 변경 후 더 긴 대기 시간 및 강제 리플로우 (두 번째 페이지)
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 2초로 증가
-      
-      // 강제 리플로우 트리거
-      document.body.style.display = 'none';
-      document.body.offsetHeight; // 강제 리플로우
-      document.body.style.display = '';
-      
-      // 추가 대기
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // 실제로 색상이 변경되었는지 최종 확인
-      const finalCheck2 = document.querySelectorAll('p');
-      let blackTextCount2 = 0;
-      finalCheck2.forEach(p => {
-        const computedColor = window.getComputedStyle(p).color;
-        if (computedColor === 'rgb(0, 0, 0)') {
-          blackTextCount2++;
-        }
-      });
-      console.log(`두 번째 페이지 최종 확인: ${blackTextCount2}개의 p 태그가 검정색으로 변경됨`);
-
       // html2canvas에 더 강력한 옵션 적용 (두 번째 페이지)
       const detailedCanvas = await html2canvas(reportRef.current, {
         scale: 1.5,
@@ -415,58 +151,7 @@ const AIAnalysisResult = ({
         foreignObjectRendering: false,
         removeContainer: true,
         async: true,
-        allowTaint: true,
-        useCORS: true,
-        onclone: (clonedDoc) => {
-          // 클론된 문서에서도 강제로 색상 적용
-          console.log('두 번째 페이지 클론된 문서에서 색상 재적용...');
-          
-          const clonedParagraphs = clonedDoc.querySelectorAll('p');
-          clonedParagraphs.forEach(p => {
-            const text = p.textContent || '';
-            if (text.includes('말투') || text.includes('목소리') || text.includes('습관어') ||
-                text.includes('자신감') || text.includes('발음') || text.includes('아이컨택') ||
-                text.includes('표정') || text.includes('답변') || text.includes('내용') ||
-                text.includes('논리') || text.includes('구조') || text.length > 20) {
-              p.style.color = '#000000';
-              p.style.setProperty('color', '#000000', 'important');
-              p.setAttribute('style', (p.getAttribute('style') || '') + '; color: #000000 !important;');
-            }
-          });
-          
-          // 클론된 문서의 헤더들도 처리
-          const clonedHeaders = clonedDoc.querySelectorAll('h4, span');
-          clonedHeaders.forEach(h => {
-            const text = h.textContent || '';
-            if (text.includes('전문가') || text.includes('피드백') || text.includes('Gemini')) {
-              h.style.color = '#000000';
-              h.style.setProperty('color', '#000000', 'important');
-              h.setAttribute('style', (h.getAttribute('style') || '') + '; color: #000000 !important;');
-            }
-          });
-          
-          // 클론된 문서에 강제 스타일 추가
-          const clonedStyleElement = clonedDoc.createElement('style');
-          clonedStyleElement.innerHTML = `
-            p, h4, span {
-              color: #000000 !important;
-              -webkit-text-fill-color: #000000 !important;
-            }
-          `;
-          clonedDoc.head.appendChild(clonedStyleElement);
-          
-          console.log('두 번째 페이지 클론된 문서 색상 재적용 완료');
-        }
       });
-
-      // 스타일 요소 제거 (두 번째 페이지)
-      const tempStyleElement2 = document.getElementById('pdf-feedback-style-2');
-      if (tempStyleElement2) {
-        tempStyleElement2.remove();
-      }
-
-      // 색상 복원
-      restoreFeedbackColors(colorData2);
 
       // 숨긴 요소들 복원
       if (analysisHeader) analysisHeader.style.display = originalHeaderDisplay;
@@ -560,7 +245,7 @@ const AIAnalysisResult = ({
     // 페이지 분할 처리
     let remainingHeight = imgHeight;
     let currentY = 0;
-    const maxHeightPerPage = pageHeight - margin * 2;
+    const maxHeightPerPage = pageHeight - margin;
     let pageCount = 0;
 
     while (remainingHeight > 0) {
@@ -760,10 +445,10 @@ const AIAnalysisResult = ({
         <div className={styles.feedbackBox}>
           <div className={styles.feedbackHeader}>
             <Brain size={16} />
-            <span>Gemini AI 전문가 피드백</span>
+            <span style={{ color: '#000000' }}>🤖 Gemini AI 전문가 피드백</span>
           </div>
           <div className={styles.feedbackContent}>
-            <p>{feedback}</p>
+            <p style={{ color: '#000000' }}>{feedback}</p>
           </div>
         </div>
       )}
@@ -788,8 +473,8 @@ const AIAnalysisResult = ({
       <div className={styles.sectionContent}>
         {feedback && (
           <div className={styles.feedbackBox}>
-            <h4>전문가 피드백</h4>
-            <p>{feedback}</p>
+            <h4 style={{ color: '#000000' }}>🎯 전문가 피드백</h4>
+            <p style={{ color: '#000000' }}>{feedback}</p>
           </div>
         )}
         {metrics && metrics.length > 0 && (
