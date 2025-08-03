@@ -9,14 +9,31 @@ const SimpleVisualGuide = ({
 }) => {
   const [faceDetected, setFaceDetected] = useState(false);
   const [eyeContactPercentage, setEyeContactPercentage] = useState(0);
+  const [guideCompleted, setGuideCompleted] = useState(false); // 🎯 가이드 완료 여부
+  const [detectionStarted, setDetectionStarted] = useState(false); // 🎯 실시간 감지 시작 여부
 
-  // 실시간 데이터 업데이트
+  // 실시간 데이터 업데이트 (감지 시작된 경우에만)
   useEffect(() => {
-    if (analysisData?.video) {
+    if (analysisData?.video && detectionStarted) {
       setFaceDetected(analysisData.video.faceDetected);
       setEyeContactPercentage(analysisData.video.eyeContactPercentage || 0);
     }
-  }, [analysisData]);
+  }, [analysisData, detectionStarted]);
+
+  // 가이드 완료 핸들러
+  const handleGuideComplete = () => {
+    setGuideCompleted(true); // 🎯 가이드 완료 (네모 박스 숨김)
+    setDetectionStarted(true); // 🎯 실시간 감지 시작
+    onCalibrationComplete?.(true); // 🎯 부모 컴포넌트에 알림
+  };
+
+  // 가이드 재시작 핸들러
+  const handleRestartGuide = () => {
+    setGuideCompleted(false);
+    setDetectionStarted(false);
+    setFaceDetected(false);
+    setEyeContactPercentage(0);
+  };
 
   if (!showGuide) return null;
 
@@ -31,270 +48,164 @@ const SimpleVisualGuide = ({
       zIndex: 20
     }}>
       
-      {/* 중앙 얼굴 가이드 박스 */}
-      <div style={{
-        position: 'absolute',
-        top: '15%',
-        left: '25%',
-        width: '50%',
-        height: '70%',
-        border: `3px dashed ${faceDetected ? '#10b981' : '#3b82f6'}`,
-        borderRadius: '12px',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'all 0.3s ease'
-      }}>
-        
-        {/* 가이드 텍스트 */}
+      {/* 🎯 중앙 얼굴 가이드 박스 - 가이드 완료 전까지만 표시 */}
+      {!guideCompleted && (
         <div style={{
-          background: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          fontWeight: '600',
-          textAlign: 'center'
+          position: 'absolute',
+          top: '15%',
+          left: '25%',
+          width: '50%',
+          height: '70%',
+          border: '3px dashed #3b82f6',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          animation: 'pulse 2s infinite'
         }}>
-          {faceDetected ? (
-            <>
-              ✅ 얼굴 감지됨<br/>
-              <span style={{ fontSize: '12px', color: '#d1d5db' }}>
-                아이컨택: {eyeContactPercentage}%
-              </span>
-            </>
-          ) : (
-            <>
-              👤 얼굴을 이 박스 안에<br/>
-              <span style={{ fontSize: '12px', color: '#d1d5db' }}>
-                위치시켜주세요
-              </span>
-            </>
-          )}
+          
+          {/* 🎯 모서리 마커들 */}
+          <div style={{
+            position: 'absolute',
+            top: '-6px',
+            left: '-6px',
+            width: '24px',
+            height: '24px',
+            border: '4px solid #3b82f6',
+            borderBottom: 'transparent',
+            borderRight: 'transparent',
+            borderRadius: '4px 0 0 0'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            top: '-6px',
+            right: '-6px',
+            width: '24px',
+            height: '24px',
+            border: '4px solid #3b82f6',
+            borderBottom: 'transparent',
+            borderLeft: 'transparent',
+            borderRadius: '0 4px 0 0'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            bottom: '-6px',
+            left: '-6px',
+            width: '24px',
+            height: '24px',
+            border: '4px solid #3b82f6',
+            borderTop: 'transparent',
+            borderRight: 'transparent',
+            borderRadius: '0 0 0 4px'
+          }} />
+          
+          <div style={{
+            position: 'absolute',
+            bottom: '-6px',
+            right: '-6px',
+            width: '24px',
+            height: '24px',
+            border: '4px solid #3b82f6',
+            borderTop: 'transparent',
+            borderLeft: 'transparent',
+            borderRadius: '0 0 4px 0'
+          }} />
+
+          {/* 🎯 가이드 안내 텍스트 */}
+          <div style={{
+            textAlign: 'center',
+            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '20px 24px',
+            borderRadius: '12px',
+            fontSize: '14px',
+            fontWeight: '600',
+            maxWidth: '80%'
+          }}>
+            <div style={{ color: '#3b82f6', marginBottom: '12px', fontSize: '18px' }}>
+              🎯 얼굴 위치 조정
+            </div>
+            <div style={{ fontSize: '13px', color: '#d1d5db', marginBottom: '8px' }}>
+              점선 박스 안에 얼굴을 위치시켜주세요
+            </div>
+            <div style={{ fontSize: '11px', color: '#9ca3af' }}>
+              화면에서 30-50cm 거리 유지 • 충분한 조명 확보
+            </div>
+          </div>
         </div>
-        
-        {/* 모서리 마커 */}
+      )}
+
+      {/* 🎯 가이드 완료 버튼 */}
+      {!guideCompleted && (
         <div style={{
           position: 'absolute',
-          top: '-6px',
-          left: '-6px',
-          width: '24px',
-          height: '24px',
-          border: `4px solid ${faceDetected ? '#10b981' : '#3b82f6'}`,
-          borderBottom: 'transparent',
-          borderRight: 'transparent',
-          borderRadius: '4px 0 0 0'
-        }} />
-        
-        <div style={{
-          position: 'absolute',
-          top: '-6px',
-          right: '-6px',
-          width: '24px',
-          height: '24px',
-          border: `4px solid ${faceDetected ? '#10b981' : '#3b82f6'}`,
-          borderBottom: 'transparent',
-          borderLeft: 'transparent',
-          borderRadius: '0 4px 0 0'
-        }} />
-        
-        <div style={{
-          position: 'absolute',
-          bottom: '-6px',
-          left: '-6px',
-          width: '24px',
-          height: '24px',
-          border: `4px solid ${faceDetected ? '#10b981' : '#3b82f6'}`,
-          borderTop: 'transparent',
-          borderRight: 'transparent',
-          borderRadius: '0 0 0 4px'
-        }} />
-        
-        <div style={{
-          position: 'absolute',
-          bottom: '-6px',
-          right: '-6px',
-          width: '24px',
-          height: '24px',
-          border: `4px solid ${faceDetected ? '#10b981' : '#3b82f6'}`,
-          borderTop: 'transparent',
-          borderLeft: 'transparent',
-          borderRadius: '0 0 4px 0'
-        }} />
-      </div>
-      
-      {/* 카메라 타겟 (상단 중앙) */}
-      <div style={{
-        position: 'absolute',
-        top: '5%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '60px',
-        height: '60px',
-        border: `3px solid ${eyeContactPercentage > 60 ? '#10b981' : '#f59e0b'}`,
-        borderRadius: '50%',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        animation: eyeContactPercentage > 60 ? 'glow 2s ease-in-out infinite' : 'pulse 3s ease-in-out infinite'
-      }}>
-        <Eye size={24} color="white" />
-        
-        {/* 카메라 타겟 설명 */}
-        <div style={{
-          position: 'absolute',
-          top: '70px',
+          bottom: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          padding: '4px 8px',
-          borderRadius: '6px',
-          fontSize: '12px',
-          fontWeight: '600',
-          whiteSpace: 'nowrap'
+          pointerEvents: 'auto'
         }}>
-          👁️ 여기를 보세요
+          <button
+            onClick={handleGuideComplete}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #3b82f6, #1e40af)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+            }}
+          >
+            ✅ 가이드 완료
+          </button>
         </div>
-      </div>
-      
-      {/* 시선 연결선 (얼굴이 감지될 때만) */}
-      {faceDetected && (
-        <div style={{
-          position: 'absolute',
-          top: '20%',
-          left: '50%',
-          width: '2px',
-          height: '30%',
-          background: `linear-gradient(to bottom, ${eyeContactPercentage > 60 ? '#10b981' : '#f59e0b'}, transparent)`,
-          transform: 'translateX(-50%)',
-          opacity: 0.7
-        }} />
       )}
       
-      {/* 좌하단 - 거리 가이드 */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        left: '20px',
-        background: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        padding: '12px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        minWidth: '160px'
-      }}>
-        <div style={{ marginBottom: '8px', fontWeight: '600' }}>📏 거리 가이드</div>
-        <div style={{ marginBottom: '4px' }}>
-          상태: {faceDetected ? '✅ 좋음' : '❌ 조정 필요'}
-        </div>
-        <div style={{ fontSize: '11px', color: '#d1d5db' }}>
-          화면에서 30-50cm 거리 유지
-        </div>
-      </div>
-      
-      {/* 우하단 - 아이컨택 점수 */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        right: '20px',
-        background: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        padding: '12px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        minWidth: '120px',
-        textAlign: 'center'
-      }}>
-        <div style={{ marginBottom: '8px', fontWeight: '600' }}>👁️ 아이컨택</div>
-        <div style={{ 
-          fontSize: '24px', 
-          fontWeight: 'bold',
-          color: eyeContactPercentage > 60 ? '#10b981' : eyeContactPercentage > 30 ? '#f59e0b' : '#ef4444'
-        }}>
-          {eyeContactPercentage}%
-        </div>
-        <div style={{ fontSize: '10px', color: '#d1d5db', marginTop: '4px' }}>
-          {eyeContactPercentage > 60 ? '우수함' : eyeContactPercentage > 30 ? '보통' : '향상 필요'}
-        </div>
-      </div>
-      
-      {/* 상단 중앙 - 전체 상태 */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: 'rgba(0, 0, 0, 0.8)',
-        color: 'white',
-        padding: '8px 16px',
-        borderRadius: '20px',
-        fontSize: '12px',
-        fontWeight: '600',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <Target size={14} />
-        {faceDetected && eyeContactPercentage > 60 ? (
-          <span style={{ color: '#10b981' }}>✅ 최적 상태</span>
-        ) : faceDetected ? (
-          <span style={{ color: '#f59e0b' }}>⚠️ 시선 조정 필요</span>
-        ) : (
-          <span style={{ color: '#ef4444' }}>❌ 얼굴 위치 조정 필요</span>
-        )}
-      </div>
-      
-      {/* 컨트롤 버튼 */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        gap: '8px',
-        pointerEvents: 'auto'
-      }}>
-        <button
-          onClick={() => onCalibrationComplete?.(true)}
-          style={{
-            padding: '8px 16px',
-            background: '#10b981',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '12px',
-            fontWeight: '600'
-          }}
-        >
-          가이드 완료
-        </button>
-      </div>
-      
-      {/* CSS 애니메이션 */}
+      {/* 🎯 CSS 애니메이션 */}
       <style>{`
         @keyframes pulse {
           0%, 100% { 
-            transform: translateX(-50%) scale(1);
             opacity: 1;
+            transform: scale(1);
           }
           50% { 
-            transform: translateX(-50%) scale(1.1);
             opacity: 0.8;
+            transform: scale(1.02);
+          }
+        }
+        
+        @keyframes slideInFromRight {
+          from {
+            opacity: 0;
+            transform: translateX(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
           }
         }
         
         @keyframes glow {
           0%, 100% { 
-            box-shadow: 0 0 5px #10b981;
-            transform: translateX(-50%) scale(1);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
           50% { 
-            box-shadow: 0 0 20px #10b981;
-            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
           }
         }
       `}</style>

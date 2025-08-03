@@ -3,8 +3,9 @@ import { Brain, Eye, Mic, MessageSquare } from 'lucide-react';
 import commonStyles from '../../styles/mockInterview/Common.module.css';
 import styles from '../../styles/mockInterview/AIAnalysisLoading.module.css';
 
-const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
+const AIAnalysisLoading = ({ progress = 0, onCancel, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const analysisSteps = [
     { 
@@ -45,6 +46,22 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
     setCurrentStep(step >= 0 ? step : analysisSteps.length - 1);
   }, [progress]);
 
+  // 🎯 progress가 100%가 되면 자동으로 완료 처리
+  useEffect(() => {
+    if (progress >= 100 && !isCompleted) {
+      console.log('🎉 AI 분석 진행률 100% 도달 - 완료 처리 시작');
+      setIsCompleted(true);
+      
+      // 2초 후 자동으로 완료 콜백 실행
+      setTimeout(() => {
+        console.log('✅ AI 분석 완료 - 결과 화면으로 전환');
+        if (onComplete) {
+          onComplete();
+        }
+      }, 2000);
+    }
+  }, [progress, isCompleted, onComplete]);
+
   const currentStepData = analysisSteps[currentStep];
   const StepIcon = currentStepData?.icon || Brain;
 
@@ -67,10 +84,13 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
         {/* 로딩 텍스트 */}
         <div className={styles.aiLoadingContent}>
           <h2 className={styles.aiLoadingTitle}>
-            AI가 면접을 분석하고 있습니다
+            {progress >= 100 ? '🎉 AI 분석 완료!' : 'AI가 면접을 분석하고 있습니다'}
           </h2>
           <p className={styles.aiLoadingSubtitle}>
-            잠시만 기다려주세요. 곧 상세한 분석 결과를 제공해드립니다.
+            {progress >= 100 
+              ? '분석이 완료되었습니다. 곧 결과를 보여드리겠습니다.' 
+              : '잠시만 기다려주세요. 곧 상세한 분석 결과를 제공해드립니다.'
+            }
           </p>
         </div>
 
@@ -79,11 +99,15 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
           <div className={styles.aiProgressBar}>
             <div 
               className={styles.aiProgressFill}
-              style={{ width: `${progress}%` }}
+              style={{ 
+                width: `${progress}%`,
+                backgroundColor: progress >= 100 ? '#10b981' : '#3b82f6'
+              }}
             />
           </div>
           <div className={styles.aiProgressText}>
             {progress}% 완료
+            {progress >= 100 && ' ✅'}
           </div>
         </div>
 
@@ -94,10 +118,16 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
           </div>
           <div className={styles.stepContent}>
             <h3 className={styles.stepTitle}>
-              {currentStepData?.title || '분석 준비 중...'}
+              {progress >= 100 
+                ? '🎯 분석 완료!' 
+                : (currentStepData?.title || '분석 준비 중...')
+              }
             </h3>
             <p className={styles.stepDescription}>
-              {currentStepData?.description || '분석을 시작합니다...'}
+              {progress >= 100 
+                ? '모든 분석이 완료되었습니다. 결과 화면으로 이동합니다.' 
+                : (currentStepData?.description || '분석을 시작합니다...')
+              }
             </p>
           </div>
         </div>
@@ -106,8 +136,8 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
         <div className={styles.stepsIndicator}>
           {analysisSteps.map((step, index) => {
             const StepIcon = step.icon;
-            const isCompleted = progress > step.maxProgress;
-            const isCurrent = index === currentStep;
+            const isCompleted = progress > step.maxProgress || progress >= 100;
+            const isCurrent = index === currentStep && progress < 100;
             
             return (
               <div 
@@ -163,13 +193,28 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
           </div>
         </div>
 
-        {/* 취소 버튼 */}
-        {onCancel && (
+        {/* 취소 버튼 (100% 완료 시 숨김) */}
+        {onCancel && progress < 100 && (
           <button 
             onClick={onCancel}
             className={`${commonStyles.btn} ${commonStyles.btnSecondary} ${commonStyles.cancelButton}`}
           >
             분석 취소
+          </button>
+        )}
+
+        {/* 🎯 수동 완료 버튼 (100% 완료 시에만 표시) */}
+        {progress >= 100 && onComplete && (
+          <button 
+            onClick={onComplete}
+            className={`${commonStyles.btn} ${commonStyles.btnPrimary}`}
+            style={{
+              marginTop: '16px',
+              background: 'linear-gradient(135deg, #10b981, #047857)',
+              animation: 'pulse 2s infinite'
+            }}
+          >
+            🎉 결과 확인하기
           </button>
         )}
 

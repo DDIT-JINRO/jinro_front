@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { interviewAnalysisApi } from '../../api/mockInterview/interviewAnalysisApi';
 
 /**
@@ -9,6 +9,10 @@ export const useAIAnalysis = () => {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [analysisError, setAnalysisError] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
+  
+  // 🎯 진행률 업데이트 및 취소를 위한 ref
+  const progressTimeoutRef = useRef(null);
+  const currentSessionIdRef = useRef(null);
 
   // AI 분석 실행
   const analyzeInterview = useCallback(async (questions, answers, realTimeData, recordingDuration) => {
@@ -16,52 +20,102 @@ export const useAIAnalysis = () => {
     setAnalysisError(null);
     setAnalysisProgress(0);
     
+    // 세션 ID 생성
+    const sessionId = `interview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    currentSessionIdRef.current = sessionId;
+    
     try {
-      console.log('🎯 Gemini AI 분석 시작...');
+      console.log('🎯 면접 분석 시작 - 세션 ID:', sessionId);
       
-      // 프로그레스 시뮬레이션
-      const progressInterval = setInterval(() => {
-        setAnalysisProgress(prev => Math.min(prev + 10, 90));
-      }, 500);
-
-      // 백엔드 API 요청 데이터 구성
+      // 🎯 백엔드 API 요청 데이터 구성 (sessionId를 최상위로)
       const requestData = {
+        sessionId: sessionId, // 🎯 최상위 레벨에 sessionId 배치
         interview_data: {
           questions: questions || [],
           answers: answers || [],
           duration: recordingDuration || 0,
-          sessionId: `interview_${Date.now()}`
+          timestamp: new Date().toISOString()
+          // sessionId는 여기서 제거 (최상위로 이동)
         },
         realtime_analysis: {
           audio: {
             averageVolume: realTimeData?.audio?.averageVolume || 0,
             speakingTime: realTimeData?.audio?.speakingTime || 0,
             wordsPerMinute: realTimeData?.audio?.wordsPerMinute || 0,
-            fillerWordsCount: realTimeData?.audio?.fillerWordsCount || 0
+            fillerWordsCount: realTimeData?.audio?.fillerWordsCount || 0,
+            speechClarity: realTimeData?.audio?.speechClarity || 0
           },
           video: {
             faceDetected: realTimeData?.video?.faceDetected || false,
             eyeContactPercentage: realTimeData?.video?.eyeContactPercentage || 0,
             smileDetection: realTimeData?.video?.smileDetection || 0,
             postureScore: realTimeData?.video?.postureScore || 0,
-            faceDetectionRate: realTimeData?.video?.faceDetectionRate || 0
+            faceDetectionRate: realTimeData?.video?.faceDetectionRate || 0,
+            emotionAnalysis: realTimeData?.video?.emotionAnalysis || {}
+          },
+          metadata: {
+            browserInfo: navigator.userAgent,
+            deviceType: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+            analysisStartTime: new Date().toISOString()
           }
         }
       };
 
-      // 백엔드 API 호출
+      console.log('📤 백엔드로 전송할 데이터:', {
+        sessionId: requestData.sessionId,
+        questionsCount: requestData.interview_data.questions.length,
+        answersCount: requestData.interview_data.answers.length,
+        duration: requestData.interview_data.duration
+      });
+
+      // 🎯 진행률 시뮬레이션 시작
+      const simulateProgress = async () => {
+        const progressSteps = [
+          { progress: 5, delay: 300, message: '서버 연결 중...' },
+          { progress: 15, delay: 800, message: '데이터 전송 중...' },
+          { progress: 30, delay: 1200, message: '영상 분석 시작...' },
+          { progress: 50, delay: 1500, message: '음성 분석 중...' },
+          { progress: 70, delay: 1200, message: '답변 내용 분석...' },
+          { progress: 85, delay: 1000, message: 'AI 종합 분석...' },
+          { progress: 95, delay: 800, message: '결과 생성 중...' }
+        ];
+
+        for (const step of progressSteps) {
+          // 🎯 분석이 중단된 경우 루프 중단
+          if (!isAnalyzing || currentSessionIdRef.current !== sessionId) break;
+          
+          await new Promise(resolve => {
+            progressTimeoutRef.current = setTimeout(resolve, step.delay);
+          });
+          
+          setAnalysisProgress(step.progress);
+          console.log(`📊 ${step.message} (${step.progress}%)`);
+        }
+      };
+
+      // 진행률 시뮬레이션 시작
+      simulateProgress();
+
+      // 🎯 백엔드 API 호출
       const analysisResponse = await interviewAnalysisApi.requestDetailedAnalysis(requestData);
       
-      clearInterval(progressInterval);
+      console.log('📥 백엔드 응답 받음:', {
+        success: analysisResponse.success,
+        overallScore: analysisResponse.overallScore,
+        sessionId: analysisResponse.sessionId
+      });
+
+      // 🎯 진행률 100%로 설정
       setAnalysisProgress(100);
 
-      // 기존 프론트엔드 형식에 맞게 변환
+      // 🎯 백엔드 응답을 프론트엔드 형식에 맞게 변환
       const transformedResult = {
-        overallScore: analysisResponse.overallScore,
-        grade: analysisResponse.grade,
-        timestamp: analysisResponse.timestamp,
+        sessionId: analysisResponse.sessionId || sessionId,
+        overallScore: analysisResponse.overallScore || 75,
+        grade: analysisResponse.grade || calculateGrade(analysisResponse.overallScore || 75),
+        timestamp: analysisResponse.timestamp || new Date().toISOString(),
         duration: recordingDuration,
-        analysisMethod: analysisResponse.analysisMethod,
+        analysisMethod: analysisResponse.analysisMethod || 'AI Expert Analysis',
         
         detailed: {
           audio: {
@@ -71,9 +125,9 @@ export const useAIAnalysis = () => {
             feedback: analysisResponse.detailed?.audio?.feedback || '음성 분석이 완료되었습니다.'
           },
           video: {
-            eyeContact: analysisResponse.detailed?.video?.eyeContact || 75,
+            eyeContact: analysisResponse.detailed?.video?.eyeContact || realTimeData?.video?.eyeContactPercentage || 75,
             facialExpression: analysisResponse.detailed?.video?.facialExpression || 75,
-            posture: analysisResponse.detailed?.video?.posture || 75,
+            posture: analysisResponse.detailed?.video?.posture || realTimeData?.video?.postureScore || 75,
             feedback: analysisResponse.detailed?.video?.feedback || '비언어적 소통 분석이 완료되었습니다.'
           },
           text: {
@@ -85,8 +139,8 @@ export const useAIAnalysis = () => {
         },
         
         summary: {
-          strengths: analysisResponse.summary?.strengths || ['성실한 태도', '기본기 보유'],
-          improvements: analysisResponse.summary?.improvements || ['답변 구체화', '자신감 향상'],
+          strengths: analysisResponse.summary?.strengths || ['성실한 태도', '기본적인 소통 능력'],
+          improvements: analysisResponse.summary?.improvements || ['답변 구체화 필요', '자신감 향상 권장'],
           recommendation: analysisResponse.summary?.recommendation || '지속적인 연습을 통해 더욱 발전하실 수 있습니다!'
         },
         
@@ -99,45 +153,46 @@ export const useAIAnalysis = () => {
       };
 
       setAnalysisResult(transformedResult);
-      console.log('✅ Gemini AI 분석 완료:', transformedResult);
+      console.log('✅ 면접 분석 완료:', transformedResult);
 
     } catch (error) {
       console.error('❌ AI 분석 실패:', error);
       setAnalysisError(error.message);
       
-      // 에러 시 기본값 제공 (선택사항)
-      setAnalysisResult({
+      // 🎯 에러 시 기본 결과 제공 (사용자 경험 개선)
+      const fallbackResult = {
+        sessionId,
         overallScore: 70,
         grade: 'B',
         timestamp: new Date().toISOString(),
         duration: recordingDuration,
-        analysisMethod: 'Gemini AI Expert Analysis (오류로 인한 기본 분석)',
+        analysisMethod: '기본 분석 (오류로 인한 대체 결과)',
         
         detailed: {
           audio: {
             speechClarity: 70,
             paceAppropriate: 70,
             volumeConsistency: 70,
-            feedback: '음성 분석 중 오류가 발생했습니다. 다시 시도해주세요.'
+            feedback: '음성 분석 중 오류가 발생했습니다. 네트워크 연결을 확인 후 다시 시도해주세요.'
           },
           video: {
-            eyeContact: 70,
+            eyeContact: realTimeData?.video?.eyeContactPercentage || 70,
             facialExpression: 70,
-            posture: 70,
-            feedback: '영상 분석 중 오류가 발생했습니다. 다시 시도해주세요.'
+            posture: realTimeData?.video?.postureScore || 70,
+            feedback: '영상 분석 중 오류가 발생했습니다. 카메라 설정을 확인해주세요.'
           },
           text: {
             contentQuality: 70,
             structureLogic: 70,
             relevance: 70,
-            feedback: '답변 분석 중 오류가 발생했습니다. 다시 시도해주세요.'
+            feedback: '답변 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
           }
         },
         
         summary: {
-          strengths: ['면접에 참여해주셔서 감사합니다'],
-          improvements: ['네트워크 연결을 확인해주세요'],
-          recommendation: '잠시 후 다시 시도해주세요. 기술적 문제가 지속되면 관리자에게 문의해주세요.'
+          strengths: ['면접 참여에 감사드립니다', '기본적인 준비가 되어있습니다'],
+          improvements: ['서버 연결 상태 확인', '다시 시도해보세요'],
+          recommendation: '기술적 문제가 지속되면 관리자에게 문의해주세요. 면접 연습은 계속하시길 권장합니다!'
         },
         
         scores: {
@@ -145,11 +200,40 @@ export const useAIAnalysis = () => {
           appearance: 70,
           content: 70,
           overall: 70
-        }
-      });
+        },
+        
+        isErrorResult: true,
+        errorDetails: error.message
+      };
+      
+      setAnalysisResult(fallbackResult);
       
     } finally {
       setIsAnalyzing(false);
+      // 정리 작업
+      if (progressTimeoutRef.current) {
+        clearTimeout(progressTimeoutRef.current);
+      }
+      currentSessionIdRef.current = null;
+    }
+  }, [isAnalyzing]);
+
+  // 🎯 분석 취소
+  const cancelAnalysis = useCallback(async () => {
+    if (currentSessionIdRef.current) {
+      try {
+        await interviewAnalysisApi.cancelAnalysis(currentSessionIdRef.current);
+        console.log('🛑 분석 취소됨:', currentSessionIdRef.current);
+      } catch (error) {
+        console.warn('⚠️ 분석 취소 실패:', error.message);
+      }
+    }
+    
+    setIsAnalyzing(false);
+    setAnalysisProgress(0);
+    
+    if (progressTimeoutRef.current) {
+      clearTimeout(progressTimeoutRef.current);
     }
   }, []);
 
@@ -160,13 +244,26 @@ export const useAIAnalysis = () => {
     setAnalysisProgress(0);
   }, []);
 
+  // 🎯 점수에 따른 등급 계산
+  const calculateGrade = (score) => {
+    if (score >= 90) return 'A+';
+    if (score >= 85) return 'A';
+    if (score >= 80) return 'B+';
+    if (score >= 75) return 'B';
+    if (score >= 70) return 'C+';
+    if (score >= 65) return 'C';
+    return 'D';
+  };
+
   return {
     isAnalyzing,
     analysisResult,
     analysisError,
     analysisProgress,
     analyzeInterview,
+    cancelAnalysis,
     clearAnalysis,
-    hasAnalysis: !!analysisResult
+    hasAnalysis: !!analysisResult,
+    currentSessionId: currentSessionIdRef.current
   };
-}
+};

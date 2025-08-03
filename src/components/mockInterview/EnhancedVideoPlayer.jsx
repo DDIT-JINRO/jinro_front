@@ -59,12 +59,8 @@ const EnhancedVideoPlayer = ({
     switch (guideMode) {
       case 'visual':
         return { icon: Target, text: '시각적 가이드', color: '#10b981' };
-      case 'simple':
-        return { icon: Eye, text: '간단한 가이드', color: '#3b82f6' };
-      case 'off':
-        return { icon: EyeOff, text: '가이드 끄기', color: '#6b7280' };
       default:
-        return { icon: Target, text: '가이드', color: '#6b7280' };
+        return { icon: EyeOff, text: '가이드 끄기', color: '#6b7280' };
     }
   };
 
@@ -141,30 +137,6 @@ const EnhancedVideoPlayer = ({
             <GuideIcon size={14} />
             {guideButtonInfo.text}
           </button>
-          
-          {/* 디버그 패널 토글 (개발 환경에서만) */}
-          {canShowDebugPanel && (
-            <button
-              onClick={() => setShowDebugPanel(!showDebugPanel)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '8px 12px',
-                background: showDebugPanel ? '#f59e0b' : '#6b7280',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                transition: 'background-color 0.2s'
-              }}
-              title="개발자 디버그 패널"
-            >
-              <Settings size={14} />
-              디버그
-            </button>
-          )}
           
           {/* 미디어 컨트롤 버튼 */}
           <button
@@ -256,17 +228,6 @@ const EnhancedVideoPlayer = ({
           <SimpleVisualGuide
             videoRef={videoRef}
             analysisData={analysisData}
-            showGuide={true}
-            onCalibrationComplete={handleCalibrationComplete}
-          />
-        )}
-        
-        {/* 간단한 얼굴 감지 가이드 */}
-        {guideMode === 'simple' && isCameraOn && (
-          <FaceDetectionGuide
-            videoRef={videoRef}
-            analysisData={analysisData}
-            isMediaPipeReady={isMediaPipeReady}
             showGuide={true}
             onCalibrationComplete={handleCalibrationComplete}
           />
@@ -415,7 +376,7 @@ const EnhancedVideoPlayer = ({
                   borderRadius: '50%',
                   animation: 'pulse 2s infinite'
                 }} />
-                {isMediaPipeReady ? '🤖 AI 분석 중' : '📊 시뮬레이션'}
+                {isMediaPipeReady ? '실시간 분석 중' : '📊 시뮬레이션'}
               </div>
             )}
           </>
@@ -493,13 +454,6 @@ const EnhancedVideoPlayer = ({
                 • 카메라 표시를 직접 바라보세요 (아이컨택)<br />
                 • 화면에서 30-50cm 거리를 유지하세요<br />
                 • 조명이 얼굴을 밝게 비추도록 하세요
-              </>
-            )}
-            {guideMode === 'simple' && (
-              <>
-                • 화면 중앙에 얼굴을 위치시켜주세요<br />
-                • 카메라를 직접 바라보세요<br />
-                • 적절한 거리를 유지하세요
               </>
             )}
             {guideMode === 'off' && (
