@@ -10,8 +10,22 @@ const QuestionCard = ({
   currentAnswer,
   isListening,
   isLastQuestion,
-  onNext
+  onNext,
+  onComplete  // ✅ 새로 추가: 면접 완료 전용 콜백
 }) => {
+  
+  // 🎯 면접 완료 처리 함수
+  const handleComplete = () => {
+    console.log('🎉 면접 완료 버튼 클릭 - 녹화 중지 및 분석 시작');
+    
+    // 면접 완료 전용 콜백이 있으면 사용, 없으면 기존 onNext 사용
+    if (onComplete) {
+      onComplete();
+    } else {
+      onNext();
+    }
+  };
+
   return (
     <div className={styles.questionCard}>
       {/* 헤더 */}
@@ -60,7 +74,7 @@ const QuestionCard = ({
         
         {isLastQuestion ? (
           <button
-            onClick={onNext}
+            onClick={handleComplete}  // ✅ 수정: 전용 핸들러 사용
             className={`${commonStyles.btn} ${commonStyles.btnSuccess}`}
           >
             <CheckCircle size={16} />

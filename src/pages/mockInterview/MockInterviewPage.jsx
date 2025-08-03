@@ -191,37 +191,79 @@ const MockInterviewPage = () => {
     
     if (isInterviewComplete) {
       console.log('🎉 모든 질문 완료! 분석 종료 및 결과 화면으로 이동');
-      
-      stopAnalysis();
-      
-      if (isRecording) {
-        stopRecording();
-      }
-      
-      setShowResults(true);
+      handleCompleteInterview();
     } else {
       resetTimer();
       console.log(`➡️ 질문 ${currentQuestion + 2}번으로 이동`);
     }
   };
 
+  const handleCompleteInterview = async () => {
+    console.log('🎯 면접 완료 처리 시작...');
+    
+    try {
+      // 1. 현재 답변 저장
+      const answerToSave = getCurrentAnswerAndClear();
+      saveAnswer(currentQuestion, answerToSave);
+      console.log('💾 마지막 답변 저장 완료');
+      
+      // 2. 모든 실시간 활동 중지
+      console.log('🛑 모든 실시간 활동 중지...');
+      
+      // 음성 인식 중지
+      if (isListening) {
+        stopListening();
+        console.log('🎤 음성 인식 중지됨');
+      }
+      
+      // 타이머 중지
+      if (isTimerRunning) {
+        pauseTimerOriginal();
+        console.log('⏰ 타이머 중지됨');
+      }
+      
+      // 실시간 분석 중지
+      if (isAnalyzing) {
+        await stopAnalysis();
+        console.log('📊 실시간 분석 중지됨');
+      }
+      
+      // 3. 녹화 중지 (가장 중요!)
+      if (isRecording) {
+        console.log('🎥 녹화 중지 시작...');
+        await stopRecording();
+        
+        // 녹화 중지 확인을 위한 추가 대기
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('✅ 녹화 중지 완료');
+      } else {
+        console.log('⚠️ 이미 녹화가 중지된 상태입니다.');
+      }
+      
+      // 4. 최종 분석 데이터 준비
+      await finishAnalysis();
+      console.log('📈 최종 분석 데이터 준비 완료');
+      
+      // 5. 결과 화면으로 이동
+      console.log('📋 결과 화면으로 전환');
+      setShowResults(true);
+      
+    } catch (error) {
+      console.error('❌ 면접 완료 처리 중 오류:', error);
+      alert('면접 완료 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
   // 면접 강제 종료
-  const handleEndInterview = () => {
+  const handleEndInterview = async () => {
     console.log('🔚 면접 강제 종료');
     
-    const answerToSave = getCurrentAnswerAndClear();
-    saveAnswer(currentQuestion, answerToSave);
+    const confirmEnd = window.confirm('정말로 면접을 종료하시겠습니까? 현재까지의 답변이 저장됩니다.');
     
-    pauseTimerOriginal();
-    stopListening();
-    stopAnalysis();
-    
-    if (isRecording) {
-      stopRecording();
+    if (confirmEnd) {
+      await handleCompleteInterview();
     }
-    
-    cleanupMedia();
-    setShowResults(true);
   };
 
   // 🎯 AI 분석 시작 - 실제 분석 데이터 사용
@@ -624,11 +666,46 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
   // 컴포넌트 언마운트 시 정리
   useEffect(() => {
     return () => {
-      stopAnalysis();
+      // 녹화 중지
+      if (isRecording) {
+        stopRecording();
+      }
+      
+      // 분석 중지
+      if (isAnalyzing) {
+        stopAnalysis();
+      }
       cleanupRecording();
       cleanupMedia();
     };
   }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isRecording || isAnalyzing) {
+        event.preventDefault();
+        event.returnValue = '면접이 진행 중입니다. 정말로 나가시겠습니까?';
+        return event.returnValue;
+      }
+    };
+    
+    const handleUnload = () => {
+      if (isRecording) {
+        stopRecording();
+      }
+      if (isAnalyzing) {
+        stopAnalysis();
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('unload', handleUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleUnload);
+    };
+  }, [isRecording, isAnalyzing]);
 
   // 로딩 중일 때
   if (!questionsLoaded) {
@@ -813,6 +890,7 @@ ${analysis.summary?.recommendation || '추천사항 없음'}
               isListening={isListening}
               isLastQuestion={isLastQuestion}
               onNext={handleNextQuestion}
+              onComplete={handleCompleteInterview}
             />
           </div>
 

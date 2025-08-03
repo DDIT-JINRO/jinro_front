@@ -6,9 +6,8 @@ export const API_ENDPOINTS = {
 
 // 타이머 관련 상수
 export const TIMER_DEFAULTS = {
-  INITIAL_TIME: 120, // 2분
-  LOW_TIME_THRESHOLD: 30, // 30초 이하일 때 경고
-  WARNING_TIME_THRESHOLD: 60 // 1분 이하일 때 주의
+  INITIAL_TIME: 60, // 2분
+  LOW_TIME_THRESHOLD: 15, // 30초 이하일 때 경고
 };
 
 // 오디오 분석 관련 상수
