@@ -59,7 +59,7 @@ const AIAnalysisResult = ({
 
       const pageWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm
-      const margin = 15;
+      const margin = 10;
       const contentWidth = pageWidth - (margin * 2);
 
       // PDF 다운로드 버튼 숨기기 (직접적인 방법)
@@ -232,8 +232,16 @@ const AIAnalysisResult = ({
       
       console.log('강제 CSS 스타일 추가됨');
 
-      // 색상 변경 후 잠시 대기하여 적용 확인
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 색상 변경 후 더 긴 대기 시간 및 강제 리플로우
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2초로 증가
+      
+      // 강제 리플로우 트리거
+      document.body.style.display = 'none';
+      document.body.offsetHeight; // 강제 리플로우
+      document.body.style.display = '';
+      
+      // 추가 대기
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // 실제로 색상이 변경되었는지 최종 확인
       const finalCheck = document.querySelectorAll('p');
@@ -246,7 +254,7 @@ const AIAnalysisResult = ({
       });
       console.log(`최종 확인: ${blackTextCount}개의 p 태그가 검정색으로 변경됨`);
 
-      // 종합 분석 캡처 (ignoreElements 제거)
+      // html2canvas에 더 강력한 옵션 적용
       const overviewCanvas = await html2canvas(reportRef.current, {
         scale: 1.5,
         useCORS: true,
@@ -257,7 +265,51 @@ const AIAnalysisResult = ({
         scrollX: 0,
         scrollY: 0,
         logging: false,
-        foreignObjectRendering: false
+        foreignObjectRendering: false,
+        removeContainer: true,
+        async: true,
+        allowTaint: true,
+        useCORS: true,
+        onclone: (clonedDoc) => {
+          // 클론된 문서에서도 강제로 색상 적용
+          console.log('클론된 문서에서 색상 재적용...');
+          
+          const clonedParagraphs = clonedDoc.querySelectorAll('p');
+          clonedParagraphs.forEach(p => {
+            const text = p.textContent || '';
+            if (text.includes('말투') || text.includes('목소리') || text.includes('습관어') ||
+                text.includes('자신감') || text.includes('발음') || text.includes('아이컨택') ||
+                text.includes('표정') || text.includes('답변') || text.includes('내용') ||
+                text.includes('논리') || text.includes('구조') || text.length > 20) {
+              p.style.color = '#000000';
+              p.style.setProperty('color', '#000000', 'important');
+              p.setAttribute('style', (p.getAttribute('style') || '') + '; color: #000000 !important;');
+            }
+          });
+          
+          // 클론된 문서의 헤더들도 처리
+          const clonedHeaders = clonedDoc.querySelectorAll('h4, span');
+          clonedHeaders.forEach(h => {
+            const text = h.textContent || '';
+            if (text.includes('전문가') || text.includes('피드백') || text.includes('Gemini')) {
+              h.style.color = '#000000';
+              h.style.setProperty('color', '#000000', 'important');
+              h.setAttribute('style', (h.getAttribute('style') || '') + '; color: #000000 !important;');
+            }
+          });
+          
+          // 클론된 문서에 강제 스타일 추가
+          const clonedStyleElement = clonedDoc.createElement('style');
+          clonedStyleElement.innerHTML = `
+            p, h4, span {
+              color: #000000 !important;
+              -webkit-text-fill-color: #000000 !important;
+            }
+          `;
+          clonedDoc.head.appendChild(clonedStyleElement);
+          
+          console.log('클론된 문서 색상 재적용 완료');
+        }
       });
 
       // 스타일 요소 제거
@@ -327,8 +379,16 @@ const AIAnalysisResult = ({
       
       console.log('두 번째 페이지 강제 CSS 스타일 추가됨');
 
-      // 색상 변경 후 잠시 대기하여 적용 확인 (두 번째 페이지)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 색상 변경 후 더 긴 대기 시간 및 강제 리플로우 (두 번째 페이지)
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2초로 증가
+      
+      // 강제 리플로우 트리거
+      document.body.style.display = 'none';
+      document.body.offsetHeight; // 강제 리플로우
+      document.body.style.display = '';
+      
+      // 추가 대기
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // 실제로 색상이 변경되었는지 최종 확인
       const finalCheck2 = document.querySelectorAll('p');
@@ -341,7 +401,7 @@ const AIAnalysisResult = ({
       });
       console.log(`두 번째 페이지 최종 확인: ${blackTextCount2}개의 p 태그가 검정색으로 변경됨`);
 
-      // 세부 분석 + 분석 방법 캡처 (ignoreElements 제거)
+      // html2canvas에 더 강력한 옵션 적용 (두 번째 페이지)
       const detailedCanvas = await html2canvas(reportRef.current, {
         scale: 1.5,
         useCORS: true,
@@ -352,7 +412,51 @@ const AIAnalysisResult = ({
         scrollX: 0,
         scrollY: 0,
         logging: false,
-        foreignObjectRendering: false
+        foreignObjectRendering: false,
+        removeContainer: true,
+        async: true,
+        allowTaint: true,
+        useCORS: true,
+        onclone: (clonedDoc) => {
+          // 클론된 문서에서도 강제로 색상 적용
+          console.log('두 번째 페이지 클론된 문서에서 색상 재적용...');
+          
+          const clonedParagraphs = clonedDoc.querySelectorAll('p');
+          clonedParagraphs.forEach(p => {
+            const text = p.textContent || '';
+            if (text.includes('말투') || text.includes('목소리') || text.includes('습관어') ||
+                text.includes('자신감') || text.includes('발음') || text.includes('아이컨택') ||
+                text.includes('표정') || text.includes('답변') || text.includes('내용') ||
+                text.includes('논리') || text.includes('구조') || text.length > 20) {
+              p.style.color = '#000000';
+              p.style.setProperty('color', '#000000', 'important');
+              p.setAttribute('style', (p.getAttribute('style') || '') + '; color: #000000 !important;');
+            }
+          });
+          
+          // 클론된 문서의 헤더들도 처리
+          const clonedHeaders = clonedDoc.querySelectorAll('h4, span');
+          clonedHeaders.forEach(h => {
+            const text = h.textContent || '';
+            if (text.includes('전문가') || text.includes('피드백') || text.includes('Gemini')) {
+              h.style.color = '#000000';
+              h.style.setProperty('color', '#000000', 'important');
+              h.setAttribute('style', (h.getAttribute('style') || '') + '; color: #000000 !important;');
+            }
+          });
+          
+          // 클론된 문서에 강제 스타일 추가
+          const clonedStyleElement = clonedDoc.createElement('style');
+          clonedStyleElement.innerHTML = `
+            p, h4, span {
+              color: #000000 !important;
+              -webkit-text-fill-color: #000000 !important;
+            }
+          `;
+          clonedDoc.head.appendChild(clonedStyleElement);
+          
+          console.log('두 번째 페이지 클론된 문서 색상 재적용 완료');
+        }
       });
 
       // 스타일 요소 제거 (두 번째 페이지)
@@ -489,91 +593,6 @@ const AIAnalysisResult = ({
       remainingHeight -= heightToAdd;
       currentY += heightToAdd;
       pageCount++;
-    }
-  };
-
-  // 🎯 질문별 답변을 HTML로 렌더링 후 이미지로 캡처 (한글 폰트 문제 해결)
-  const addQuestionsPageAsImage = async (pdf, questions, answers, margin, contentWidth, pageHeight) => {
-    try {
-      // 임시 DOM 요소 생성
-      const tempContainer = document.createElement('div');
-      tempContainer.style.cssText = `
-        position: absolute;
-        left: -9999px;
-        top: 0;
-        width: ${contentWidth * 3}px;
-        background: white;
-        padding: 40px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
-        color: #333;
-      `;
-
-      // HTML 컨텐츠 생성
-      const questionsHTML = `
-        <div style="max-width: 100%;">
-          <h1 style="color: #1e293b; font-size: 24px; margin-bottom: 30px; text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;">
-            📝 질문별 답변 분석
-          </h1>
-          
-          ${questions.slice(0, 5).map((question, index) => {
-            const answer = answers[index] || '답변 없음';
-            const wordCount = answer !== '답변 없음' ? answer.split(/\s+/).filter(word => word.length > 0).length : 0;
-            
-            return `
-              <div style="margin-bottom: 25px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                <h3 style="color: #3b82f6; font-size: 16px; font-weight: bold; margin: 0 0 12px 0;">
-                  질문 ${index + 1}
-                </h3>
-                <p style="color: #1e293b; font-weight: 500; margin: 0 0 15px 0; font-size: 15px; line-height: 1.5;">
-                  ${question}
-                </p>
-                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 12px;">
-                  <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.5;">
-                    <strong>답변:</strong> ${answer.length > 400 ? answer.substring(0, 400) + '...' : answer}
-                  </p>
-                </div>
-                <div style="display: flex; gap: 20px; font-size: 12px; color: #6b7280;">
-                  <span>📏 답변 길이: ${answer.length}자</span>
-                  <span>📝 단어 수: ${wordCount}개</span>
-                  <span>✅ 완성도: ${answer !== '답변 없음' ? '완료' : '미완료'}</span>
-                </div>
-              </div>
-            `;
-          }).join('')}
-          
-          <div style="text-align: center; padding: 20px; background: #f1f5f9; border-radius: 8px; margin-top: 30px;">
-            <p style="margin: 0; font-size: 12px; color: #64748b; line-height: 1.4;">
-              🔒 본 분석은 모두 브라우저에서 처리되었으며, 어떠한 개인정보도 외부 서버로 전송되지 않았습니다.
-            </p>
-          </div>
-        </div>
-      `;
-
-      tempContainer.innerHTML = questionsHTML;
-      document.body.appendChild(tempContainer);
-
-      // 잠시 대기 (렌더링 완료)
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // HTML을 이미지로 캡처
-      const canvas = await html2canvas(tempContainer, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false
-      });
-
-      // 임시 요소 제거
-      document.body.removeChild(tempContainer);
-
-      // PDF에 이미지 추가 (새 페이지에서 시작)
-      await addCanvasToPDF(pdf, canvas, contentWidth, pageHeight, margin, false);
-
-    } catch (error) {
-      console.error('질문 페이지 생성 중 오류:', error);
     }
   };
 
@@ -727,7 +746,7 @@ const AIAnalysisResult = ({
     );
   };
 
-  // 🎯 피드백이 포함된 진행 바 컴포넌트
+  // 🎯 피드백이 포함된 진행 바 컴포넌트 (검정색 텍스트)
   const ProgressBarWithFeedback = ({ score, label, icon: Icon, feedback, maxValue = 100 }) => (
     <div className={styles.progressItemWithFeedback}>
       <ProgressBar 
@@ -741,7 +760,7 @@ const AIAnalysisResult = ({
         <div className={styles.feedbackBox}>
           <div className={styles.feedbackHeader}>
             <Brain size={16} />
-            <span>🤖 Gemini AI 전문가 피드백</span>
+            <span>Gemini AI 전문가 피드백</span>
           </div>
           <div className={styles.feedbackContent}>
             <p>{feedback}</p>
@@ -759,7 +778,7 @@ const AIAnalysisResult = ({
     </div>
   );
 
-  // 🎯 분석 섹션 컴포넌트
+  // 🎯 분석 섹션 컴포넌트 (검정색 텍스트)
   const AnalysisSection = ({ icon: Icon, title, feedback, metrics, iconColor }) => (
     <div className={styles.analysisSection}>
       <div className={styles.sectionHeader}>
@@ -769,7 +788,7 @@ const AIAnalysisResult = ({
       <div className={styles.sectionContent}>
         {feedback && (
           <div className={styles.feedbackBox}>
-            <h4>🎯 전문가 피드백</h4>
+            <h4>전문가 피드백</h4>
             <p>{feedback}</p>
           </div>
         )}

@@ -330,7 +330,7 @@
 /* 🎯 피드백이 포함된 진행 바 */
 .progressItemWithFeedback {
   padding: 24px;
-  background: linear-gradient(135deg, var(--gray-50), var(--white));
+  background: #FFF;
   border-radius: var(--radius-xl);
   border: 1px solid var(--gray-200);
   transition: var(--transition);
@@ -384,12 +384,9 @@
 .feedbackBox {
   margin-top: 16px;
   padding: 20px;
-  background: linear-gradient(135deg, var(--white), var(--gray-50));
+  background: #FFF;
   border: 1px solid var(--gray-300);
   border-radius: var(--radius-lg);
-  border-left: 4px solid var(--primary-color);
-  position: relative;
-  animation: feedbackSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes feedbackSlideIn {
@@ -412,28 +409,13 @@
   font-weight: 700;
 }
 
-.feedbackHeader span {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 .feedbackContent {
   line-height: 1.6;
-  color: var(--gray-700);
+  color: #000000;
 }
 
 .feedbackContent p {
-  margin: 0;
-  font-size: 14px;
-  text-align: justify;
-  word-break: keep-all;
-}
-
-.feedbackContent strong {
-  color: var(--gray-800);
-  font-weight: 600;
+  color: #000000;
 }
 
 /* 🎯 섹션 스타일 */
