@@ -67,7 +67,7 @@ const AIAnalysisLoading = ({ progress = 0, onCancel }) => {
         {/* 로딩 텍스트 */}
         <div className={styles.aiLoadingContent}>
           <h2 className={styles.aiLoadingTitle}>
-            🤖 AI가 면접을 분석하고 있습니다
+            AI가 면접을 분석하고 있습니다
           </h2>
           <p className={styles.aiLoadingSubtitle}>
             잠시만 기다려주세요. 곧 상세한 분석 결과를 제공해드립니다.

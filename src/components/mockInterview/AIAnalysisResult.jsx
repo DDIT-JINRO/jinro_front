@@ -445,10 +445,10 @@ const AIAnalysisResult = ({
         <div className={styles.feedbackBox}>
           <div className={styles.feedbackHeader}>
             <Brain size={16} />
-            <span style={{ color: '#000000' }}>🤖 Gemini AI 전문가 피드백</span>
+            <span>AI 전문가 피드백</span>
           </div>
           <div className={styles.feedbackContent}>
-            <p style={{ color: '#000000' }}>{feedback}</p>
+            <p>{feedback}</p>
           </div>
         </div>
       )}
@@ -473,8 +473,8 @@ const AIAnalysisResult = ({
       <div className={styles.sectionContent}>
         {feedback && (
           <div className={styles.feedbackBox}>
-            <h4 style={{ color: '#000000' }}>🎯 전문가 피드백</h4>
-            <p style={{ color: '#000000' }}>{feedback}</p>
+            <h4>전문가 피드백</h4>
+            <p>{feedback}</p>
           </div>
         )}
         {metrics && metrics.length > 0 && (
@@ -530,7 +530,7 @@ const AIAnalysisResult = ({
             </div>
             <div className={styles.headerText}>
               <h1>
-                {analysis.analysisMethod?.includes('Gemini') ? 'Gemini AI 전문가' : '실시간'} 면접 분석 결과
+                {analysis.analysisMethod?.includes('Gemini') ? 'AI 전문가' : '실시간'} 면접 분석 결과
               </h1>
               <p>음성과 영상을 종합적으로 분석했습니다</p>
             </div>
@@ -741,11 +741,11 @@ const AIAnalysisResult = ({
               <Brain size={20} />
               <div>
                 <h4>
-                  🤖 {analysis.analysisMethod?.includes('Gemini') ? 'Gemini AI 전문가 분석' : 'AI 분석'}
+                  {analysis.analysisMethod?.includes('Gemini') ? 'AI 전문가 분석' : 'AI 분석'}
                 </h4>
                 <p>
                   {analysis.analysisMethod?.includes('Gemini') 
-                    ? 'Google Gemini AI가 15년 경력의 면접 전문가로서 종합적인 분석을 수행했습니다.'
+                    ? 'AI가 15년 경력의 면접 전문가로서 종합적인 분석을 수행했습니다.'
                     : '실시간 AI 분석으로 면접 태도를 평가했습니다.'
                   }
                 </p>
