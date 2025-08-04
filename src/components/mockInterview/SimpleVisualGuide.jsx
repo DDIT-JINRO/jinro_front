@@ -135,7 +135,7 @@ const SimpleVisualGuide = ({
               점선 박스 안에 얼굴을 위치시켜주세요
             </div>
             <div style={{ fontSize: '11px', color: '#9ca3af' }}>
-              화면에서 30-50cm 거리 유지 • 충분한 조명 확보
+              화면에서 30cm 거리 유지 • 충분한 조명 확보
             </div>
           </div>
         </div>

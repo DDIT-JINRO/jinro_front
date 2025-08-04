@@ -428,7 +428,7 @@ const FaceDetectionGuide = ({
         zIndex: 11,
         pointerEvents: 'none'
       }}>
-        💡 팁: 화면에서 30-50cm 거리를 유지하고, 조명이 얼굴을 밝게 비추도록 하세요
+        💡 팁: 화면에서 30cm 거리를 유지하고, 조명이 얼굴을 밝게 비추도록 하세요
       </div>
     </div>
   );

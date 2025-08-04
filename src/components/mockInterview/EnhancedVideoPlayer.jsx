@@ -50,31 +50,6 @@ const EnhancedVideoPlayer = ({
     }
   };
 
-  // 가이드 모드 토글
-  const toggleGuideMode = () => {
-    const modes = ['simple', 'visual', 'off'];
-    const currentIndex = modes.indexOf(guideMode);
-    const nextIndex = (currentIndex + 1) % modes.length;
-    setGuideMode(modes[nextIndex]);
-  };
-
-  // 가이드 상태에 따른 아이콘과 텍스트
-  const getGuideButtonInfo = () => {
-    switch (guideMode) {
-      case 'simple':
-        return { icon: Target, text: '간편 가이드', color: '#3b82f6' };
-      case 'visual':
-        return { icon: Eye, text: '시각적 가이드', color: '#10b981' };
-      case 'off':
-        return { icon: EyeOff, text: '가이드 끄기', color: '#6b7280' };
-      default:
-        return { icon: Target, text: '가이드', color: '#6b7280' };
-    }
-  };
-
-  const guideButtonInfo = getGuideButtonInfo();
-  const GuideIcon = guideButtonInfo.icon;
-
   return (
     <div style={{ position: 'relative' }}>
       {/* 헤더 */}
@@ -145,25 +120,6 @@ const EnhancedVideoPlayer = ({
           >
             {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
           </button>
-
-          {/* 가이드 모드 토글 버튼 */}
-          {showFaceGuide && (
-            <button
-              onClick={toggleGuideMode}
-              style={{
-                padding: '12px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                color: 'white',
-                background: guideButtonInfo.color
-              }}
-              title={guideButtonInfo.text}
-            >
-              <GuideIcon size={20} />
-            </button>
-          )}
 
           {/* 디버그 패널 토글 */}
           {canShowDebugPanel && (
