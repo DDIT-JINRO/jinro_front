@@ -40,6 +40,9 @@ const MockInterviewPage = () => {
   
   // 🎯 최종 분석 결과 상태 추가
   const [finalAnalysis, setFinalAnalysis] = useState(null);
+
+  const [forceGuideComplete, setForceGuideComplete] = useState(false);
+  const [isInterviewStarted, setIsInterviewStarted] = useState(false);
   
   // 🎯 얼굴 감지 가이드 관련 상태 추가
   const [faceGuideEnabled, setFaceGuideEnabled] = useState(true);
@@ -159,6 +162,12 @@ const MockInterviewPage = () => {
   const startTimer = async () => {
     console.log('⏰ 타이머 및 실시간 분석 시작...');
     
+    setIsInterviewStarted(true);
+    setForceGuideComplete(true);
+    setCalibrationCompleted(true);
+    setShowStartupGuide(false);
+    setFaceGuideEnabled(false);
+
     if (speechSupported && isMicOn) {
       startListening(isMicOn);
       console.log('🎤 음성 인식 시작됨');
@@ -470,6 +479,8 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
     setCalibrationCompleted(false);
     setShowStartupGuide(true);
     setFaceGuideEnabled(true);
+    setIsInterviewStarted(false);
+    setForceGuideComplete(false);
   };
 
   // 마이크 토글 시 분석도 연동
@@ -683,6 +694,8 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
                 mediaStream={mediaStream}
                 showFaceGuide={faceGuideEnabled}
                 onCalibrationComplete={handleCalibrationComplete}
+                isInterviewStarted={isInterviewStarted}
+                forceGuideComplete={forceGuideComplete}
               />
             </div>
 

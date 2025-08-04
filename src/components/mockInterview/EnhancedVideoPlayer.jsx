@@ -1,3 +1,5 @@
+// EnhancedVideoPlayer.jsx 완전 수정
+
 import React, { useState } from 'react';
 import { Camera, Mic, MicOff, CameraOff, Settings, Target, Eye, EyeOff } from 'lucide-react';
 import FaceDetectionGuide from './FaceDetectionGuide';
@@ -22,10 +24,13 @@ const EnhancedVideoPlayer = ({
   isAnalyzing = false,
   mediaStream,
   showFaceGuide = true,
-  onCalibrationComplete
+  onCalibrationComplete,
+  // 🎯 새로운 props 추가
+  isInterviewStarted = false,
+  forceGuideComplete = false
 }) => {
   const [showDebugPanel, setShowDebugPanel] = useState(false);
-  const [guideMode, setGuideMode] = useState('visual'); // 'visual', 'simple', 'off'
+  const [guideMode, setGuideMode] = useState('simple'); // 'visual', 'simple', 'off'
   const [calibrationCompleted, setCalibrationCompleted] = useState(false);
   const [showControlHints, setShowControlHints] = useState(true);
 
@@ -48,7 +53,7 @@ const EnhancedVideoPlayer = ({
 
   // 가이드 모드 토글
   const toggleGuideMode = () => {
-    const modes = ['visual', 'simple', 'off'];
+    const modes = ['simple', 'visual', 'off'];
     const currentIndex = modes.indexOf(guideMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     setGuideMode(modes[nextIndex]);
@@ -57,10 +62,14 @@ const EnhancedVideoPlayer = ({
   // 가이드 상태에 따른 아이콘과 텍스트
   const getGuideButtonInfo = () => {
     switch (guideMode) {
+      case 'simple':
+        return { icon: Target, text: '간편 가이드', color: '#3b82f6' };
       case 'visual':
-        return { icon: Target, text: '시각적 가이드', color: '#10b981' };
-      default:
+        return { icon: Eye, text: '시각적 가이드', color: '#10b981' };
+      case 'off':
         return { icon: EyeOff, text: '가이드 끄기', color: '#6b7280' };
+      default:
+        return { icon: Target, text: '가이드', color: '#6b7280' };
     }
   };
 
@@ -120,20 +129,8 @@ const EnhancedVideoPlayer = ({
             title={isCameraOn ? '카메라 끄기' : '카메라 켜기'}
           >
             {isCameraOn ? <Camera size={20} /> : <CameraOff size={20} />}
-            {!isCameraOn && (
-              <div style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                width: '12px',
-                height: '12px',
-                background: '#ef4444',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }} />
-            )}
           </button>
-          
+
           <button
             onClick={onToggleMic}
             style={{
@@ -143,29 +140,54 @@ const EnhancedVideoPlayer = ({
               cursor: 'pointer',
               transition: 'all 0.2s',
               color: 'white',
-              background: isMicOn ? '#3b82f6' : '#ef4444',
-              position: 'relative'
+              background: isMicOn ? '#3b82f6' : '#ef4444'
             }}
             title={isMicOn ? '마이크 끄기' : '마이크 켜기'}
           >
             {isMicOn ? <Mic size={20} /> : <MicOff size={20} />}
-            {!isMicOn && (
-              <div style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                width: '12px',
-                height: '12px',
-                background: '#ef4444',
-                borderRadius: '50%',
-                animation: 'pulse 2s infinite'
-              }} />
-            )}
           </button>
+
+          {/* 가이드 모드 토글 버튼 */}
+          {showFaceGuide && (
+            <button
+              onClick={toggleGuideMode}
+              style={{
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                color: 'white',
+                background: guideButtonInfo.color
+              }}
+              title={guideButtonInfo.text}
+            >
+              <GuideIcon size={20} />
+            </button>
+          )}
+
+          {/* 디버그 패널 토글 */}
+          {canShowDebugPanel && (
+            <button
+              onClick={() => setShowDebugPanel(!showDebugPanel)}
+              style={{
+                padding: '12px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                color: 'white',
+                background: showDebugPanel ? '#f59e0b' : '#6b7280'
+              }}
+              title="디버그 패널"
+            >
+              <Settings size={20} />
+            </button>
+          )}
         </div>
       </div>
-      
-      {/* 비디오 화면 컨테이너 */}
+
+      {/* 비디오 스크린 */}
       <div style={{
         position: 'relative',
         background: '#111827',
@@ -173,7 +195,7 @@ const EnhancedVideoPlayer = ({
         overflow: 'hidden',
         aspectRatio: '16/9',
         marginBottom: '16px',
-        border: isAnalyzing ? '2px solid #10b981' : '1px solid #374151'
+        border: isRecording ? '2px solid #10b981' : '1px solid #374151'
       }}>
         
         {/* 비디오 엘리먼트 */}
@@ -190,12 +212,25 @@ const EnhancedVideoPlayer = ({
         />
         
         {/* 시각적 가이드 오버레이 */}
-        {guideMode === 'visual' && isCameraOn && (
+        {guideMode === 'simple' && isCameraOn && showFaceGuide && (
           <SimpleVisualGuide
             videoRef={videoRef}
             analysisData={analysisData}
-            showGuide={true}
+            showGuide={showFaceGuide && !calibrationCompleted}
             onCalibrationComplete={handleCalibrationComplete}
+            // 🎯 새로운 props 전달
+            isInterviewStarted={isInterviewStarted}
+            forceComplete={forceGuideComplete}
+          />
+        )}
+
+        {guideMode === 'visual' && isCameraOn && showFaceGuide && (
+          <VisualGuideOverlay
+            videoRef={videoRef}
+            analysisData={analysisData}
+            showGuide={showFaceGuide && !calibrationCompleted}
+            onCalibrationComplete={handleCalibrationComplete}
+            onToggleGuide={toggleGuideMode}
           />
         )}
         
@@ -262,9 +297,9 @@ const EnhancedVideoPlayer = ({
                   height: '8px',
                   background: 'white',
                   borderRadius: '50%',
-                  animation: 'pulse 2s infinite'
+                  animation: 'pulse 1.5s infinite'
                 }} />
-                🎤 음성 인식 중
+                음성 인식 중
               </div>
             )}
 
@@ -293,149 +328,68 @@ const EnhancedVideoPlayer = ({
                   borderRadius: '50%',
                   animation: 'pulse 1s infinite'
                 }} />
-                REC
-                <span style={{ fontFamily: 'monospace' }}>
-                  {formatRecordingTime ? formatRecordingTime() : '00:00'}
-                </span>
-              </div>
-            )}
-            
-            {/* 마이크 상태 표시 */}
-            <div style={{
-              position: 'absolute',
-              bottom: '16px',
-              right: '16px',
-              padding: '8px',
-              borderRadius: '50%',
-              background: isMicOn && speechSupported ? '#10b981' : '#ef4444',
-              zIndex: 15,
-              backdropFilter: 'blur(8px)'
-            }}>
-              {isMicOn ? (
-                <Mic size={16} style={{ color: 'white' }} />
-              ) : (
-                <MicOff size={16} style={{ color: 'white' }} />
-              )}
-            </div>
-
-            {/* MediaPipe/분석 상태 표시 */}
-            {isAnalyzing && (
-              <div style={{
-                position: 'absolute',
-                bottom: '16px',
-                left: '16px',
-                background: 'rgba(0, 0, 0, 0.7)',
-                color: 'white',
-                padding: '6px 10px',
-                borderRadius: '12px',
-                fontSize: '11px',
-                zIndex: 15,
-                backdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <div style={{
-                  width: '6px',
-                  height: '6px',
-                  background: '#10b981',
-                  borderRadius: '50%',
-                  animation: 'pulse 2s infinite'
-                }} />
-                {isMediaPipeReady ? '실시간 분석 중' : '📊 시뮬레이션'}
+                녹화 중 • {formatRecordingTime(recordingDuration)}
               </div>
             )}
           </>
         )}
       </div>
 
-      {/* 캘리브레이션 완료 상태 표시 */}
-      {calibrationCompleted && showControlHints && (
-        <div style={{
-          background: '#d1fae5',
-          border: '1px solid #10b981',
-          borderRadius: '8px',
-          padding: '12px',
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          color: '#065f46'
-        }}>
-          <Target size={16} />
-          <span style={{ fontSize: '14px' }}>
-            ✅ 얼굴 위치 조정이 완료되었습니다. 이제 최적의 분석이 가능합니다!
-          </span>
-          <button
-            onClick={() => setShowControlHints(false)}
-            style={{
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              color: '#065f46',
-              cursor: 'pointer',
-              fontSize: '18px',
-              lineHeight: 1
-            }}
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-
-      {/* 가이드 사용법 안내 */}
-      {showControlHints && !calibrationCompleted && isCameraOn && (
-        <div style={{
-          background: '#f0f9ff',
-          border: '1px solid #3b82f6',
-          borderRadius: '8px',
-          padding: '12px',
-          marginBottom: '16px',
-          fontSize: '14px',
-          color: '#1e40af'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <Target size={16} />
-            <strong>면접 가이드 활성</strong>
-            <button
-              onClick={() => setShowControlHints(false)}
-              style={{
-                marginLeft: 'auto',
-                background: 'none',
-                border: 'none',
-                color: '#1e40af',
-                cursor: 'pointer',
-                fontSize: '16px',
-                lineHeight: 1
-              }}
-            >
-              ×
-            </button>
+      {/* 상태 정보 */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        background: 'white',
+        borderRadius: '8px',
+        fontSize: '12px',
+        color: '#6b7280'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: isCameraOn ? '#10b981' : '#ef4444'
+            }} />
+            카메라
           </div>
-          
-          <div style={{ fontSize: '12px', color: '#1e40af', opacity: 0.8 }}>
-            {guideMode === 'visual' && (
-              <>
-                • 점선 박스 안에 얼굴을 위치시켜주세요<br />
-                • 카메라 표시를 직접 바라보세요 (아이컨택)<br />
-                • 화면에서 30-50cm 거리를 유지하세요<br />
-                • 조명이 얼굴을 밝게 비추도록 하세요
-              </>
-            )}
-            {guideMode === 'off' && (
-              <>
-                • 가이드가 꺼져있습니다<br />
-                • 위 버튼으로 가이드를 켤 수 있습니다
-              </>
-            )}
-            <br />
-            <strong>현재 상태:</strong> {analysisData?.video?.faceDetected ? 
-              `✅ 얼굴 감지됨 (아이컨택: ${analysisData.video.eyeContactPercentage}%)` : 
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: isMicOn ? '#10b981' : '#ef4444'
+            }} />
+            마이크
+          </div>
+          {speechSupported && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: isListening ? '#3b82f6' : '#6b7280'
+              }} />
+              음성인식
+            </div>
+          )}
+        </div>
+        
+        {analysisData?.video?.faceDetected && (
+          <div style={{
+            fontSize: '11px',
+            color: '#10b981',
+            fontWeight: '600'
+          }}>
+            {analysisData.video.faceDetected ? 
+              `✅ 얼굴 감지됨 (아이컨택: ${Math.round(analysisData.video.eyeContactPercentage || 0)}%)` : 
               '❌ 얼굴이 감지되지 않습니다'}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* MediaPipe 디버그 패널 */}
       {showDebugPanel && canShowDebugPanel && (

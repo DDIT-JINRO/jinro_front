@@ -5,12 +5,22 @@ const SimpleVisualGuide = ({
   videoRef, 
   analysisData, 
   showGuide = true,
-  onCalibrationComplete 
+  onCalibrationComplete,
+  forceComplete = false,
+  isInterviewStarted = false
 }) => {
   const [faceDetected, setFaceDetected] = useState(false);
   const [eyeContactPercentage, setEyeContactPercentage] = useState(0);
   const [guideCompleted, setGuideCompleted] = useState(false); // 🎯 가이드 완료 여부
   const [detectionStarted, setDetectionStarted] = useState(false); // 🎯 실시간 감지 시작 여부
+
+  useEffect(() => {
+    if (forceComplete || isInterviewStarted) {
+      setGuideCompleted(true);
+      setDetectionStarted(true);
+      onCalibrationComplete?.(true);
+    }
+  }, [forceComplete, isInterviewStarted, onCalibrationComplete]);
 
   // 실시간 데이터 업데이트 (감지 시작된 경우에만)
   useEffect(() => {
