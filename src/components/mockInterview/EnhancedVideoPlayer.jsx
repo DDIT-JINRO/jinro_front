@@ -87,17 +87,6 @@ const EnhancedVideoPlayer = ({
           gap: '8px'
         }}>
           면접 화면
-          {isMediaPipeReady && (
-            <span style={{
-              fontSize: '12px',
-              background: '#10b981',
-              color: 'white',
-              padding: '2px 6px',
-              borderRadius: '4px'
-            }}>
-              AI 분석
-            </span>
-          )}
           {isAnalyzing && (
             <span style={{
               fontSize: '12px',
@@ -114,29 +103,6 @@ const EnhancedVideoPlayer = ({
         
         {/* 미디어 컨트롤 및 설정 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          
-          {/* 가이드 모드 토글 버튼 */}
-          <button
-            onClick={toggleGuideMode}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '8px 12px',
-              background: guideButtonInfo.color,
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              transition: 'all 0.2s',
-              position: 'relative'
-            }}
-            title={`현재: ${guideButtonInfo.text}. 클릭하여 변경`}
-          >
-            <GuideIcon size={14} />
-            {guideButtonInfo.text}
-          </button>
           
           {/* 미디어 컨트롤 버튼 */}
           <button
@@ -416,6 +382,7 @@ const EnhancedVideoPlayer = ({
           </button>
         </div>
       )}
+
 
       {/* 가이드 사용법 안내 */}
       {showControlHints && !calibrationCompleted && isCameraOn && (

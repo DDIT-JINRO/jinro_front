@@ -22,7 +22,7 @@ const ProgressBar = ({
             {isListening && (
               <div className={styles.pulsingDot}></div>
             )}
-            모의면접 진행 중 {isListening ? '(🎤 음성 인식 중)' : ''} ({totalQuestions}개 질문 로드됨)
+            {isListening? '모의면접 진행 중' : '모의면접 진행 전'} {isListening ? '(🎤 음성 인식 중)' : ''}
           </h2>
           
           {/* 면접 종료 버튼 */}

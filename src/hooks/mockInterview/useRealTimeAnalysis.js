@@ -418,20 +418,22 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
             const centerBonus = faceDistanceFromCenter < 0.15 ? 5 : 0;
             
             // 🎯 점수 계산 (더 세밀한 등급 구분)
-            if (angle <= 5) { // 5도 이내 - 완벽한 아이컨택
+            const deviation = Math.abs(angle - 50); // 50에서의 편차
+
+            if (deviation <= 2) { // 48-52도 - 완벽한 아이컨택
               eyeContactScore = 98 + centerBonus;
-            } else if (angle <= 10) { // 10도 이내 - 매우 우수
-              eyeContactScore = 90 + (10 - angle) * 1.6 + centerBonus;
-            } else if (angle <= 18) { // 18도 이내 - 우수한 아이컨택
-              eyeContactScore = 80 + (18 - angle) * 1.25 + centerBonus;
-            } else if (angle <= 28) { // 28도 이내 - 좋은 아이컨택
-              eyeContactScore = 65 + (28 - angle) * 1.5;
-            } else if (angle <= 40) { // 40도 이내 - 보통 아이컨택
-              eyeContactScore = 45 + (40 - angle) * 1.67;
-            } else if (angle <= 55) { // 55도 이내 - 부족한 아이컨택
-              eyeContactScore = 20 + (55 - angle) * 1.67;
-            } else { // 55도 초과 - 매우 부족
-              eyeContactScore = Math.max(0, 20 - (angle - 55) * 0.5);
+            } else if (deviation <= 5) { // 45-55도 - 매우 우수
+              eyeContactScore = 90 + (5 - deviation) * 1.6 + centerBonus;
+            } else if (deviation <= 10) { // 40-60도 - 우수한 아이컨택
+              eyeContactScore = 80 + (10 - deviation) * 2 + centerBonus;
+            } else if (deviation <= 18) { // 32-68도 - 좋은 아이컨택
+              eyeContactScore = 65 + (18 - deviation) * 1.875;
+            } else if (deviation <= 30) { // 20-80도 - 보통 아이컨택
+              eyeContactScore = 45 + (30 - deviation) * 1.67;
+            } else if (deviation <= 45) { // 5-95도 - 부족한 아이컨택
+              eyeContactScore = 20 + (45 - deviation) * 1.67;
+            } else { // 5도 미만 또는 95도 초과 - 매우 부족
+              eyeContactScore = Math.max(0, 20 - (deviation - 45) * 0.5);
             }
             
             // 🎯 눈 뜸 정도와 머리 기울기 보정 적용

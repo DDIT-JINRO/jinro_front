@@ -27,14 +27,6 @@ const SimpleVisualGuide = ({
     onCalibrationComplete?.(true); // 🎯 부모 컴포넌트에 알림
   };
 
-  // 가이드 재시작 핸들러
-  const handleRestartGuide = () => {
-    setGuideCompleted(false);
-    setDetectionStarted(false);
-    setFaceDetected(false);
-    setEyeContactPercentage(0);
-  };
-
   if (!showGuide) return null;
 
   return (

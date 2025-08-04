@@ -9,8 +9,7 @@ export { default as CircularTimer } from './CircularTimer';
 export { default as QuestionCard } from './QuestionCard';
 
 // Video 컴포넌트들
-export { default as VideoPlayer } from './VideoPlayer';
-export { default as EnhancedVideoPlayer } from './VideoPlayer'; // Enhanced version
+export { default as EnhancedVideoPlayer } from './EnhancedVideoPlayer'; // Enhanced version
 
 // Guide 컴포넌트들
 export { default as FaceDetectionGuide } from './FaceDetectionGuide';

@@ -33,18 +33,6 @@ const QuestionCard = ({
         <h3 className={styles.questionCardTitle}>
           현재 질문
         </h3>
-        <div className={`
-          ${styles.questionCardStatus} 
-          ${isListening ? styles.listening : styles.waiting}
-        `}>
-          <div className={`
-            ${styles.questionCardStatusDot}
-            ${isListening ? styles.listening : styles.waiting}
-          `} style={{
-            backgroundColor: isListening ? '#10b981' : '#6b7280'
-          }}></div>
-          {isListening ? '음성 인식 중' : '서버 로드 완료'}
-        </div>
       </div>
       
       {/* 질문 내용 */}
