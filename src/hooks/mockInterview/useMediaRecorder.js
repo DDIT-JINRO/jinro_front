@@ -15,9 +15,7 @@ export const useMediaRecorder = () => {
 
   // 녹화 시작
   const startRecording = useCallback(async (mediaStream) => {
-    try {
-      console.log('🎥 면접 녹화 시작...');
-      
+    try {      
       if (!mediaStream) {
         throw new Error('미디어 스트림이 없습니다.');
       }
@@ -75,8 +73,6 @@ export const useMediaRecorder = () => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
 
-      console.log('✅ 녹화 시작 성공');
-
     } catch (error) {
       console.error('❌ 녹화 시작 실패:', error);
       setRecordingError(error.message);
@@ -86,8 +82,6 @@ export const useMediaRecorder = () => {
   // 녹화 중지
   const stopRecording = useCallback(() => {
     try {
-      console.log('🛑 녹화 중지...');
-
       if (mediaRecorderRef.current && isRecording) {
         mediaRecorderRef.current.stop();
       }
@@ -111,12 +105,6 @@ export const useMediaRecorder = () => {
 
     const mimeType = mediaRecorderRef.current?.mimeType || 'video/webm';
     const blob = new Blob(recordedChunks, { type: mimeType });
-    
-    console.log('📹 녹화된 비디오 Blob 생성:', {
-      size: blob.size,
-      type: blob.type,
-      chunks: recordedChunks.length
-    });
 
     return blob;
   }, [recordedChunks]);
@@ -133,7 +121,6 @@ export const useMediaRecorder = () => {
     setRecordingDuration(0);
     setRecordingError(null);
     videoChunksRef.current = [];
-    console.log('🧹 녹화 데이터 초기화');
   }, []);
 
   // 녹화 시간 포맷팅

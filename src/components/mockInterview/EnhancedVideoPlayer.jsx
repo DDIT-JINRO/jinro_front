@@ -43,7 +43,6 @@ const EnhancedVideoPlayer = ({
     onCalibrationComplete?.(success);
     
     if (success) {
-      console.log('✅ 얼굴 위치 캘리브레이션 완료');
       // 캘리브레이션 완료 후 3초 뒤에 힌트 숨김
       setTimeout(() => {
         setShowControlHints(false);

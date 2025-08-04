@@ -15,9 +15,7 @@ const QuestionCard = ({
 }) => {
   
   // 🎯 면접 완료 처리 함수
-  const handleComplete = () => {
-    console.log('🎉 면접 완료 버튼 클릭 - 녹화 중지 및 분석 시작');
-    
+  const handleComplete = () => {    
     // 면접 완료 전용 콜백이 있으면 사용, 없으면 기존 onNext 사용
     if (onComplete) {
       onComplete();

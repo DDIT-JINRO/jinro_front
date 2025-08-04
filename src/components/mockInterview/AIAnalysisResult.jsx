@@ -47,9 +47,7 @@ const AIAnalysisResult = ({
     // 현재 탭 저장 (함수 시작 부분에서)
     const currentTab = activeTab;
     
-    try {
-      console.log('📄 PDF 생성 시작...');
-      
+    try {      
       // PDF 문서 설정
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -87,7 +85,6 @@ const AIAnalysisResult = ({
       };
 
       // 첫 번째 페이지: 종합 분석 (분석 방법 제외)
-      console.log('📸 종합 분석 페이지 캡처 중...');
       setActiveTab('overview');
       await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -123,7 +120,6 @@ const AIAnalysisResult = ({
       await addCanvasToPDF(pdf, overviewCanvas, contentWidth, pageHeight, margin, true);
 
       // 두 번째 페이지: 세부 분석 + 분석 방법
-      console.log('📸 세부 분석 페이지 캡처 중...');
       setActiveTab('detailed');
       await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -162,7 +158,6 @@ const AIAnalysisResult = ({
 
       // 질문별 답변 분석 페이지 추가
       if (interviewQuestions.length > 0) {
-        console.log('📝 질문별 답변 분석 페이지 생성 중...');
         await addQuestionsPageAsImage(pdf, interviewQuestions, interviewAnswers, margin, contentWidth, pageHeight);
       }
 
@@ -175,7 +170,6 @@ const AIAnalysisResult = ({
       const fileName = `면접분석보고서_${new Date().toISOString().slice(0, 10)}_${new Date().getTime()}.pdf`;
       pdf.save(fileName);
 
-      console.log('✅ PDF 다운로드 완료!');
       alert('✅ PDF 보고서가 다운로드되었습니다!');
 
       // 원래 탭으로 복원
@@ -292,18 +286,6 @@ const AIAnalysisResult = ({
   }), [analysisResult]);
 
   const { overallScore, grade, scores, detailed, summary } = analysis;
-
-  // 🎯 데이터 검증 및 로깅
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 AIAnalysisResult 렌더링:', {
-        hasData: !!analysisResult,
-        overallScore,
-        grade,
-        hasDetailedFeedback: !!(detailed.audio?.feedback || detailed.video?.feedback || detailed.text?.feedback)
-      });
-    }
-  }, [analysisResult, overallScore, grade, detailed]);
 
   // 🎯 원형 점수 표시 컴포넌트
   const CircularScore = ({ score, label, color, size = 180 }) => {

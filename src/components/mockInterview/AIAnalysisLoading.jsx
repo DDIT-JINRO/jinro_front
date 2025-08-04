@@ -49,12 +49,10 @@ const AIAnalysisLoading = ({ progress = 0, onCancel, onComplete }) => {
   // 🎯 progress가 100%가 되면 자동으로 완료 처리
   useEffect(() => {
     if (progress >= 100 && !isCompleted) {
-      console.log('🎉 AI 분석 진행률 100% 도달 - 완료 처리 시작');
       setIsCompleted(true);
       
       // 2초 후 자동으로 완료 콜백 실행
       setTimeout(() => {
-        console.log('✅ AI 분석 완료 - 결과 화면으로 전환');
         if (onComplete) {
           onComplete();
         }

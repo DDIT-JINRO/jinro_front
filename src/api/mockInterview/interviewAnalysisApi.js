@@ -8,9 +8,7 @@ export const interviewAnalysisApi = {
    * @returns {Promise<Object>} - 분석 결과
    */
   async requestDetailedAnalysis(analysisData) {
-    try {
-      console.log('🚀 면접 분석 요청 시작:', analysisData);
-      
+    try {      
       const response = await fetch(`${backUrl}/api/analyze-interview`, { // 🎯 URL 변경
         method: 'POST',
         headers: {
@@ -27,7 +25,6 @@ export const interviewAnalysisApi = {
       }
       
       const result = await response.json();
-      console.log('✅ 면접 분석 완료:', result);
       
       // 🎯 백엔드 응답 검증
       if (!result.success && result.success !== undefined) {

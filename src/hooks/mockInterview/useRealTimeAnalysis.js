@@ -83,9 +83,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   
   // 🎯 MediaPipe 초기화 개선 (여러 CDN 시도 및 에러 처리 강화)
   const initializeMediaPipe = useCallback(async () => {
-    try {
-      console.log('📦 MediaPipe Tasks Vision 초기화 시작...');
-      
+    try {      
       // 1단계: 라이브러리 가용성 체크
       let vision = null;
       let FilesetResolver, FaceDetector, FaceLandmarker;
@@ -97,7 +95,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         FaceDetector = mediapipeModule.FaceDetector;
         FaceLandmarker = mediapipeModule.FaceLandmarker;
         
-        console.log('✅ MediaPipe 모듈 로드 성공');
       } catch (importError) {
         console.error('❌ MediaPipe 모듈 import 실패:', importError);
         
@@ -106,7 +103,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
           if (!window.MediaPipeVision) {
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.js';
-            script.onload = () => console.log('✅ MediaPipe CDN 로드 성공');
             script.onerror = () => console.error('❌ MediaPipe CDN 로드 실패');
             document.head.appendChild(script);
             
@@ -136,9 +132,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       ];
       
       for (const wasmUrl of wasmUrls) {
-        try {
-          console.log(`🌐 WASM 로드 시도: ${wasmUrl}`);
-          
+        try {          
           // 네트워크 연결 테스트
           const testResponse = await fetch(`${wasmUrl}/vision_wasm_internal.wasm`, { 
             method: 'HEAD',
@@ -146,7 +140,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
           });
           
           vision = await FilesetResolver.forVisionTasks(wasmUrl);
-          console.log(`✅ WASM 로드 성공: ${wasmUrl}`);
           break;
         } catch (error) {
           console.warn(`⚠️ WASM 로드 실패: ${wasmUrl}`, error);
@@ -168,7 +161,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       for (const [modelName, modelUrl] of Object.entries(modelUrls)) {
         try {
           const response = await fetch(modelUrl, { method: 'HEAD', mode: 'no-cors' });
-          console.log(`✅ 모델 파일 접근 가능: ${modelName}`);
         } catch (error) {
           console.warn(`⚠️ 모델 파일 접근 불가: ${modelName}`, error);
         }
@@ -187,7 +179,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         });
         
         faceDetectorRef.current = faceDetector;
-        console.log('✅ Face Detector 초기화 성공');
         
       } catch (detectorError) {
         console.warn('⚠️ Face Detector GPU 초기화 실패, CPU로 재시도:', detectorError);
@@ -204,7 +195,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
           });
           
           faceDetectorRef.current = faceDetector;
-          console.log('✅ Face Detector CPU 초기화 성공');
           
         } catch (cpuError) {
           console.error('❌ Face Detector CPU 초기화도 실패:', cpuError);
@@ -229,7 +219,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         });
         
         faceLandmarkerRef.current = faceLandmarker;
-        console.log('✅ Face Landmarker 초기화 성공');
         
       } catch (landmarkerError) {
         console.warn('⚠️ Face Landmarker 초기화 실패 (Face Detector만 사용):', landmarkerError);
@@ -238,15 +227,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       
       // 6단계: 최종 상태 설정
       setIsMediaPipeReady(true);
-      console.log('✅ MediaPipe Tasks Vision 초기화 완료');
-      
-      // 초기화 성공 정보 로그
-      console.log('📊 MediaPipe 상태:', {
-        faceDetector: !!faceDetectorRef.current,
-        faceLandmarker: !!faceLandmarkerRef.current,
-        wasmLoaded: !!vision,
-        timestamp: new Date().toISOString()
-      });
       
       return true;
       
@@ -264,7 +244,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       analysisRef.current.performanceMetrics.errorCount += 1;
       analysisRef.current.performanceMetrics.lastError = error.message;
       
-      console.log('🔄 향상된 시뮬레이션 모드로 전환');
       setIsMediaPipeReady(false);
       return false;
     }
@@ -272,9 +251,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
 
   // 🎯 오디오 분석 설정 개선
   const setupAudioAnalysis = useCallback(async (stream) => {
-    try {
-      console.log('🔊 오디오 분석 설정 시작...');
-      
+    try {      
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       
       if (audioContext.state === 'suspended') {
@@ -298,7 +275,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       audioAnalyser.current = analyser;
       audioDataArray.current = dataArray;
       
-      console.log('✅ 오디오 분석 설정 완료 (향상된 설정)');
       return true;
       
     } catch (error) {
@@ -442,20 +418,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
             
             confidence = 0.95; // 개선된 랜드마크 기반이므로 매우 높은 신뢰도
             calculationMethod = 'landmarks_enhanced_v2';
-            
-            // 🎯 디버깅 로그
-            if (analysisRef.current.debugLogCount % 300 === 0) {
-              console.log('👁️ 개선된 아이컨택 분석 v2:', {
-                angle: angle.toFixed(1) + '°',
-                score: Math.round(eyeContactScore),
-                eyeOpenness: eyeOpennessScore.toFixed(2),
-                headTilt: (headTilt * 180 / Math.PI).toFixed(1) + '°',
-                centerDistance: faceDistanceFromCenter.toFixed(3),
-                centerBonus,
-                confidence,
-                method: calculationMethod
-              });
-            }
+
           }
         }
       }
@@ -500,23 +463,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         
         confidence = 0.5; // 바운딩박스 기반이므로 중간 신뢰도
         calculationMethod = 'boundingbox_enhanced';
-        
-        // 🎯 디버깅 로그
-        if (analysisRef.current.debugLogCount % 360 === 0) {
-          console.log('📦 바운딩박스 아이컨택 (fallback):', {
-            faceCenter: {
-              x: faceCenter.x.toFixed(3),
-              y: faceCenter.y.toFixed(3)
-            },
-            distance: distanceFromCenter.toFixed(3),
-            faceSize: faceSize.toFixed(3),
-            sizeRatio: sizeRatio.toFixed(2),
-            distanceCorrection: distanceCorrection.toFixed(2),
-            score: Math.round(eyeContactScore),
-            confidence,
-            method: calculationMethod
-          });
-        }
+
       }
       
     } catch (error) {
@@ -981,14 +928,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
             
             videoResult.eyeContactStabilized = stabilizedEyeContact;
             analysisRef.current.lastVideoResult.eyeContactStabilized = stabilizedEyeContact;
-            
-            console.log('🔍 비디오 분석 결과:', {
-              originalEyeContact: videoResult.eyeContact,
-              stabilizedEyeContact: stabilizedEyeContact,
-              faceDetected: videoResult.faceDetected,
-              smile: videoResult.smile,
-              timestamp: new Date().toLocaleTimeString()
-            });
+
           }
         }
       }
@@ -1054,19 +994,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
           );
         }
         
-        console.log('🔄 상태 업데이트 준비:', {
-          eyeContactPercentage,
-          videoResultForUpdate: videoResultForUpdate ? {
-            faceDetected: videoResultForUpdate.faceDetected,
-            eyeContact: videoResultForUpdate.eyeContact,
-            eyeContactStabilized: videoResultForUpdate.eyeContactStabilized,
-            smile: videoResultForUpdate.smile
-          } : null,
-          totalFrames: analysisRef.current.totalFrames,
-          eyeContactFrames: analysisRef.current.eyeContactFrames,
-          timestamp: new Date().toLocaleTimeString()
-        });
-        
         setAnalysisData(prev => {
           const newData = {
             audio: {
@@ -1097,13 +1024,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
               facePosition: videoResultForUpdate ? videoResultForUpdate.facePosition : prev.video.facePosition
             }
           };
-          
-          console.log('✅ 새 상태 적용:', {
-            eyeContactPercentage: newData.video.eyeContactPercentage,
-            faceDetectionRate: newData.video.faceDetectionRate,
-            rawEyeContact: newData.video.rawEyeContact,
-            timestamp: new Date().toLocaleTimeString()
-          });
           
           return newData;
         });
@@ -1143,46 +1063,28 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
 
   // 🎯 분석 시작 함수
   // useRealTimeAnalysis.js - startAnalysis 함수에 디버깅 로그 추가
-  const startAnalysis = useCallback(async () => {
-    console.log('🚀🚀🚀 startAnalysis 함수 호출됨'); // 추가된 로그
-    
+  const startAnalysis = useCallback(async () => {    
     if (!mediaStream) {
       console.warn('⚠️ 미디어 스트림이 없어서 분석을 시작할 수 없습니다');
       return false;
     }
     
     if (isAnalyzing) {
-      console.log('✅ 실시간 분석이 이미 실행 중입니다');
       return true;
     }
     
     try {
-      console.log('📊 실시간 분석 시작...');
-      
-      // MediaPipe 초기화 시도 전 로그
-      console.log('🔍 MediaPipe 초기화 시작 전 상태:', {
-        mediaStream: !!mediaStream,
-        isAnalyzing,
-        faceDetectorRef: !!faceDetectorRef.current,
-        faceLandmarkerRef: !!faceLandmarkerRef.current
-      });
-      
       // MediaPipe 초기화 시도
-      console.log('🎯 initializeMediaPipe 호출 시작...');
       const mediaPipeReady = await initializeMediaPipe();
-      console.log('🎯 initializeMediaPipe 결과:', mediaPipeReady);
       
       // 오디오 분석 설정
-      console.log('🔊 setupAudioAnalysis 호출 시작...');
       const audioSetup = await setupAudioAnalysis(mediaStream);
-      console.log('🔊 setupAudioAnalysis 결과:', audioSetup);
       
       if (!audioSetup) {
         console.warn('⚠️ 오디오 분석 설정 실패, 계속 진행');
       }
       
       // 분석 데이터 초기화
-      console.log('📋 분석 데이터 초기화 중...');
       analysisRef.current = {
         startTime: Date.now(),
         lastSpeakingCheck: null,
@@ -1217,7 +1119,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       };
       
       setIsAnalyzing(true);
-      console.log(`✅✅✅ 실시간 분석 시작 완료 (${mediaPipeReady ? 'MediaPipe AI' : '향상된 시뮬레이션'} 모드)`);
       
       return true;
       
@@ -1231,9 +1132,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   }, [mediaStream, initializeMediaPipe, setupAudioAnalysis]);
 
   // 🎯 분석 중지 함수
-  const stopAnalysis = useCallback(() => {
-    console.log('⏹️ 실시간 분석 중지...');
-    
+  const stopAnalysis = useCallback(() => {    
     setIsAnalyzing(false);
     
     if (animationFrameRef.current) {
@@ -1267,39 +1166,13 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       const eyeContactRate = analysisRef.current.totalFrames > 0 
         ? (analysisRef.current.eyeContactFrames / analysisRef.current.totalFrames * 100) 
         : 0;
-      
-      console.log('📊 최종 분석 통계:', {
-        totalDuration: totalDuration.toFixed(1) + 's',
-        speaking: {
-          totalTime: totalSpeakingTimeInSeconds + 's',
-          percentage: ((totalSpeakingTimeInSeconds / totalDuration) * 100).toFixed(1) + '%',
-          wordCount: analysisRef.current.wordCount,
-          avgWPM: totalDuration > 0 ? Math.round((analysisRef.current.wordCount / totalDuration) * 60) : 0
-        },
-        video: {
-          totalFrames: analysisRef.current.totalFrames,
-          faceDetectionRate: Math.round((analysisRef.current.faceDetectionCount / analysisRef.current.totalFrames) * 100) + '%',
-          eyeContactRate: eyeContactRate.toFixed(1) + '%',
-          smileFrames: analysisRef.current.smileFrames,
-          smileRate: Math.round((analysisRef.current.smileFrames / analysisRef.current.totalFrames) * 100) + '%'
-        },
-        performance: {
-          avgProcessingTime: analysisRef.current.performanceMetrics.avgProcessingTime.toFixed(2) + 'ms',
-          errorCount: analysisRef.current.performanceMetrics.errorCount,
-          lastError: analysisRef.current.performanceMetrics.lastError
-        }
-      });
     }
     
-    console.log('✅ 실시간 분석 중지 완료');
   }, []);
 
   // 🎯 최종 분석 결과 생성
   // 🎯 최종 분석 결과 생성 (Gemini API 연동 버전)
   const finishAnalysis = useCallback(async (additionalData = {}) => {
-    console.log('🏁 최종 분석 결과 생성 시작...');
-    console.log('📊 전달받은 추가 데이터:', additionalData);
-    
     const endTime = Date.now();
     const duration = analysisRef.current.startTime 
       ? Math.round((endTime - analysisRef.current.startTime) / 1000)
@@ -1310,17 +1183,11 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     const interviewData = additionalData.interviewData || {};
     const technicalInfo = additionalData.technicalInfo || {};
     const geminiAnalysis = additionalData.geminiAnalysis; // 🎯 Gemini 분석 결과
-    
-    console.log('🔍 분석할 실시간 데이터:', realTimeData);
-    console.log('📝 면접 데이터:', interviewData);
-    console.log('🤖 Gemini 분석 결과:', geminiAnalysis);
-    
+
     let result;
     
     // 🎯 Gemini 분석 결과가 있으면 우선 사용
-    if (geminiAnalysis) {
-      console.log('🎯 Gemini AI 전문가 분석 결과 사용');
-      
+    if (geminiAnalysis) {      
       // Gemini 분석 결과를 기본으로 하되, 실시간 데이터도 포함
       result = {
         // Gemini 분석 기본 정보
@@ -1435,10 +1302,7 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
         }
       };
       
-    } else {
-      // 🎯 Gemini 분석이 없는 경우 기존 로직 사용
-      console.log('🔄 기존 분석 방식 사용 (Gemini 분석 없음)');
-      
+    } else {      
       // 🎯 음성 분석 점수 계산 (실제 데이터 기반)
       let audioScore = 65; // 기본 점수
       
@@ -1447,10 +1311,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       const wpm = realTimeData?.audio?.wordsPerMinute || 0;
       const fillerWords = realTimeData?.audio?.fillerWordsCount || 0;
       const speakingRatio = duration > 0 ? (speakingTime / duration) : 0;
-      
-      console.log('🎤 음성 분석 지표:', {
-        avgVolume, speakingTime, wpm, fillerWords, speakingRatio, duration
-      });
       
       // 볼륨 점수 (최적 범위: 20-80)
       if (avgVolume >= 25 && avgVolume <= 75) {
@@ -1503,10 +1363,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       const eyeContactPercentage = realTimeData?.video?.eyeContactPercentage || 0;
       const smileDetection = realTimeData?.video?.smileDetection || 0;
       const postureScore = realTimeData?.video?.postureScore || 0;
-      
-      console.log('👁️ 영상 분석 지표:', {
-        faceDetectionRate, eyeContactPercentage, smileDetection, postureScore
-      });
       
       // 얼굴 감지율 점수
       if (faceDetectionRate >= 90) {
@@ -1567,8 +1423,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       const questions = interviewData.questions || [];
       let textScore = 70; // 기본 텍스트 점수
       
-      console.log('📝 답변 분석:', { answers: answers.length, questions: questions.length });
-      
       // 답변 완성도 분석
       const completedAnswers = answers.filter(answer => answer && answer.trim().length > 0);
       const completionRate = questions.length > 0 ? (completedAnswers.length / questions.length) : 0;
@@ -1614,10 +1468,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
       const overallScore = Math.round(
         (audioScore * 0.35 + videoScore * 0.45 + textScore * 0.2) // 영상 > 음성 > 텍스트 순 가중치
       );
-      
-      console.log('📊 점수 계산 결과:', {
-        audioScore, videoScore, textScore, overallScore
-      });
       
       // 등급 계산
       let grade;
@@ -1820,8 +1670,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
     }
     
     setFinalAnalysis(result);
-    console.log('✅ 최종 분석 결과 생성 완료:', result);
-    console.log(`🎯 분석 방식: ${geminiAnalysis ? 'Gemini AI 전문가 분석' : '기존 실시간 분석'}`);
     
     return result;
   }, [analysisData, isMediaPipeReady]);
@@ -1829,7 +1677,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   // isAnalyzing 상태가 true로 변경될 때 분석 루프 시작
   useEffect(() => {
     if (isAnalyzing && !animationFrameRef.current) {
-      console.log('🚀 분석 루프 시작...');
       animationFrameRef.current = requestAnimationFrame(analysisLoop);
     }
   }, [isAnalyzing, analysisLoop]);
@@ -1837,7 +1684,6 @@ export const useRealTimeAnalysis = (mediaStream, videoRef) => {
   // 컴포넌트 언마운트 시 정리
   useEffect(() => {
     return () => {
-      console.log('🧹 실시간 분석 정리...');
       stopAnalysis();
     };
   }, [stopAnalysis]);

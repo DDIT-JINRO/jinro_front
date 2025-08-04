@@ -11,19 +11,16 @@ export const useTimer = (initialTime = TIMER_DEFAULTS.INITIAL_TIME) => {
 
   // 타이머 시작
   const startTimer = () => {
-    console.log('⏰ 타이머 시작');
     setIsTimerRunning(true);
   };
 
   // 타이머 일시정지
   const pauseTimer = () => {
-    console.log('⏰ 타이머 일시정지');
     setIsTimerRunning(false);
   };
 
   // 타이머 리셋
   const resetTimer = () => {
-    console.log('⏰ 타이머 리셋');
     setTimeLeft(initialTime);
     setIsTimerRunning(false);
   };
@@ -48,7 +45,6 @@ export const useTimer = (initialTime = TIMER_DEFAULTS.INITIAL_TIME) => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsTimerRunning(false);
-      console.log('⏰ 시간 종료');
     }
 
     return () => {

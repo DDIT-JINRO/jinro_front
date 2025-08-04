@@ -17,9 +17,7 @@ export const useMediaStream = () => {
 
   // 카메라 시작
   const startCamera = async () => {
-    try {
-      console.log('🎥 카메라 및 마이크 권한 요청 중...');
-      
+    try {      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: {
@@ -29,7 +27,6 @@ export const useMediaStream = () => {
         }
       });
       
-      console.log('✅ 미디어 스트림 획득 성공');
       setMediaStream(stream);
       setCameraPermissionGranted(true);
       
@@ -48,9 +45,7 @@ export const useMediaStream = () => {
 
   // 오디오 분석 설정
   const setupAudioAnalysis = async (stream) => {
-    try {
-      console.log('🔊 오디오 분석기 설정 시작...');
-      
+    try {      
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       
       if (audioCtx.state === 'suspended') {
@@ -74,9 +69,7 @@ export const useMediaStream = () => {
       setAnalyser(analyserNode);
       setDataArray(dataArr);
       setAudioInitialized(true);
-      
-      console.log('✅ 오디오 분석기 설정 완료');
-      
+            
     } catch (error) {
       console.error('❌ 오디오 분석 설정 실패:', error);
       setAudioInitialized(false);
@@ -107,7 +100,6 @@ export const useMediaStream = () => {
           if (audioContext && audioContext.state === 'suspended') {
             try {
               await audioContext.resume();
-              console.log('🔊 AudioContext 재활성화됨');
             } catch (error) {
               console.error('AudioContext 재활성화 실패:', error);
             }

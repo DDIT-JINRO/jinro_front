@@ -24,9 +24,7 @@ export const useAIAnalysis = () => {
     const sessionId = `interview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     currentSessionIdRef.current = sessionId;
     
-    try {
-      console.log('🎯 면접 분석 시작 - 세션 ID:', sessionId);
-      
+    try {      
       // 🎯 백엔드 API 요청 데이터 구성 (sessionId를 최상위로)
       const requestData = {
         sessionId: sessionId, // 🎯 최상위 레벨에 sessionId 배치
@@ -61,13 +59,6 @@ export const useAIAnalysis = () => {
         }
       };
 
-      console.log('📤 백엔드로 전송할 데이터:', {
-        sessionId: requestData.sessionId,
-        questionsCount: requestData.interview_data.questions.length,
-        answersCount: requestData.interview_data.answers.length,
-        duration: requestData.interview_data.duration
-      });
-
       // 🎯 진행률 시뮬레이션 시작
       const simulateProgress = async () => {
         const progressSteps = [
@@ -89,7 +80,6 @@ export const useAIAnalysis = () => {
           });
           
           setAnalysisProgress(step.progress);
-          console.log(`📊 ${step.message} (${step.progress}%)`);
         }
       };
 
@@ -99,7 +89,7 @@ export const useAIAnalysis = () => {
       // 🎯 백엔드 API 호출
       const analysisResponse = await interviewAnalysisApi.requestDetailedAnalysis(requestData);
       
-      console.log('📥 백엔드 응답 받음:', {
+      ('📥 백엔드 응답 받음:', {
         success: analysisResponse.success,
         overallScore: analysisResponse.overallScore,
         sessionId: analysisResponse.sessionId
@@ -153,7 +143,6 @@ export const useAIAnalysis = () => {
       };
 
       setAnalysisResult(transformedResult);
-      console.log('✅ 면접 분석 완료:', transformedResult);
 
     } catch (error) {
       console.error('❌ AI 분석 실패:', error);
@@ -223,7 +212,6 @@ export const useAIAnalysis = () => {
     if (currentSessionIdRef.current) {
       try {
         await interviewAnalysisApi.cancelAnalysis(currentSessionIdRef.current);
-        console.log('🛑 분석 취소됨:', currentSessionIdRef.current);
       } catch (error) {
         console.warn('⚠️ 분석 취소 실패:', error.message);
       }

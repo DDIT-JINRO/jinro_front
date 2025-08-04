@@ -54,25 +54,6 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
     }
   }, [video.eyeContactPercentage]);
 
-  useEffect(() => {
-    console.log('🔍 RealTimeAnalysisOverlay - analysisData 업데이트:', {
-      analysisData: analysisData ? {
-        audio: {
-          currentVolume: analysisData.audio.currentVolume,
-          speakingTime: analysisData.audio.speakingTime
-        },
-        video: {
-          faceDetected: analysisData.video.faceDetected,
-          eyeContactPercentage: analysisData.video.eyeContactPercentage,
-          rawEyeContact: analysisData.video.rawEyeContact,
-          smileDetection: analysisData.video.smileDetection,
-          faceDetectionRate: analysisData.video.faceDetectionRate
-        }
-      } : null,
-      timestamp: new Date().toLocaleTimeString()
-    });
-  }, [analysisData]);
-
   // 전체 점수 계산 (실시간 예상 점수) - 아이컨택 가중치 증가
   const calculateCurrentScore = () => {
     let score = 65; // 기본 점수를 65로 상향
@@ -85,11 +66,6 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
     if (video.faceDetected) score += 8;
 
     const eyeContactValue = video.eyeContactPercentage || 0;
-    console.log('📊 점수 계산:', {
-      eyeContactValue,
-      faceDetected: video.faceDetected,
-      currentScore: score
-    });
 
     if (video.eyeContactPercentage >= 70) score += 15; // 기존 10에서 15로 증가
     else if (video.eyeContactPercentage >= 50) score += 10; // 새로 추가
@@ -99,12 +75,6 @@ const RealTimeAnalysisOverlay = ({ analysisData }) => {
     if (video.postureScore >= 70) score += 4;
 
     const finalScore = Math.max(35, Math.min(95, score));
-
-    console.log('📊 최종 점수:', {
-      baseScore: 65,
-      eyeContactBonus: eyeContactValue >= 70 ? 15 : eyeContactValue >= 50 ? 10 : eyeContactValue >= 30 ? 5 : eyeContactValue < 20 ? -10 : 0,
-      finalScore
-    });
 
     return finalScore;
   };

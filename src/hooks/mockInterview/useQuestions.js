@@ -14,10 +14,8 @@ export const useQuestions = () => {
 
   // 랜덤 질문 선택 함수
   const selectRandomQuestions = (questionsArray, count = 3) => {
-    console.log(`🎲 전체 ${questionsArray.length}개 질문 중 랜덤으로 ${count}개 선택`);
     
     if (questionsArray.length <= count) {
-      console.log(`⚠️ 전체 질문 수(${questionsArray.length})가 요청 개수(${count})보다 적어서 모든 질문 사용`);
       return questionsArray;
     }
     
@@ -28,11 +26,6 @@ export const useQuestions = () => {
     }
     
     const selected = shuffled.slice(0, count);
-    
-    console.log('🎯 선택된 질문들:');
-    selected.forEach((question, index) => {
-      console.log(`   ${index + 1}. ${question}`);
-    });
     
     return selected;
   };
@@ -47,22 +40,17 @@ export const useQuestions = () => {
     setQuestions(fallbackQuestions);
     setQuestionsLoaded(true);
     setAnswers(new Array(fallbackQuestions.length).fill(''));
-    console.log('🔄 기본 질문으로 대체:', fallbackQuestions);
   };
 
   // 서버에서 질문 데이터 로드
-  const loadQuestionsFromServer = async () => {
-    console.log('🌐 서버에서 질문 데이터 로드 시작...');
-    
+  const loadQuestionsFromServer = async () => {    
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const type = urlParams.get('type');
       const questionListId = urlParams.get('questionListId');
       const industryCode = urlParams.get('industryCode');
       const questionCount = urlParams.get('questionCount') || '10';
-      
-      console.log('📄 URL 파라미터:', { type, questionListId, industryCode, questionCount });
-      
+            
       if (!type) {
         console.error('❌ 면접 타입이 없습니다');
         return false;
@@ -85,7 +73,6 @@ export const useQuestions = () => {
       
       // Spring Boot 서버에 API 요청
       const apiUrl = `${backUrl}/cdp/imtintrvw/aiimtintrvw/api/getInterviewQuestions?${apiParams.toString()}`;
-      console.log('🌐 API 요청 URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'GET',
@@ -94,23 +81,16 @@ export const useQuestions = () => {
         },
         credentials: 'include'
       });
-      
-      console.log('📡 API 응답 상태:', response.status);
-      
+            
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
-      console.log('📦 서버 응답 데이터:', data);
       
-      if (data.success && data.questions && Array.isArray(data.questions)) {
-        console.log('✅ 서버에서 질문 데이터 수신 성공');
-        console.log('📊 질문 개수:', data.questions.length);
-        
+      if (data.success && data.questions && Array.isArray(data.questions)) {        
         // iqContent 값들만 추출
         const allQuestionTexts = data.questions.map((item, index) => {
-          console.log(`📝 서버 질문 ${index + 1}:`, item.iqContent);
           return item.iqContent || `질문 ${index + 1}을 불러올 수 없습니다.`;
         });
 
@@ -120,7 +100,6 @@ export const useQuestions = () => {
         setQuestions(selectedQuestions);
         setQuestionsLoaded(true);
         setAnswers(new Array(selectedQuestions.length).fill(''));
-        console.log('✅ 질문 로드 완료:', selectedQuestions);
         
         return true;
         
@@ -138,13 +117,10 @@ export const useQuestions = () => {
 
   // PostMessage 리스너 설정
   const setupPostMessageListener = () => {
-    console.log('📬 PostMessage 리스너 설정');
     
     const handleMessage = (event) => {
-      console.log('📬 PostMessage 수신:', event);
       
       if (questionsLoaded && questions.length > 0) {
-        console.log('✅ 질문이 이미 로드되어 있어 PostMessage 무시');
         return;
       }
       
@@ -154,11 +130,9 @@ export const useQuestions = () => {
       }
       
       if (event.data && event.data.type === 'INTERVIEW_QUESTIONS_DATA') {
-        console.log('✅ 면접 질문 데이터 수신:', event.data.questions);
         
         if (Array.isArray(event.data.questions) && event.data.questions.length > 0) {
           const questionTexts = event.data.questions.map((item, index) => {
-            console.log(`📝 PostMessage 질문 ${index + 1}:`, item.iqContent);
             return item.iqContent || `질문 ${index + 1}을 불러올 수 없습니다.`;
           });
           
@@ -167,7 +141,6 @@ export const useQuestions = () => {
           setQuestions(selectedQuestions);
           setQuestionsLoaded(true);
           setAnswers(new Array(selectedQuestions.length).fill(''));
-          console.log('✅ PostMessage로 질문 로드 성공:', selectedQuestions);
           
           window.removeEventListener('message', handleMessage);
         }
@@ -178,7 +151,6 @@ export const useQuestions = () => {
     
     const timeoutId = setTimeout(() => {
       if (questionsLoaded && questions.length > 0) {
-        console.log('✅ 이미 질문이 로드되어 있어 PostMessage 타임아웃 취소');
         window.removeEventListener('message', handleMessage);
         return;
       }
@@ -189,7 +161,6 @@ export const useQuestions = () => {
     }, 5000);
     
     return () => {
-      console.log('🧹 PostMessage 리스너 및 타임아웃 정리');
       clearTimeout(timeoutId);
       window.removeEventListener('message', handleMessage);
     };
@@ -198,22 +169,18 @@ export const useQuestions = () => {
   // 통합 질문 로드 함수
   const loadQuestions = async () => {
     if (questionsInitialized.current || (questionsLoaded && questions.length > 0)) {
-      console.log('✅ 질문이 이미 로드되어 있음, 재로드 생략');
       return null;
     }
     
     questionsInitialized.current = true;
-    console.log('🎯 질문 데이터 로드 시작...');
     
     try {
       const serverLoadSuccess = await loadQuestionsFromServer();
       
       if (serverLoadSuccess) {
-        console.log('✅ 서버에서 질문 로드 성공, PostMessage 시도 생략');
         return null;
       }
       
-      console.log('🔄 서버 로드 실패, PostMessage 시도...');
       return setupPostMessageListener();
       
     } catch (error) {
@@ -246,9 +213,7 @@ export const useQuestions = () => {
   };
 
   // 질문 로드 초기화
-  useEffect(() => {
-    console.log('🚀 질문 로드 초기화');
-    
+  useEffect(() => {    
     let postMessageCleanup = null;
     
     const initializeQuestions = async () => {
@@ -263,7 +228,6 @@ export const useQuestions = () => {
     initializeQuestions();
     
     return () => {
-      console.log('🔄 질문 로드 cleanup');
       if (postMessageCleanup && typeof postMessageCleanup === 'function') {
         postMessageCleanup();
       }
