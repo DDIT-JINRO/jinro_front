@@ -1,0 +1,59 @@
+/* CircularTimer.module.css */
+
+.circularTimer {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+}
+
+.circularTimerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+
+.circularTimerProgress {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.circularTimerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.circularTimerText.lowTime {
+  color: #ef4444;
+}
+
+.circularTimerControls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.circularTimerAlert {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.circularTimerAlert.warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.circularTimerAlert.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+}

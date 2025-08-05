@@ -1,0 +1,2713 @@
+/* 모의면접 전용 CSS - 다른 페이지에 영향을 주지 않도록 스코핑 */
+.mockInterviewContainer {
+  /* 기본 박스 사이징 설정 (컨테이너 내부에만 적용) */
+}
+
+.mockInterviewContainer * {
+  box-sizing: border-box;
+}
+
+/* 모의면접 페이지 기본 스타일 */
+.mockInterviewPage {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 스크롤바 스타일링 (모의면접 컨테이너 내부에만 적용) */
+.mockInterviewContainer ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mockInterviewContainer ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.mockInterviewContainer ::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.mockInterviewContainer ::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 애니메이션 키프레임 */
+@keyframes mockInterviewPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes mockInterviewSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mockInterviewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mockInterviewSlideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mockInterviewBounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+/* 버튼 스타일 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  gap: 8px;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btnPrimary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btnSuccess {
+  background-color: #10b981;
+  color: white;
+}
+
+.btnSuccess:hover:not(:disabled) {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.btnDanger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btnDanger:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btnWarning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.btnWarning:hover:not(:disabled) {
+  background-color: #d97706;
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  background-color: #6b7280;
+  color: white;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+/* 카드 스타일 */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* 프로그레스 바 */
+.progressBar {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.progressBarInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.progressBarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progressBarTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressBarTitle.listening {
+  color: #10b981;
+}
+
+.progressBarContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progressBarFill {
+  flex: 1;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.progressBarFillInner {
+  height: 100%;
+  background-color: #3b82f6;
+  transition: all 0.3s ease-out;
+}
+
+.progressBarText {
+  font-size: 14px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* 상태 인디케이터 */
+.statusIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusIndicator.listening {
+  background-color: #10b981;
+  color: white;
+}
+
+.statusIndicator.waiting {
+  background-color: #6b7280;
+  color: white;
+}
+
+.statusIndicator.error {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* 알림 스타일 */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.alertInfo {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.alertSuccess {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.alertWarning {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.alertError {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+/* 로딩 스피너 */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: mockInterviewSpin 1s linear infinite;
+}
+
+.spinnerLg {
+  width: 64px;
+  height: 64px;
+  border-width: 6px;
+}
+
+/* 로딩 스화면 */
+.loadingScreen {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContent {
+  text-align: center;
+}
+
+.loadingTitle {
+  color: #1f2937;
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.loadingDescription {
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.loadingSubtext {
+  color: #9d9d9d;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* 비디오 플레이어 */
+.videoPlayer {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  height: 100%;
+}
+
+.videoPlayerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.videoPlayerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.videoPlayerControls {
+  display: flex;
+  gap: 8px;
+}
+
+.videoPlayerButton {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: white;
+}
+
+.videoPlayerButton.on {
+  background-color: #3b82f6;
+}
+
+.videoPlayerButton.off {
+  background-color: #ef4444;
+}
+
+.videoPlayerScreen {
+  position: relative;
+  background-color: #111827;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  margin-bottom: 16px;
+}
+
+.videoPlayerVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoPlayerOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoPlayerOverlayContent {
+  text-align: center;
+  color: white;
+}
+
+.videoPlayerOverlayIcon {
+  margin: 0 auto 8px;
+  opacity: 0.5;
+}
+
+.videoPlayerOverlayText {
+  font-size: 14px;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* 원형 타이머 */
+.circularTimer {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+}
+
+.circularTimerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+
+.circularTimerProgress {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.circularTimerText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.circularTimerText.lowTime {
+  color: #ef4444;
+}
+
+.circularTimerControls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.circularTimerAlert {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.circularTimerAlert.warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.circularTimerAlert.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+/* 질문 카드 */
+.questionCard {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.questionCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.questionCardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.questionCardStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.questionCardStatus.listening {
+  color: #10b981;
+}
+
+.questionCardStatus.waiting {
+  color: #6b7280;
+}
+
+.questionCardStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.questionCardContent {
+  background-color: #dbeafe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.questionCardQuestion {
+  color: #1f2937;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.questionCardAnswer {
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #bbf7d0;
+}
+
+.questionCardAnswerLabel {
+  font-size: 12px;
+  color: #059669;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.questionCardAnswerText {
+  font-size: 14px;
+  color: #064e3b;
+  margin: 0;
+  line-height: 1.4;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.questionCardFooter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.questionCardInfo {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 면접 결과 */
+.interviewResult {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 24px;
+}
+
+.interviewResultContainer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.interviewResultHeader {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.interviewResultIcon {
+  width: 80px;
+  height: 80px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.interviewResultTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.interviewResultDescription {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+}
+
+.interviewResultQuestion {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.interviewResultQuestionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.interviewResultQuestionNumber {
+  width: 32px;
+  height: 32px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.interviewResultQuestionNumberText {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.interviewResultQuestionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.interviewResultQuestionContent {
+  background-color: #dbeafe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.interviewResultQuestionText {
+  color: #1e40af;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.interviewResultAnswer {
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #bbf7d0;
+}
+
+.interviewResultAnswerHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.interviewResultAnswerLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #059669;
+  margin-left: 8px;
+}
+
+.interviewResultAnswerText {
+  color: #064e3b;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.interviewResultAnswerStats {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.interviewResultActions {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* 오디오 비주얼라이저 */
+.audioVisualizer {
+}
+
+.audioVisualizerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.audioVisualizerTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.audioVisualizerStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.audioVisualizerStatus.listening {
+  color: #10b981;
+}
+
+.audioVisualizerStatus.waiting {
+  color: #6b7280;
+}
+
+.audioVisualizerStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.audioVisualizerCanvas {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #1f2937;
+}
+
+.audioVisualizerCanvasElement {
+  width: 100%;
+  height: 80px;
+  display: block;
+}
+
+/* 메인 레이아웃 */
+.mainContent {
+  flex: 1;
+  padding: 24px;
+}
+
+.mainGrid {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  display: grid;
+  gap: 24px;
+}
+
+.mainGridDesktop {
+  grid-template-columns: 1fr 2fr;
+}
+
+.mainGridMobile {
+  grid-template-columns: 1fr;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rightColumn {
+}
+
+.audioVisualizerContainer {
+  margin-top: 16px;
+}
+
+/* 펄스 애니메이션을 위한 특별한 클래스 */
+.pulseAnimation {
+  animation: mockInterviewPulse 2s infinite;
+}
+
+.pulsingDot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  animation: mockInterviewPulse 2s infinite;
+}
+
+/* 상태별 색상 */
+.listening {
+  color: #10b981;
+}
+
+.waiting {
+  color: #6b7280;
+}
+
+.error {
+  color: #ef4444;
+}
+
+.warning {
+  color: #f59e0b;
+}
+
+/* 스크린 리더를 위한 접근성 */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 포커스 스타일 */
+.mockInterviewContainer button:focus,
+.mockInterviewContainer input:focus,
+.mockInterviewContainer select:focus,
+.mockInterviewContainer textarea:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 툴팁 */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  z-index: 1000;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* AI 분석 로딩 화면 */
+.aiAnalysisLoading {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.aiLoadingContainer {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.aiLoadingIcon {
+  margin-bottom: 32px;
+}
+
+.brainContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.brainIcon {
+  color: #3b82f6;
+  animation: mockInterviewPulse 2s infinite;
+}
+
+.loadingOrbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  animation: mockInterviewSpin 3s linear infinite;
+}
+
+.orbitItem {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+}
+
+.orbitItem:nth-child(1) {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orbitItem:nth-child(2) {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.orbitItem:nth-child(3) {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.aiLoadingContent {
+  margin-bottom: 32px;
+}
+
+.aiLoadingTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.aiLoadingSubtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.aiProgressContainer {
+  margin-bottom: 32px;
+}
+
+.aiProgressBar {
+  width: 100%;
+  height: 12px;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.aiProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  transition: width 0.3s ease-out;
+}
+
+.aiProgressText {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.aiCurrentStep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stepIcon {
+  width: 48px;
+  height: 48px;
+  background-color: #dbeafe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+}
+
+.stepContent {
+  text-align: left;
+}
+
+.stepTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.stepDescription {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.stepsIndicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding: 0 20px;
+}
+
+.stepIndicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.stepIndicator.current {
+  opacity: 1;
+}
+
+.stepIndicator.completed {
+  opacity: 1;
+}
+
+.stepIndicatorIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.stepIndicator.current .stepIndicatorIcon {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.stepIndicator.completed .stepIndicatorIcon {
+  background-color: #10b981;
+  color: white;
+}
+
+.stepIndicatorLabel {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.stepIndicator.current .stepIndicatorLabel,
+.stepIndicator.completed .stepIndicatorLabel {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.aiAnalysisInfo {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.analysisInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.analysisInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.analysisInfoItem svg {
+  color: #3b82f6;
+}
+
+.infoLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.infoDescription {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.cancelButton {
+  margin-top: 16px;
+}
+
+.analysisTips {
+  background-color: #f0f9ff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  border: 1px solid #e0f2fe;
+}
+
+.analysisTips h4 {
+  color: #0c4a6e;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.analysisTips ul {
+  margin: 0;
+  padding-left: 16px;
+  color: #0c4a6e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.analysisTips li {
+  margin-bottom: 4px;
+}
+
+/* AI 분석 결과 화면 */
+.aiAnalysisResult {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 24px;
+}
+
+.aiAnalysisContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.aiAnalysisHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.aiAnalysisTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.aiIcon {
+  color: #3b82f6;
+}
+
+.aiAnalysisTitle h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.aiAnalysisTitle p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.aiScoreSummary {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.overallScoreCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.circularScore {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.circularScoreText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.circularScoreValue {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.circularScoreLabel {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.gradeInfo {
+  text-align: center;
+}
+
+.grade {
+  font-size: 48px;
+  font-weight: bold;
+  color: #3b82f6;
+  margin-bottom: 16px;
+}
+
+.recommendation {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.scoreBreakdown {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.scoreItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.scoreItem svg {
+  color: #3b82f6;
+}
+
+.scoreValue {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.analysisTabMenu {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tabButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background-color: #f3f4f6;
+}
+
+.tabButton.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.analysisTabContent {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.analysisSection {
+  margin-bottom: 32px;
+}
+
+.analysisSection:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.strengthIcon {
+  color: #10b981;
+}
+
+.improvementIcon {
+  color: #f59e0b;
+}
+
+.strengthsList {
+  display: grid;
+  gap: 12px;
+}
+
+.strengthItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #d1fae5;
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+}
+
+.strengthItem svg {
+  color: #059669;
+}
+
+.improvementsList {
+  display: grid;
+  gap: 12px;
+}
+
+.improvementItem {
+  padding: 12px 16px;
+  background-color: #fef3c7;
+  border-radius: 8px;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+
+.progressList {
+  display: grid;
+  gap: 16px;
+}
+
+.progressItem {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+}
+
+.progressItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.progressScore {
+  margin-left: auto;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.progressBarContainer {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.detailedScores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detailedScoreItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.videoContainer {
+  text-align: center;
+}
+
+.recordedVideo {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.videoNote {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+.noVideo {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.noVideo svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.analysisError {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.analysisError svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.analysisError h2 {
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+/* 녹화 관련 스타일 */
+.recordingIndicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(239, 68, 68, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recordingDot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  animation: mockInterviewPulse 1s infinite;
+}
+
+.recordingTime {
+  font-family: monospace;
+}
+
+/* 실시간 분석 오버레이 */
+.realTimeOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 320px;
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.realTimeOverlayMinimized {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+.expandButton:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: scale(1.05);
+}
+
+.currentScoreText {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.overlayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.overlayTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.minimizeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.minimizeButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #374151;
+}
+
+.currentScoreContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+}
+
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+}
+
+.scoreNumber {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.scoreStatus {
+  flex: 1;
+}
+
+.statusGood {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #059669;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNormal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNeedImprovement {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.metricsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.metricSection {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.metricItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.metricIcon {
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+
+.metricValue {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.metricValue.success {
+  color: #059669;
+}
+
+.metricValue.warning {
+  color: #d97706;
+}
+
+.volumeBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.volumeFill {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.realTimeTips {
+  max-height: 120px;
+  overflow-y: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #92400e;
+  border-left: 3px solid #f59e0b;
+}
+
+.tipSuccess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #d1fae5;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+.tipIcon {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 실시간 분석 오버레이가 비디오 위에 표시될 때 가독성 향상 */
+.realTimeOverlay:hover {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+/* 음성/영상 분석 시각화 */
+.audioAnalysisVisual,
+.videoAnalysisVisual {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.audioAnalysisVisual h4,
+.videoAnalysisVisual h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.audioMetrics,
+.videoMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audioMetric,
+.videoMetric {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.audioMetric span:first-of-type,
+.videoMetric span:first-of-type {
+  flex: 0 0 100px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.audioMetric span:last-of-type,
+.videoMetric span:last-of-type {
+  flex: 0 0 50px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-align: right;
+}
+
+.metricBar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metricBarFill {
+  height: 100%;
+  transition: width 1s ease-in-out;
+  border-radius: 4px;
+}
+
+/* 분석 방법 안내 */
+.analysisMethodInfo {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  border: 1px solid #e0f2fe;
+}
+
+.analysisMethodInfo h3 {
+  margin: 0 0 16px 0;
+  color: #0c4a6e;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.methodGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.methodItem {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0f2fe;
+}
+
+.methodItem svg {
+  color: #0284c7;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.methodItem h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0c4a6e;
+}
+
+.methodItem p {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+/* 실시간 분석 오버레이 */
+.realTimeOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 320px;
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.realTimeOverlayMinimized {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+.expandButton:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: scale(1.05);
+}
+
+.currentScoreText {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.overlayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.overlayTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.minimizeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.minimizeButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #374151;
+}
+
+.currentScoreContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+}
+
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+}
+
+.scoreNumber {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.scoreStatus {
+  flex: 1;
+}
+
+.statusGood {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #059669;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNormal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNeedImprovement {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.metricsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.metricSection {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.metricItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.metricIcon {
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+
+.metricValue {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.metricValue.success {
+  color: #059669;
+}
+
+.metricValue.warning {
+  color: #d97706;
+}
+
+.volumeBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.volumeFill {
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.realTimeTips {
+  max-height: 120px;
+  overflow-y: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #92400e;
+  border-left: 3px solid #f59e0b;
+}
+
+.tipSuccess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #d1fae5;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+.tipIcon {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 실시간 분석 오버레이가 비디오 위에 표시될 때 가독성 향상 */
+.realTimeOverlay:hover {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+/* 모바일에서 오버레이 크기 조정 */
+@media (max-width: 768px) {
+  .realTimeOverlay {
+    min-width: 240px;
+    max-width: 280px;
+    font-size: 11px;
+    padding: 12px;
+  }
+  
+  .currentScoreContainer {
+    padding: 8px;
+  }
+  
+  .scoreCircle {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .scoreNumber {
+    font-size: 14px;
+  }
+  
+  .metricSection {
+    padding: 8px;
+  }
+  
+  .methodGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .audioMetrics,
+  .videoMetrics {
+    gap: 8px;
+  }
+  
+  .audioMetric span:first-of-type,
+  .videoMetric span:first-of-type {
+    flex: 0 0 80px;
+  }
+  
+  .audioMetric span:last-of-type,
+  .videoMetric span:last-of-type {
+    flex: 0 0 40px;
+  }
+}
+
+/* 🎯 아이컨택 특별 섹션 스타일 */
+.eyeContactSpecialSection {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #bae6fd;
+}
+
+.eyeContactHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0c4a6e;
+}
+
+.eyeContactGrade {
+  margin-left: auto;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  min-width: 20px;
+}
+
+.eyeContactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eyeContactMainMetric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eyeContactPercentage {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0c4a6e;
+  line-height: 1;
+}
+
+.eyeContactLabel {
+  font-size: 11px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.trendUp {
+  color: #10b981;
+  font-size: 12px;
+}
+
+.trendDown {
+  color: #ef4444;
+  font-size: 12px;
+}
+
+.eyeContactProgressBar {
+  height: 6px;
+  background: rgba(203, 213, 225, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.eyeContactProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+.eyeContactDebug {
+  display: flex;
+  gap: 8px;
+  font-size: 9px;
+  color: #64748b;
+  margin-top: 4px;
+  padding: 4px 6px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.eyeContactDebug span {
+  flex: 1;
+}
+
+/* 축소된 오버레이의 아이컨택 등급 표시 */
+.eyeContactMiniGrade {
+  background-color: #3b82f6;
+  margin-left: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: white;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+/* 팁 스타일 개선 */
+.tipInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #e0f2fe;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #0c4a6e;
+  border-left: 3px solid #0284c7;
+}
+
+/* 기존 tip, tipSuccess 스타일과 함께 사용 */
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #92400e;
+  border-left: 3px solid #f59e0b;
+}
+
+.tipSuccess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: #d1fae5;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+/* 실시간 오버레이 전체 스타일 개선 */
+.realTimeOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 300px;
+  max-width: 340px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* 스크롤바 스타일 (오버레이 전용) */
+.realTimeOverlay::-webkit-scrollbar {
+  width: 4px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 2px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 2px;
+}
+
+.realTimeOverlay::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* 호버 효과 */
+.realTimeOverlay:hover {
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+}
+
+/* 현재 점수 컨테이너 개선 */
+.currentScoreContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  border: 1px solid #bae6fd;
+}
+
+.scoreCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.scoreNumber {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.scoreLabel {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.scoreStatus {
+  flex: 1;
+}
+
+.statusGood {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #059669;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNormal {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d97706;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.statusNeedImprovement {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* 메트릭 섹션 스타일 개선 */
+.metricSection {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.metricItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.metricIcon {
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+
+.metricValue {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.metricValue.success {
+  color: #059669;
+}
+
+.metricValue.warning {
+  color: #d97706;
+}
+
+/* 볼륨 바 */
+.volumeBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.volumeFill {
+  height: 100%;
+  transition: width 0.2s ease, background-color 0.3s ease;
+}
+
+/* 프로그레스 바 */
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 4px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* 실시간 팁 컨테이너 */
+.realTimeTips {
+  max-height: 140px;
+  overflow-y: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* 팁 아이콘 */
+.tipIcon {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 축소된 오버레이 */
+.realTimeOverlayMinimized {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.expandButton:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.currentScoreText {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* 애니메이션 효과 */
+@keyframes eyeContactGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.eyeContactSpecialSection:hover {
+  animation: eyeContactGlow 2s ease-in-out infinite;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .realTimeOverlay {
+    min-width: 260px;
+    max-width: 300px;
+    font-size: 11px;
+    padding: 12px;
+    max-height: 85vh;
+  }
+  
+  .eyeContactSpecialSection {
+    padding: 10px;
+  }
+  
+  .eyeContactPercentage {
+    font-size: 18px;
+  }
+  
+  .currentScoreContainer {
+    padding: 10px;
+  }
+  
+  .scoreCircle {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .scoreNumber {
+    font-size: 14px;
+  }
+  
+  .metricSection {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .realTimeOverlay {
+    min-width: 240px;
+    max-width: 280px;
+    font-size: 10px;
+    padding: 10px;
+  }
+  
+  .eyeContactPercentage {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,58 @@
+/* ProgressBar.module.css */
+
+.progressBar {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.progressBarInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.progressBarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progressBarTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressBarTitle.listening {
+  color: #10b981;
+}
+
+.progressBarContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progressBarFill {
+  flex: 1;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.progressBarFillInner {
+  height: 100%;
+  background-color: #3b82f6;
+  transition: all 0.3s ease-out;
+}
+
+.progressBarText {
+  font-size: 14px;
+  color: #6b7280;
+  white-space: nowrap;
+}

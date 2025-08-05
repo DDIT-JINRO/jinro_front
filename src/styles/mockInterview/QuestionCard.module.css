@@ -1,0 +1,92 @@
+/* QuestionCard.module.css */
+
+.questionCard {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+}
+
+.questionCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.questionCardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.questionCardStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.questionCardStatus.listening {
+  color: #10b981;
+}
+
+.questionCardStatus.waiting {
+  color: #6b7280;
+}
+
+.questionCardStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.questionCardContent {
+  background-color: #dbeafe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.questionCardQuestion {
+  color: #1f2937;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.questionCardAnswer {
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #bbf7d0;
+}
+
+.questionCardAnswerLabel {
+  font-size: 12px;
+  color: #059669;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.questionCardAnswerText {
+  font-size: 14px;
+  color: #064e3b;
+  margin: 0;
+  line-height: 1.4;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.questionCardFooter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.questionCardInfo {
+  font-size: 12px;
+  color: #6b7280;
+}

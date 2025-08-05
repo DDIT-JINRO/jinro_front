@@ -1,0 +1,306 @@
+/* VisualGuideOverlay.module.css */
+
+.guideOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.guideCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.controlPanel {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+
+.controlButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.controlButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.startButton {
+  background: #3b82f6;
+  color: white;
+}
+
+.startButton:hover {
+  background: #2563eb;
+}
+
+.skipButton {
+  background: #6b7280;
+  color: white;
+}
+
+.skipButton:hover {
+  background: #4b5563;
+}
+
+.toggleButton {
+  background: #f59e0b;
+  color: white;
+  padding: 10px;
+}
+
+.toggleButton:hover {
+  background: #d97706;
+}
+
+.qualityPanel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  min-width: 150px;
+  z-index: 20;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qualityTitle {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qualityItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  align-items: center;
+}
+
+.qualityLabel {
+  color: #d1d5db;
+}
+
+.qualityValue {
+  font-weight: 600;
+}
+
+.qualityGood {
+  color: #10b981;
+}
+
+.qualityWarning {
+  color: #f59e0b;
+}
+
+.qualityError {
+  color: #ef4444;
+}
+
+.calibrationProgress {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #4b5563;
+  font-size: 10px;
+  color: #d1d5db;
+}
+
+/* 가이드 상태별 애니메이션 */
+.guideActive {
+  animation: guideGlow 3s ease-in-out infinite;
+}
+
+@keyframes guideGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
+  }
+}
+
+.calibrationActive {
+  animation: calibrationPulse 2s ease-in-out infinite;
+}
+
+@keyframes calibrationPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.9));
+  }
+}
+
+.calibrationComplete {
+  animation: completionFlash 0.6s ease-out;
+}
+
+@keyframes completionFlash {
+  0% {
+    filter: drop-shadow(0 0 0px rgba(16, 185, 129, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(16, 185, 129, 1));
+  }
+  100% {
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+  }
+}
+
+/* 품질 바 애니메이션 */
+.qualityBar {
+  width: 100%;
+  height: 3px;
+  background: #374151;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.qualityBarFill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+/* 툴팁 스타일 */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  z-index: 1000;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .controlPanel {
+    bottom: 10px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .controlButton {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  
+  .qualityPanel {
+    top: 10px;
+    right: 10px;
+    min-width: 120px;
+    font-size: 10px;
+    padding: 8px;
+  }
+  
+  .qualityTitle {
+    margin-bottom: 6px;
+  }
+  
+  .qualityItem {
+    margin-bottom: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .controlPanel {
+    bottom: 5px;
+    gap: 4px;
+  }
+  
+  .controlButton {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+  
+  .qualityPanel {
+    top: 5px;
+    right: 5px;
+    min-width: 100px;
+    font-size: 9px;
+    padding: 6px;
+  }
+}
+
+/* 접근성 개선 */
+.controlButton:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.qualityPanel:focus-within {
+  outline: 1px solid #3b82f6;
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  .qualityPanel {
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid white;
+  }
+  
+  .controlButton {
+    border: 2px solid currentColor;
+  }
+}
+
+/* 애니메이션 줄이기 선호도 */
+@media (prefers-reduced-motion: reduce) {
+  .guideActive,
+  .calibrationActive,
+  .calibrationComplete {
+    animation: none;
+  }
+  
+  .qualityBarFill,
+  .controlButton {
+    transition: none;
+  }
+}
