@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { selectResultData } from '../../api/roadmap/roadMapApi';
 import '../../css/roadmap/roadmapResultPage.css'; // Import the new CSS file
+import LoadingPage from "../../pages/aptiTest/LoadingPage";
 
 // 로드맵 결과 페이지 컴포넌트
 function RoadmapResultPage() {
   // 화면 이동을 위한 navigate훅
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // 결과 데이터 상태
   const [resultData, setResultData] = useState("");
@@ -15,7 +18,7 @@ function RoadmapResultPage() {
   const fetchData = async () => {
     try {
       const res = await selectResultData();
-
+      setIsLoading(false);
       setResultData(res);
     } catch (error) {
       navigate("/roadmap/error", {
@@ -29,8 +32,13 @@ function RoadmapResultPage() {
   // 페이지 로딩 시 API 호출 및 창 크기 조절
   useEffect(() => {
     fetchData();
+    setIsLoading(true);
     window.resizeTo(900, 1080); 
   }, []);
+
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
 
   return (
     // 페이지 시작

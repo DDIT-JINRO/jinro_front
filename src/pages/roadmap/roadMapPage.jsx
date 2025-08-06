@@ -1,6 +1,7 @@
 import { useRoadmap } from "../../hooks/roadmap/useRoadmap";
 import RoadmapView from "../../components/roadmap/roadmapView";
 import RoadmapOverlays from "../../components/roadmap/roadmapOverlays";
+import LoadingPage from "../../pages/aptiTest/LoadingPage";
 import "../../css/roadmap/roadmapPage.css";
 
 // 로드맵 페이지 컴포넌트
@@ -10,7 +11,7 @@ function RoadmapPage() {
   
   // 로딩 시 출력 할 페이지
   if (roadmap.isLoading) {
-    return <div>로딩 중...</div>;
+    return <LoadingPage/>
   }
 
   // 로드맵 렌더링

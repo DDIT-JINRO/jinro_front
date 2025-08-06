@@ -118,6 +118,9 @@ export const updateDueDate = async (rsId, newDueDate) => {
 // 로드맵 결과 데이터를 조회
 export const selectResultData = async () => {
   try {
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     const res = await axios.get(`${prefix}/selectResultData`);
 
     if (!res.data) { 
