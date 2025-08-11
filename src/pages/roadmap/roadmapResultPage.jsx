@@ -106,7 +106,7 @@ function RoadmapResultPage() {
         {/* 버튼 시작 */}
         <div className="result-actions">
           <button className="back-btn" onClick={() => navigate(-1)}>돌아가기</button>
-          <button className="pdf-save-btn" onClick={() => alert("앙 저장띠")}>PDF로 저장</button>
+          {/* <button className="pdf-save-btn" onClick={() => alert("PDF 저장 미구현")}>PDF로 저장</button> */}
         </div>
         {/* 버튼 종료 */}
       </div>
