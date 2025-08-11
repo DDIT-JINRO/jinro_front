@@ -52,6 +52,17 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
 
   // 바로가기 클릭 핸들러
   const handleShortCutClick = (stageId) => {
+
+    const width = 1200;
+    const height = 800;
+
+    if (stageId == 3) {
+      window.resizeTo(width, height);
+      navigate("/worldcup");
+
+      return;
+    }
+
     const targetUrl = SHORT_CUT_URL[stageId-1];
 
     const message = {
@@ -126,13 +137,13 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
               <div>
                 <div className="mission-name">
                   <span>{`${currentGroup}단계 : ${stepName}`}</span>
-                  {!isCompleted && (
+                  {!isCompleted && mission.rsId != 11 && (
                     <div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>
                   )}
                 </div>
                 
                 {/* 완료 예정일이 있고, 완료되지 않은 미션일 경우 */}
-                {dueDate && !isCompleted && (
+                {dueDate && !isCompleted && mission.rsId != 11 && (
                   <p className="mission-due-date">
                     예정: {formatDate(dueDate)}
                     <button className="edit-date-btn" onClick={() => onEditDueDate(mission.rsId, mission.dueDate)}>
