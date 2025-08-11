@@ -5,11 +5,12 @@ import axios from "axios";
 import { useTestList } from "../../hooks/aptiTest/useTestList";
 import parse from 'html-react-parser';
 import { useNavigate } from "react-router-dom";
+import LoadingPage from "../../pages/aptiTest/LoadingPage";
 const backUrl = import.meta.env.VITE_BACK_END_URL;
 
 function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
-
+    const [isLoading, setisLoading] = useState(false);
 
     const { getValue, getTitle } = useTestList();
     const testNo = getValue(qno, ageGroup);
@@ -49,6 +50,10 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
         fetchData();
     }, [qno, testNo]);
+
+    if (isLoading) {
+        return <LoadingPage/>;
+    }
 
     const moveToLastAnsweredPage = (list) => {
         if (!answers || Object.keys(answers).length === 0) return;
@@ -131,6 +136,8 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
     };
 
     const handleSubmit = () => {
+        setisLoading(true);
+
         const data = {
             ageGroup: ageGroup,
             testNo: testNo,
@@ -138,6 +145,7 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
         };
 
         axios.post(backUrl + "/pse/cat/aptiTestSubmit.do", data, { withCredentials: true }).then(res => {
+            setisLoading(false);
             if (res.data.result.msg == "success") {
                 navigate("/aptiTest/result", { state: { resultData: res.data.result.reportUrl } });
             } else {
