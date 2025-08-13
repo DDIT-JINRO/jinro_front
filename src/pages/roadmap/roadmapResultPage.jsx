@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { selectResultData } from '../../api/roadmap/roadMapApi';
 import '../../css/roadmap/roadmapResultPage.css'; // Import the new CSS file
-import LoadingPage from "../../pages/aptiTest/LoadingPage";
+import LoadingPage from "../../pages/aptiTest/loadingPage";
 
 // 로드맵 결과 페이지 컴포넌트
 function RoadmapResultPage() {

@@ -1,7 +1,7 @@
 import { useRoadmap } from "../../hooks/roadmap/useRoadmap";
 import RoadmapView from "../../components/roadmap/roadmapView";
 import RoadmapOverlays from "../../components/roadmap/roadmapOverlays";
-import LoadingPage from "../../pages/aptiTest/LoadingPage";
+import LoadingPage from "../../pages/aptiTest/loadingPage";
 import "../../css/roadmap/roadmapPage.css";
 
 // 로드맵 페이지 컴포넌트
