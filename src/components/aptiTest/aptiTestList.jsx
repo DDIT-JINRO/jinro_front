@@ -5,7 +5,7 @@ import axios from "axios";
 import { useTestList } from "../../hooks/aptiTest/useTestList";
 import parse from 'html-react-parser';
 import { useNavigate } from "react-router-dom";
-import LoadingPage from "../../pages/aptiTest/LoadingPage";
+import LoadingPage from "../../pages/aptiTest/loadingPage";
 const backUrl = import.meta.env.VITE_BACK_END_URL;
 
 function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
