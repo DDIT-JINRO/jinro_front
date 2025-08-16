@@ -1,0 +1,83 @@
+.direct-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.direct-modal-content {
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px B20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: scaleUp 0.3s ease-in-out forwards;
+}
+
+.mission-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0 0 10px;
+}
+
+.mission-title span {
+  background: linear-gradient(to top, #cce0ff 40%, transparent 40%);
+  padding: 0 5px;
+}
+
+.mission-prompt {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 20px;
+}
+
+.direct-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  width: 120px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.decline-btn {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.direct-btn {
+  background-color: #5865f2;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
