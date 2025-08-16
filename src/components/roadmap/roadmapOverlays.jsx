@@ -30,6 +30,8 @@ function RoadmapOverlays({ roadmap }) {
         isMissionBoxOpen={roadmap.isMissionBoxOpen}
         setIsMissionBoxOpen={roadmap.setIsMissionBoxOpen}
         handleShortCutClick={roadmap.handleShortCutClick}
+        newlyAcceptedMissionId={roadmap.newlyAcceptedMissionId}
+        setNewlyAcceptedMissionId={roadmap.setNewlyAcceptedMissionId}
       />
 
       {/* 로드맵 결과 다시보기 버튼 컴포넌트 */}

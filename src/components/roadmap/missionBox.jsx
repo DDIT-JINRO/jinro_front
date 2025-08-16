@@ -24,7 +24,9 @@ function MissionBox({
   setIsCompleteMoving,
   isMissionBoxOpen,
   setIsMissionBoxOpen,
-  handleShortCutClick
+  handleShortCutClick,
+  newlyAcceptedMissionId,
+  setNewlyAcceptedMissionId
 }) {
   const navigate = useNavigate();
 
@@ -118,7 +120,13 @@ function MissionBox({
                 <div className="mission-name">
                   <span>{`${currentGroup}단계 : ${stepName}`}</span>
                   {!isCompleted && mission.rsId != 11 && (
-                    <div className="short-cut-btn" onClick={() => handleShortCutClick(mission.rsId)}>바로가기</div>
+                    <div className={`short-cut-btn ${mission.rsId === newlyAcceptedMissionId ? 'newly-accepted' : ''}`}
+                     onClick={() => {
+                      handleShortCutClick(mission.rsId);
+                      setNewlyAcceptedMissionId(null);
+                    }}>
+                      바로가기
+                    </div>
                   )}
                 </div>
                 

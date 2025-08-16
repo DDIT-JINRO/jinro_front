@@ -53,6 +53,9 @@ export const useRoadmap = () => {
    */
   const { setCookie, removeCookie, getCookie } = useCookie();
 
+  // 새롭게 수락한 미션 ID 상태 관리
+  const [newlyAcceptedMissionId, setNewlyAcceptedMissionId] = useState(null);
+
   // 미션 박스 컴포넌트 상태 관리
   const [isMissionBoxOpen, setIsMissionBoxOpen] = useState(false);
 
@@ -100,7 +103,8 @@ export const useRoadmap = () => {
   const { tutorialModal, acceptMissionModal } = useModalManager(
     missionList,
     refreshMissionData,
-    handleSetCharPosition
+    handleSetCharPosition,
+    setNewlyAcceptedMissionId
   );
 
   // 완료 예정 날짜 수정 클릭 함수
@@ -265,6 +269,8 @@ export const useRoadmap = () => {
     handleSetCharPosition,
     setIsCompleteMoving,
     setIsMissionBoxOpen,
-    handleShortCutClick
+    handleShortCutClick,
+    newlyAcceptedMissionId,
+    setNewlyAcceptedMissionId
   };
 };

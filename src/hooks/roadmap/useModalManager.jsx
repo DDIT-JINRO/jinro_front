@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { insertMission } from "../../api/roadmap/roadMapApi";
 import { useNavigate } from "react-router-dom";
 
-export const useModalManager = ( missionList, refreshMissionData, setCharPosition) => {
+export const useModalManager = ( missionList, refreshMissionData, setCharPosition, setNewlyAcceptedMissionId) => {
   const navigate = useNavigate();
 
   // 튜토리얼 모달 상태 관리
@@ -14,10 +14,6 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [isLockedMode, setIsLockedMode] = useState(false);
-
-  // 바로가기 모달 상태 관리
-  const [isDirectModalOpen, setIsDirectModalOpen] = useState(false);
-  const [directMission, setDirectMission] = useState(null);
 
   // 튜토리얼 모달 열기 핸들러
   const openTutorialModal = () => setIsTutorialOpen(true);
@@ -53,13 +49,14 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
     setSelectedMission(null);
   };
 
-  // 미션 수락 핸들럭
+  // 미션 수락 핸들러
   const handleAcceptMission = async (dueDate) => {
     if (!selectedMission) return;
 
     setCharPosition(selectedMission.rsId - 1);
     try {
       await insertMission(selectedMission.rsId, dueDate);
+      setNewlyAcceptedMissionId(selectedMission.rsId);
       
       refreshMissionData();
     } catch (error) {
