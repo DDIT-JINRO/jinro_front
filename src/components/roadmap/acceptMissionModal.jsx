@@ -8,7 +8,7 @@ import "../../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS �
  * @param {function} onClose - 모달을 닫을 때 호출될 함수
  * @param {boolean} isLocked - 미션이 잠금 상태인지 여부
  */
-function AcceptMissionModal({ mission, onAccept, onClose, isLocked }) {
+function AcceptMissionModal({ mission, onAccept, onClose, isLocked, setIsMissionBoxOpen, openDirectMoveModal }) {
   // 완료 예정 날짜 상태 관리
   const [dueDate, setDueDate] = useState("");
 
@@ -32,8 +32,10 @@ function AcceptMissionModal({ mission, onAccept, onClose, isLocked }) {
       alert("과거 날짜는 선택할 수 없습니다.");
       return;
     }
-
+    
+    openDirectMoveModal(mission.rsId);
     onAccept(dueDate);
+    setIsMissionBoxOpen(true);
   };
 
   return (

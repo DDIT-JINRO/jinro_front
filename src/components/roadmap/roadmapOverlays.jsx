@@ -27,6 +27,8 @@ function RoadmapOverlays({ roadmap }) {
         onEditDueDate={roadmap.editModal.open}
         setCharPosition={roadmap.handleSetCharPosition}
         setIsCompleteMoving={roadmap.setIsCompleteMoving}
+        isMissionBoxOpen={roadmap.isMissionBoxOpen}
+        setIsMissionBoxOpen={roadmap.setIsMissionBoxOpen}
       />
 
       {/* 로드맵 결과 다시보기 버튼 컴포넌트 */}
@@ -59,6 +61,10 @@ function RoadmapOverlays({ roadmap }) {
           onAccept={roadmap.acceptMissionModal.accept}
           onClose={roadmap.acceptMissionModal.close}
           isLocked={roadmap.acceptMissionModal.isLocked}
+          setIsMissionBoxOpen={roadmap.setIsMissionBoxOpen}
+          openDirectMoveModal={roadmap.directMoveModal.open}
+        />
+      )}
         />
       )}
 

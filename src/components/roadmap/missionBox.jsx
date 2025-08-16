@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react";
 import { updateCompleteMission } from "../../api/roadmap/roadMapApi";
 import "../../css/roadmap/missionBox.css";
-import { SHORT_CUT_URL } from "../../data/roadmapStagedata";
 import { formatDate, getStageGroup } from "../../data/roadmapUtils";
 import { useNavigate } from "react-router-dom";
 
-const backUrl = import.meta.env.VITE_BACK_END_URL;
+
 
 /**
  * 사용자의 현재 미션 목록(진행 중, 완료)을 보여주는 박스 컴포넌트
@@ -15,18 +14,26 @@ const backUrl = import.meta.env.VITE_BACK_END_URL;
  * @param {function} onUpdate - 새로고침하는 함수
  * @param {function} onEditDueDate - 완료 예정일 수정 모달을 여는 함수
  */
-function MissionBox({ missionList, progressMissions, completedMissions, refresh, onEditDueDate, setCharPosition, setIsCompleteMoving }) {
+function MissionBox({
+  missionList,
+  progressMissions,
+  completedMissions,
+  refresh,
+  onEditDueDate,
+  setCharPosition,
+  setIsCompleteMoving,
+  isMissionBoxOpen,
+  setIsMissionBoxOpen,
+  handleShortCutClick
+}) {
   const navigate = useNavigate();
-
-  // 미션 박스 컴포넌트 상태 관리
-  const [isOpen, setIsOpen] = useState(false);
 
   // 미션 박스 열고 닫는 함수
   const toggleMissionBox = () => {
-    setIsOpen(true);
+    setIsMissionBoxOpen(true);
   };
   const closeMissionBox = () => {
-    setIsOpen(false);
+    setIsMissionBoxOpen(false);
   };
 
   // 미션 완료 클릭 핸들러
@@ -49,34 +56,6 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
       });
     }
   };
-
-  // 바로가기 클릭 핸들러
-  const handleShortCutClick = (stageId) => {
-
-    const width = 1200;
-    const height = 800;
-
-    if (stageId == 3) {
-      window.resizeTo(width, height);
-      navigate("/worldcup");
-
-      return;
-    }
-
-    const targetUrl = SHORT_CUT_URL[stageId-1];
-
-    const message = {
-      type: 'navigateParent',
-      url : targetUrl
-    }
-
-    if(window.opener) {
-      window.opener.postMessage(message, backUrl);
-      window.close();
-    } else {
-      console.log("부모 창을 찾을 수 없습니다.");
-    }
-  }
 
   // 미션 완료, 진행중 상태에 따라 정렬하는 함수
   const displayMissions = useMemo(() => {
@@ -102,13 +81,15 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
   }, [progressMissions, completedMissions]);
 
   return (
-    <div className={`mission-box-container ${isOpen ? "open" : ""}`}>
-
-      <h3 className={`mission-box-title ${isOpen ? "open" : ""}`} onClick={toggleMissionBox}>
+    <div className={`mission-box-container ${isMissionBoxOpen ? "open" : ""}`}>
+      <h3
+        className={`mission-box-title ${isMissionBoxOpen ? "open" : ""}`}
+        onClick={toggleMissionBox}
+      >
         나의 미션
       </h3>
 
-      {isOpen && (
+      {isMissionBoxOpen && (
         <button className="mission-box-close-btn" onClick={closeMissionBox}>
           <i className="fa-solid fa-xmark"></i>
         </button>
@@ -116,7 +97,6 @@ function MissionBox({ missionList, progressMissions, completedMissions, refresh,
 
       <ul className="mission-list">
         {displayMissions.map((mission) => {
-          console.log(mission);
           // 각 미션 완료 상태 여부
           const isCompleted = mission.status === "completed";
 

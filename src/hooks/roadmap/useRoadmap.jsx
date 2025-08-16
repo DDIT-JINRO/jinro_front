@@ -53,6 +53,9 @@ export const useRoadmap = () => {
    */
   const { setCookie, removeCookie, getCookie } = useCookie();
 
+  // 미션 박스 컴포넌트 상태 관리
+  const [isMissionBoxOpen, setIsMissionBoxOpen] = useState(false);
+
   // 캐릭터 이동 상태 관리
   const [isMoving, setIsMoving] = useState(false);
 
@@ -237,6 +240,7 @@ export const useRoadmap = () => {
     isCompleted,
     isMoving,
     isCompleteMoving,
+    isMissionBoxOpen,
     calendar,
     tooltip,
     character,
@@ -260,5 +264,6 @@ export const useRoadmap = () => {
     refreshMissionData,
     handleSetCharPosition,
     setIsCompleteMoving
+    setIsMissionBoxOpen,
   };
 };
