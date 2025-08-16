@@ -100,7 +100,7 @@ export const SHORT_CUT_URL = [
   `${backUrl}/`,
   `${backUrl}/pse/cr/crl/selectCareerList.do`,
   `${backUrl}/prg/std/stdGroupList.do`,
-  `${backUrl}/cnslt/off/crsv/offlineReservation.do`,
+  `${backUrl}/cnslt/resve/crsv/reservation.do`,
   `${backUrl}/comm/peer/teen/teenList.do`,
   `${backUrl}/cdp/rsm/rsm/resumeList.do`,
   `${backUrl}/cdp/sint/qestnlst/questionList.do`,
