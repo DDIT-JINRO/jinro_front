@@ -168,7 +168,7 @@ export const useRoadmap = () => {
   // 구름 클릭 함수
   const handleCloudClick = (pos) => {
     // 만약 움직이는 중이면 함수 중지
-    if (isMoving) return;
+    if (isMoving || isCompleteMoving) return;
 
     // 현재 캐릭터 위치
     const currentPos = STAGE_POSITIONS[charPosition];

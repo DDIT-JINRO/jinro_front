@@ -42,8 +42,7 @@ body {
 }
 
 .character.completeMoving {
-  width: 7%;
-  transform: translateY(-100px);
+  width: 6.5%;
 }
 
 .cloud {
