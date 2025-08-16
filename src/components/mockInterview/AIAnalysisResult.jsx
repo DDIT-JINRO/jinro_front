@@ -514,7 +514,7 @@ const AIAnalysisResult = ({
               <h1>
                 {analysis.analysisMethod?.includes('Gemini') ? 'AI 전문가' : '실시간'} 면접 분석 결과
               </h1>
-              <p>음성과 영상을 종합적으로 분석했습니다</p>
+              <p>음성과 영상을 종합적으로 분석했습니다 [Powered by Gemini]</p>
             </div>
           </div>
 
