@@ -691,7 +691,7 @@ const InterviewResult = ({
               onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
             >
               <Brain size={20} />
-              상세 AI 분석 결과 확인하기
+              Gemini AI의 정밀 분석 리포트 확인
             </button>
           </div>
         )}
