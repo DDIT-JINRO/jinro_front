@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp, Database } from 'lucide-react';
+import geminiIcon from '../../assets/gemini-icon.png';
 
 const InterviewResult = ({ 
   questions, 
@@ -639,10 +640,10 @@ const InterviewResult = ({
             border: '2px solid #3b82f6'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-              <Brain size={32} style={{ color: '#3b82f6', marginRight: '12px' }} />
+              <img src={geminiIcon} style={{width : 32, height : 32, marginRight: '12px'}}/>
               <div>
                 <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#1f2937', margin: 0 }}>
-                  AI 면접 분석 결과 확인
+                  AI 면접 분석 [Powered by Gemini]
                 </h3>
                 <p style={{ color: '#6b7280', fontSize: '14px', margin: '4px 0 0 0' }}>
                   실시간으로 수집된 음성, 영상 데이터를 바탕으로 상세한 분석 리포트를 제공합니다
@@ -690,8 +691,7 @@ const InterviewResult = ({
               onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
               onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
             >
-              <Brain size={20} />
-              Gemini AI의 정밀 분석 리포트 확인
+              AI 면접 분석 결과 확인
             </button>
           </div>
         )}
