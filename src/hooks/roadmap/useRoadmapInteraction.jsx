@@ -1,6 +1,11 @@
 import { useState, useCallback } from 'react';
+import { SHORT_CUT_URL } from "../../data/roadmapStagedata";
+import { useNavigate } from 'react-router-dom';
 
 export const useRoadmapInteraction = (missionList) => {
+
+  const backUrl = import.meta.env.VITE_BACK_END_URL;
+
   // 달력 여닫음 여부 상태관리
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   
@@ -10,6 +15,8 @@ export const useRoadmapInteraction = (missionList) => {
 
   // 이동 시 캐릭터가 바라보는 방향 상태 관리
   const [chracterDirection, setChracterDirection] = useState('left');
+
+  const navigate = useNavigate();
 
   // 달력 열고 닫는 함수
   const toggleCalendar = () => {
@@ -34,7 +41,36 @@ export const useRoadmapInteraction = (missionList) => {
     setHoveredMission(null);
   }, []);
 
+  // 바로가기 클릭 핸들러
+  const handleShortCutClick = (stageId) => {
+
+    const width = 1200;
+    const height = 800;
+
+    if (stageId == 3) {
+      window.resizeTo(width, height);
+      navigate("/worldcup");
+
+      return;
+    }
+
+    const targetUrl = SHORT_CUT_URL[stageId-1];
+
+    const message = {
+      type: 'navigateParent',
+      url : targetUrl
+    }
+
+    if(window.opener) {
+      window.opener.postMessage(message, backUrl);
+      window.close();
+    } else {
+      console.log("부모 창을 찾을 수 없습니다.");
+    }
+  }
+
   return {
+    handleShortCutClick,
     calendar: {
       isOpen: isCalendarOpen,
       toggle: toggleCalendar,

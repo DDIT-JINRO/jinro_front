@@ -43,7 +43,7 @@ export const useRoadmap = () => {
     * @property {object} eventHandlers - 마우스 이벤트 함수 반환 객체
     * @property {object} character - 캐릭터 방향 상태 관리 반환 객체
    */
-  const { calendar, tooltip, eventHandlers, character } = useRoadmapInteraction(missionList);
+  const { handleShortCutClick, calendar, tooltip, eventHandlers, character } = useRoadmapInteraction(missionList);
 
   /**
     * 오늘 하루 보지 않기 기능을 위한 쿠키 커스텀 훅 사용
@@ -97,7 +97,7 @@ export const useRoadmap = () => {
    * @property {object} tutorialModal - 튜토리얼 모달 상태 및 열기, 닫기 함수 반환 객체
    * @property {object} acceptMissionModal - 미션 수락 모달 상태 및 열기, 닫기, 수락 함수 반환 객체
    */
-  const { tutorialModal, acceptMissionModal } = useModalManager(
+  const { tutorialModal, acceptMissionModal, directMoveModal } = useModalManager(
     missionList,
     refreshMissionData,
     handleSetCharPosition
@@ -213,10 +213,6 @@ export const useRoadmap = () => {
     }
   };
 
-  const intervalId = setInterval(() => {
-    refreshMissionData();
-  }, 1000);
-
   // 페이지 로딩 시 오늘 하루 보지 않기 체크박스 상태 로딩 및 화면 크기 조정
   useEffect(() => {
     if (getCookie('popup')) {
@@ -247,6 +243,7 @@ export const useRoadmap = () => {
     isNoShow,
     tutorialModal,
     acceptMissionModal,
+    directMoveModal,
     editModal: {
       isOpen: isEditModalOpen,
       mission: missionToEdit,
@@ -263,7 +260,8 @@ export const useRoadmap = () => {
     handleCheckboxChange,
     refreshMissionData,
     handleSetCharPosition,
-    setIsCompleteMoving
+    setIsCompleteMoving,
     setIsMissionBoxOpen,
+    handleShortCutClick
   };
 };
