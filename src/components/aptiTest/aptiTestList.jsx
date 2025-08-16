@@ -251,7 +251,9 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
                 {isSubmitEnabled && (
                     <button className="submit-btn" onClick={handleSubmit}>결과 제출</button>
                 )}
+            <h5 className="apti-source">[ 진로심리검사 문항 제공 : 한국직업능력연구원 국가진로교육연구센터 (커리어넷) ]</h5>
             </div>
+            
         </div>
     );
 }
