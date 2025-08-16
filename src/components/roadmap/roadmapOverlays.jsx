@@ -1,6 +1,5 @@
 import AcceptMissionModal from './acceptMissionModal';
 import CalendarView from './calendarView';
-import DirectMoveModal from './directMoveModal';
 import EditDueDateModal from './editDueDateModal';
 import MissionBox from './missionBox';
 import MissionTooltip from './missionTooltip';
@@ -64,16 +63,6 @@ function RoadmapOverlays({ roadmap }) {
           onClose={roadmap.acceptMissionModal.close}
           isLocked={roadmap.acceptMissionModal.isLocked}
           setIsMissionBoxOpen={roadmap.setIsMissionBoxOpen}
-          openDirectMoveModal={roadmap.directMoveModal.open}
-        />
-      )}
-      
-      {/* 미션 수락 모달 컴포넌트 */}
-      {roadmap.directMoveModal.isOpen && (
-        <DirectMoveModal
-          handleShortCutClick={roadmap.handleShortCutClick}
-          mission={roadmap.directMoveModal.mission}
-          onClose={roadmap.directMoveModal.close}
         />
       )}
 

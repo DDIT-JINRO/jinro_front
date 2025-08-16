@@ -97,7 +97,7 @@ export const useRoadmap = () => {
    * @property {object} tutorialModal - 튜토리얼 모달 상태 및 열기, 닫기 함수 반환 객체
    * @property {object} acceptMissionModal - 미션 수락 모달 상태 및 열기, 닫기, 수락 함수 반환 객체
    */
-  const { tutorialModal, acceptMissionModal, directMoveModal } = useModalManager(
+  const { tutorialModal, acceptMissionModal } = useModalManager(
     missionList,
     refreshMissionData,
     handleSetCharPosition
@@ -247,7 +247,6 @@ export const useRoadmap = () => {
     isNoShow,
     tutorialModal,
     acceptMissionModal,
-    directMoveModal,
     editModal: {
       isOpen: isEditModalOpen,
       mission: missionToEdit,

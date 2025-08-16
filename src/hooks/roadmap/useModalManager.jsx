@@ -53,25 +53,6 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
     setSelectedMission(null);
   };
 
-    // 미션 바로가기 모달 열기 핸들러
-  const openDirectMoveModal = (stageId) => {
-    const missionInfo = missionList.find((m) => m.rsId === stageId);
-
-    if (missionInfo) {
-      setDirectMission(missionInfo);
-    } else {
-      return;
-    }
-
-    setIsDirectModalOpen(true);
-  };
-
-  // 미션 수락 모달 닫기 핸들러
-  const closeDirectMoveModal = () => {
-    setIsDirectModalOpen(false);
-    setDirectMission(null);
-  };
-
   // 미션 수락 핸들럭
   const handleAcceptMission = async (dueDate) => {
     if (!selectedMission) return;
@@ -118,11 +99,5 @@ export const useModalManager = ( missionList, refreshMissionData, setCharPositio
       close: closeAcceptModal,
       accept: handleAcceptMission,
     },
-    directMoveModal: {
-      isOpen: isDirectModalOpen,
-      mission: directMission,
-      open: openDirectMoveModal,
-      close: closeDirectMoveModal,
-    }
   };
 };
