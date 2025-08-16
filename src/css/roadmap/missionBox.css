@@ -196,3 +196,27 @@
 .mission-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
 }
+
+
+.mission-item > div:first-child {
+  flex-grow: 1;
+}
+
+@keyframes DirectPulse {
+  0% {
+    transform: scale(1);
+    background-color: #a8b1ff;
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: #495bff;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #a8b1ff;
+  }
+}
+
+.short-cut-btn.newly-accepted {
+  animation: DirectPulse 1.5s infinite;
+}

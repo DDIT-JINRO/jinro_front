@@ -55,6 +55,7 @@ function Submenu({ num, setIsNext, setAgeGroup }) {
                     <button className="next-btn" onClick={() => startTest(num, selectedAgeGroup)}>다음</button>
                 </div>
             )}
+            <h5 className="apti-source">[ 진로심리검사 문항 제공 : 한국직업능력연구원 국가진로교육연구센터 (커리어넷) ]</h5>
         </div>
     )
 }

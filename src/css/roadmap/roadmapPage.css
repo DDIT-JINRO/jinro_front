@@ -42,8 +42,7 @@ body {
 }
 
 .character.completeMoving {
-  width: 7%;
-  transform: translateY(-100px);
+  width: 6.5%;
 }
 
 .cloud {
@@ -74,9 +73,14 @@ body {
 
 /* wood-sign-image와 wood-sign-text는 woodSign.css에서 관리 */
 
-.cloud.progress, .cloud.unlocked {
+.cloud.progress {
   cursor: pointer;
   animation: pulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
+}
+
+.cloud.unlocked {
+  cursor: pointer;
+  animation: reversePulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
 }
 
 .cloud.completed {
@@ -93,6 +97,12 @@ body {
   0% { transform: scale(1); }
   50% { transform: scale(1.1); }
   100% { transform: scale(1); }
+}
+
+@keyframes reversePulse {
+  0% { transform: scale(1.1); }
+  50% { transform: scale(1); }
+  100% { transform: scale(1.1); }
 }
 
 /* 달력 슬라이더 */

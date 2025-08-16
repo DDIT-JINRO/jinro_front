@@ -43,7 +43,7 @@ export const useRoadmap = () => {
     * @property {object} eventHandlers - 마우스 이벤트 함수 반환 객체
     * @property {object} character - 캐릭터 방향 상태 관리 반환 객체
    */
-  const { calendar, tooltip, eventHandlers, character } = useRoadmapInteraction(missionList);
+  const { handleShortCutClick, calendar, tooltip, eventHandlers, character } = useRoadmapInteraction(missionList);
 
   /**
     * 오늘 하루 보지 않기 기능을 위한 쿠키 커스텀 훅 사용
@@ -52,6 +52,12 @@ export const useRoadmap = () => {
     * @property {Function} getCookie - 쿠키 조회 함수
    */
   const { setCookie, removeCookie, getCookie } = useCookie();
+
+  // 새롭게 수락한 미션 ID 상태 관리
+  const [newlyAcceptedMissionId, setNewlyAcceptedMissionId] = useState(null);
+
+  // 미션 박스 컴포넌트 상태 관리
+  const [isMissionBoxOpen, setIsMissionBoxOpen] = useState(false);
 
   // 캐릭터 이동 상태 관리
   const [isMoving, setIsMoving] = useState(false);
@@ -97,7 +103,8 @@ export const useRoadmap = () => {
   const { tutorialModal, acceptMissionModal } = useModalManager(
     missionList,
     refreshMissionData,
-    handleSetCharPosition
+    handleSetCharPosition,
+    setNewlyAcceptedMissionId
   );
 
   // 완료 예정 날짜 수정 클릭 함수
@@ -165,7 +172,7 @@ export const useRoadmap = () => {
   // 구름 클릭 함수
   const handleCloudClick = (pos) => {
     // 만약 움직이는 중이면 함수 중지
-    if (isMoving) return;
+    if (isMoving || isCompleteMoving) return;
 
     // 현재 캐릭터 위치
     const currentPos = STAGE_POSITIONS[charPosition];
@@ -210,10 +217,6 @@ export const useRoadmap = () => {
     }
   };
 
-  const intervalId = setInterval(() => {
-    refreshMissionData();
-  }, 1000);
-
   // 페이지 로딩 시 오늘 하루 보지 않기 체크박스 상태 로딩 및 화면 크기 조정
   useEffect(() => {
     if (getCookie('popup')) {
@@ -225,8 +228,12 @@ export const useRoadmap = () => {
 
     window.resizeTo(1084, 736);
 
+    const intervalId = setInterval(() => {
+      refreshMissionData();
+    }, 10000);
+
     return () => clearInterval(intervalId);
-  }, [getCookie, isFirst, refreshMissionData]);
+  }, [getCookie, isFirst, refreshMissionData, tutorialModal, setIsFirst]);
 
   return {
     missionList,
@@ -237,6 +244,7 @@ export const useRoadmap = () => {
     isCompleted,
     isMoving,
     isCompleteMoving,
+    isMissionBoxOpen,
     calendar,
     tooltip,
     character,
@@ -259,6 +267,10 @@ export const useRoadmap = () => {
     handleCheckboxChange,
     refreshMissionData,
     handleSetCharPosition,
-    setIsCompleteMoving
+    setIsCompleteMoving,
+    setIsMissionBoxOpen,
+    handleShortCutClick,
+    newlyAcceptedMissionId,
+    setNewlyAcceptedMissionId
   };
 };

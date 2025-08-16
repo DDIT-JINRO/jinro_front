@@ -4,12 +4,13 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { 
-  Brain, Eye, Mic, TrendingUp, TrendingDown, Star, BarChart3,
+  Brain, Eye, Mic, TrendingUp, TrendingDown, Star, BarChart3, BarChart2,
   Download, Play, ArrowLeft, MessageSquare, Clock, Target,
   CheckCircle, AlertCircle, Users, Smile
 } from 'lucide-react';
 import commonStyles from '../../styles/mockInterview/Common.module.css';
 import styles from '../../styles/mockInterview/AIAnalysisResult.module.css';
+import geminiIcon from '../../assets/gemini-icon.png';
 
 import { 
   getScoreColor, 
@@ -426,7 +427,7 @@ const AIAnalysisResult = ({
       {feedback && (
         <div className={styles.feedbackBox}>
           <div className={styles.feedbackHeader}>
-            <Brain size={16} />
+            <img src={geminiIcon} style={{width : 20, height : 20}}/>
             <span>AI 전문가 피드백</span>
           </div>
           <div className={styles.feedbackContent}>
@@ -472,8 +473,8 @@ const AIAnalysisResult = ({
 
   // 🎯 탭 데이터 구성
   const tabs = [
-    { id: 'overview', label: '종합 분석', icon: BarChart3 },
-    { id: 'detailed', label: '세부 분석', icon: Brain },
+    { id: 'overview', label: '종합 분석', icon: BarChart2 },
+    { id: 'detailed', label: '세부 분석', icon: BarChart3 },
     ...(recordedVideoURL ? [{ id: 'video', label: '면접 영상', icon: Play }] : [])
   ];
 
@@ -482,7 +483,7 @@ const AIAnalysisResult = ({
     return (
       <div className={`${commonStyles.mockInterviewContainer} ${styles.aiAnalysisResult}`}>
         <div className={styles.analysisError}>
-          <Brain size={64} />
+          <img src={geminiIcon} style={{width : 64, height : 64}}/>
           <h2>분석 결과를 불러올 수 없습니다</h2>
           <p>면접 데이터를 다시 확인해주세요.</p>
           <button 
@@ -507,14 +508,12 @@ const AIAnalysisResult = ({
           </button>
           
           <div className={styles.headerContent}>
-            <div className={styles.headerIcon}>
-              <Brain size={32} color="white" />
-            </div>
+            <img src={geminiIcon} style={{width : 48, height : 48}}/>
             <div className={styles.headerText}>
               <h1>
                 {analysis.analysisMethod?.includes('Gemini') ? 'AI 전문가' : '실시간'} 면접 분석 결과
               </h1>
-              <p>음성과 영상을 종합적으로 분석했습니다</p>
+              <p>음성과 영상을 종합적으로 분석했습니다 [Powered by Gemini]</p>
             </div>
           </div>
 
@@ -720,7 +719,7 @@ const AIAnalysisResult = ({
           <h3>🔬 분석 방법</h3>
           <div className={styles.methodGrid}>
             <div className={styles.methodItem}>
-              <Brain size={20} />
+              <img src={geminiIcon} style={{width : 24, height : 24}}/>
               <div>
                 <h4>
                   {analysis.analysisMethod?.includes('Gemini') ? 'AI 전문가 분석' : 'AI 분석'}
