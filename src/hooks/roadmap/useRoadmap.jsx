@@ -224,8 +224,12 @@ export const useRoadmap = () => {
 
     window.resizeTo(1084, 736);
 
+    const intervalId = setInterval(() => {
+      refreshMissionData();
+    }, 10000);
+
     return () => clearInterval(intervalId);
-  }, [getCookie, isFirst, refreshMissionData]);
+  }, [getCookie, isFirst, refreshMissionData, tutorialModal, setIsFirst]);
 
   return {
     missionList,
