@@ -11,6 +11,7 @@ export const interviewAnalysisApi = {
     try {      
       const response = await fetch(`${backUrl}/api/analyze-interview`, { // 🎯 URL 변경
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
