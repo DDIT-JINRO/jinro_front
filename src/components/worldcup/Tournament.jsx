@@ -6,23 +6,26 @@ import '../../css/worldcup/Tournament.css';
 const Tournament = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { jobs: initialJobs, categoryId, round ,comCode} = location.state || {};
+    const { jobs: initialJobs, categoryId, round, comCode } = location.state || {};
 
-    const [jobs, setJobs] = useState([]);
+    // 1. 초기 상태를 직접 설정
+    const [jobs, setJobs] = useState(() => {
+        if (!initialJobs || !categoryId) return [];
+        const shuffled = [...initialJobs].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, round);
+    });
+
     const [currentPairIndex, setCurrentPairIndex] = useState(0);
     const [currentRound, setCurrentRound] = useState(round || 32);
     const [nextRoundJobs, setNextRoundJobs] = useState([]);
 
     useEffect(() => {
+        // 2. useEffect는 초기 진입 유효성 검사만 담당
         if (!initialJobs || !categoryId) {
             alert("잘못된 접근입니다.");
             navigate("/worldcup");
-            return;
         }
-
-        const shuffled = [...initialJobs].sort(() => Math.random() - 0.5);
-        setJobs(shuffled.slice(0, currentRound));
-    }, [initialJobs, categoryId, currentRound, navigate]);
+    }, [initialJobs, categoryId, navigate]);
 
     const handleSelect = async (selectedJob) => {
         const updatedNextRound = [...nextRoundJobs, selectedJob];
@@ -44,7 +47,8 @@ const Tournament = () => {
                 console.error("우승 처리 실패", err);
             }
         } else {
-            setJobs(updatedNextRound);
+            const shuffledNextRoundJobs = updatedNextRound.sort(() => Math.random() - 0.5);
+            setJobs(shuffledNextRoundJobs);
             setNextRoundJobs([]);
             setCurrentPairIndex(0);
             setCurrentRound(currentRound / 2);
