@@ -152,3 +152,50 @@
     transform: scale(1);
   }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .result-page-container {
+    padding: 10px;
+  }
+
+  .result-card {
+    padding: 15px;
+    border-width: 4px;
+  }
+
+  .report-intro {
+    font-size: 13px;
+    word-break: keep-all;
+  }
+
+  .result-header h1 {
+    font-size: 20px;
+  }
+
+  .result-header h2 {
+    font-size: 16px;
+  }
+
+  .report-section h3 {
+    font-size: 16px;
+  }
+
+  .report-section p,
+  .report-section ul li {
+    word-break: keep-all;
+    font-size: 13px;
+  }
+
+  .result-actions {
+    gap: 15px;
+    margin-top: 40px;
+  }
+
+  .result-actions .back-btn,
+  .result-actions .pdf-save-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 13px;
+  }
+}

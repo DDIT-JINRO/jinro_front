@@ -232,3 +232,19 @@ body {
   /* 45도 회전해서 V 모양 만들기 */
   transform: rotate(45deg);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .character {
+    width: 10%;
+  }
+  .character.moving {
+    width: 12%;
+  }
+  .character.completeMoving {
+    width: 11%;
+  }
+  .cloud {
+    width: 25%;
+  }
+}

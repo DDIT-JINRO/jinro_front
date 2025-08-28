@@ -23,8 +23,8 @@ export const STAGE_GROUPS = {
   5: [11],
 };
 
-// 스테이지별 컴포넌트 위치 상수 데이터
-export const STAGE_POSITIONS = [
+// 스테이지별 컴포넌트 위치 상수 데이터 (Normal 화면용)
+export const POSITIONS_NORMAL = [
   {
     id: 1,
     cloud: { top: "85%", left: "42%" },
@@ -93,6 +93,76 @@ export const STAGE_POSITIONS = [
   },
 ];
 
+// 스테이지별 컴포넌트 위치 상수 데이터 (Tall 화면용)
+export const POSITIONS_TALL = [
+  {
+    id: 1,
+    cloud: { top: "80%", left: "40%" },
+    char: { top: "75%", left: "48%" },
+    sign: { top: "81%", left: "46%" },
+  },
+  {
+    id: 2,
+    cloud: { top: "70%", left: "8%" },
+    char: { top: "65%", left: "13%" },
+    sign: { top: "70%", left: "25%" },
+  },
+  {
+    id: 3,
+    cloud: { top: "67.5%", left: "42%" },
+    char: { top: "62%", left: "57%" },
+    sign: { top: "68%", left: "50%" },
+  },
+  {
+    id: 4,
+    cloud: { top: "70%", left: "70%" },
+    char: { top: "65%", left: "85%" },
+    sign: { top: "70.5%", left: "79%" },
+  },
+  {
+    id: 5,
+    cloud: { top: "48%", left: "2%" },
+    char: { top: "42.5%", left: "8%" },
+    sign: { top: "48%", left: "20%" },
+  },
+  {
+    id: 6,
+    cloud: { top: "46%", left: "38%" },
+    char: { top: "40%", left: "49%" },
+    sign: { top: "47%", left: "46%" },
+  },
+  {
+    id: 7,
+    cloud: { top: "50%", left: "72%" },
+    char: { top: "44%", left: "84%" },
+    sign: { top: "51%", left: "80%" },
+  },
+  {
+    id: 8,
+    cloud: { top: "27%", left: "7%" },
+    char: { top: "22%", left: "10%" },
+    sign: { top: "27%", left: "26%" },
+  },
+  {
+    id: 9,
+    cloud: { top: "31%", left: "40%" },
+    char: { top: "26%", left: "44%" },
+    sign: { top: "31%", left: "52%" },
+  },
+  {
+    id: 10,
+    cloud: { top: "28%", left: "72%" },
+    char: { top: "23%", left: "75%" },
+    sign: { top: "28%", left: "90%" },
+  },
+  {
+    id: 11,
+    cloud: { top: "12%", left: "42%" },
+    char: { top: "7%", left: "50%" },
+    sign: { top: "13%", left: "52%" },
+  },
+];
+
 // 바로가기 URL 상수 데이터
 export const SHORT_CUT_URL = [
   `${backUrl}/mpg/mif/inq/selectMyInquiryView.do`,
@@ -105,4 +175,4 @@ export const SHORT_CUT_URL = [
   `${backUrl}/cdp/rsm/rsm/resumeList.do`,
   `${backUrl}/cdp/sint/qestnlst/questionList.do`,
   `${backUrl}/cdp/imtintrvw/aiimtintrvw/aiImitationInterview.do`
-]
+];

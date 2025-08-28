@@ -24,3 +24,14 @@
   transform: translate(-50%, -50%);
   white-space: nowrap;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .wood-sign-container {
+    width: 12%;
+  }
+
+  .wood-sign-text {
+    font-size: clamp(8px, 1.2vw, 12px);
+  }
+}
