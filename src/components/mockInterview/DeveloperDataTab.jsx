@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Copy, RefreshCw, Database, Code, BarChart3, Mic, Eye, Brain, Clock } from 'lucide-react';
-
+import { useModal } from "../../context/ModalContext.jsx";
 const DeveloperDataTab = ({ 
   analysisResult, 
   realTimeAnalysisData, 
@@ -11,6 +11,7 @@ const DeveloperDataTab = ({
 }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [expandedSections, setExpandedSections] = useState({});
+  const { showAlert } = useModal();
 
   // 실제 데이터 종합
   const consolidatedData = {
@@ -67,10 +68,18 @@ const DeveloperDataTab = ({
   const copyToClipboard = async (data) => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-      alert('데이터가 클립보드에 복사되었습니다!');
+      showAlert(
+          "데이터가 클립보드에 복사되었습니다!",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     } catch (err) {
       console.error('복사 실패:', err);
-      alert('복사에 실패했습니다.');
+      showAlert(
+          "복사에 실패했습니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   };
 

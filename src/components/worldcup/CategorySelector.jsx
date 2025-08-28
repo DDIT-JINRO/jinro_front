@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCategories, selectJobsByCategory } from "../../api/worldcup/worldcupApi";
+import { useModal } from "../../context/ModalContext.jsx";
 import '../../css/worldcup/CategorySelector.css';
 
 export default function CategorySelector() {
@@ -8,11 +9,11 @@ export default function CategorySelector() {
     const [selected, setSelected] = useState("");
     const [round, setRound] = useState(32);
     const navigate = useNavigate();
+    const { showAlert } = useModal();
 
     useEffect(() => {
         getCategories(round)
             .then((data) => {
-                console.log(data);
                 setCategories(data);
             })
             .catch((err) => console.error("카테고리 로드 실패:", err));
@@ -20,7 +21,11 @@ export default function CategorySelector() {
 
     const handleSubmit = () => {
         if (!selected) {
-            alert("카테고리를 선택하세요.");
+            showAlert(
+                "카테고리를 선택하세요.",
+                "유형을 선택하지 않으면 다음 단계로 넘어갈 수 없습니다.", // 메시지2 추가
+                () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+            );
             return;
         }
 

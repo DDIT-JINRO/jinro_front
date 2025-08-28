@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { insertWorldcupResult, selectJobById } from "../../api/worldcup/worldcupApi.js";
+import { useModal } from "../../context/ModalContext.jsx";
 import '../../css/worldcup/Tournament.css';
 
 const Tournament = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { jobs: initialJobs, categoryId, round, comCode } = location.state || {};
+    const { showAlert } = useModal();
 
     // 1. 초기 상태를 직접 설정
     const [jobs, setJobs] = useState(() => {
@@ -22,7 +24,11 @@ const Tournament = () => {
     useEffect(() => {
         // 2. useEffect는 초기 진입 유효성 검사만 담당
         if (!initialJobs || !categoryId) {
-            alert("잘못된 접근입니다.");
+            showAlert(
+                "잘못된 접근입니다.",
+                "",
+                () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+            );
             navigate("/worldcup");
         }
     }, [initialJobs, categoryId, navigate]);

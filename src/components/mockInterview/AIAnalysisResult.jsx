@@ -22,7 +22,7 @@ import {
   calculateCircularProgress,
   isValidScore
 } from '../../utils/mockInterview/scoreUtils';
-
+import { useModal } from "../../context/ModalContext.jsx";
 const AIAnalysisResult = ({ 
   analysisResult, 
   recordedVideoURL,
@@ -35,12 +35,16 @@ const AIAnalysisResult = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const reportRef = useRef(null);
+  const { showAlert } = useModal();
 
   // 🎯 PDF 생성 함수 (오류 완전 해결 버전)
   const generatePDF = async () => {
     if (!reportRef.current) {
-      alert('보고서 참조를 찾을 수 없습니다.');
-      return;
+      showAlert(
+          "보고서 참조를 찾을 수 없습니다.",
+          "",
+          () => {return;} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
 
     setIsGeneratingPDF(true);
@@ -171,15 +175,21 @@ const AIAnalysisResult = ({
       const fileName = `면접분석보고서_${new Date().toISOString().slice(0, 10)}_${new Date().getTime()}.pdf`;
       pdf.save(fileName);
 
-      alert('✅ PDF 보고서가 다운로드되었습니다!');
+      showAlert(
+          "✅ PDF 보고서가 다운로드되었습니다!",
+          "",
+          () => {setActiveTab(currentTab);} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
 
-      // 원래 탭으로 복원
-      setActiveTab(currentTab);
       
     } catch (error) {
       console.error('❌ PDF 생성 중 오류:', error);
-      alert(`PDF 생성 중 오류가 발생했습니다: ${error.message}\n\n다시 시도해주세요.`);
-      
+      showAlert(
+          "PDF 생성 중 오류가 발생했습니다: ${error.message}",
+          "다시 시도해주세요.",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
+
       // 에러 발생 시 모든 요소 복원
       try {
         const analysisMethodSection = document.querySelector(`.${styles.analysisMethodInfo}`);

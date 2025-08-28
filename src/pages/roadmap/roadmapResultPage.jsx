@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import { selectResultData } from '../../api/roadmap/roadMapApi';
 import '../../css/roadmap/roadmapResultPage.css';
 import LoadingPage from "./loadingPage";
-
+import { useModal } from "../../context/ModalContext.jsx";
 // 로드맵 결과 페이지 컴포넌트
 function RoadmapResultPage() {
   // 화면 이동을 위한 navigate훅
@@ -14,6 +14,8 @@ function RoadmapResultPage() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);  // API 데이터 로딩 완료 여부
   const [isProgressComplete, setIsProgressComplete] = useState(false);  // 프로그레스 100% 완료 여부
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const { showAlert } = useModal();
 
   // 결과 데이터 상태
   const [resultData, setResultData] = useState(null);
@@ -32,7 +34,11 @@ function RoadmapResultPage() {
   // PDF 생성 함수
   const generatePDF = async () => {
     if (!reportRef.current || !resultData) {
-      alert('보고서 데이터를 찾을 수 없습니다.');
+      showAlert(
+          "보고서 데이터를 찾을 수 없습니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
 
@@ -202,12 +208,22 @@ function RoadmapResultPage() {
       const fileName = `진로로드맵분석보고서_${resultData.memName}_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(fileName);
 
-      alert('✅ 진로 로드맵 분석 보고서가 다운로드되었습니다!');
+
+      showAlert(
+          "✅ 진로 로드맵 분석 보고서가 다운로드되었습니다!",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
 
     } catch (error) {
       console.error('❌ PDF 생성 중 오류:', error);
-      alert(`PDF 생성 중 오류가 발생했습니다: ${error.message}\n\n다시 시도해주세요.`);
-      
+
+      showAlert(
+          "PDF 생성 중 오류가 발생했습니다: ${error.message}",
+          "다시 시도해주세요.",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
+
       // 에러 발생 시 스타일과 버튼들 복원
       const tempStyleElement = document.getElementById('pdf-temp-style');
       if (tempStyleElement) tempStyleElement.remove();

@@ -6,12 +6,13 @@ import { useTestList } from "../../hooks/aptiTest/useTestList";
 import parse from 'html-react-parser';
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "../../pages/aptiTest/loadingPage";
+import { useModal } from "../../context/ModalContext.jsx";
 const backUrl = import.meta.env.VITE_BACK_END_URL;
 
 function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
     const [isLoading, setisLoading] = useState(false);
-
+    const { showAlert } = useModal();
     const { getValue, getTitle } = useTestList();
     const testNo = getValue(qno, ageGroup);
     const title = getTitle(qno);
@@ -103,7 +104,11 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
     const handleNextPage = () => {
         if (!isCurrentPageCompleted) {
-            alert("모든 문항에 답변해주세요.");
+            showAlert(
+                "모든 문항에 답변해주세요.",
+                "",
+                () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+            );
             return;
         }
         if ((currentPage * itemsPerPage) < testList.length) {
@@ -126,11 +131,19 @@ function AptiTestList({ qno, ageGroup, answers, setAnswers }) {
 
         axios.post(`${backUrl}/pse/cat/aptiTestSave.do`, data, { withCredentials: true }).then(res => {
             if (res.data === "success") {
-                alert("임시저장이 완료되었습니다.");
-                window.close();
+                showAlert(
+                    "임시저장이 완료되었습니다.",
+                    "",
+                    () => {window.close();} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                );
+
             } else {
-                alert("임시저장 중 에러 발생");
-                window.close();
+                showAlert(
+                    "임시저장 중 에러 발생",
+                    "",
+                    () => {window.close();} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                );
+
             }
         });
     };

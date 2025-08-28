@@ -7,7 +7,7 @@ import { updateDueDate, updateCompleteMission } from '../../api/roadmap/roadMapA
 import { CLOUD_STATE, STAGE_POSITIONS } from '../../data/roadmapStagedata';
 import { getCloudState } from '../../data/roadmapUtils';
 import { useNavigate } from 'react-router-dom';
-
+import { useModal } from "../../context/ModalContext.jsx";
 export const useRoadmap = () => {
   const navigate = useNavigate();
 
@@ -77,6 +77,9 @@ export const useRoadmap = () => {
   // 오늘 하루 보지 않기 체크박스 상태 관리
   const [isNoShow, setIsNoShow] = useState(false);
 
+  //alert 창
+  const { showAlert } = useModal();
+
   // 캐릭터 위치 변경 함수
   const handleSetCharPosition = useCallback((newPosition, onCompleteCallback = null) => {
     // 제자리 클릭 하거나, 움직이는 중이면 함수 중지
@@ -120,22 +123,30 @@ export const useRoadmap = () => {
   const handleSaveEditedDueDate = async (newDueDate) => {
     if (missionToEdit) {
       try {
+        // updateDueDate 함수 호출
         const res = await updateDueDate(missionToEdit.rsId, newDueDate);
 
-        if (res == "fail") {
-          alert("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
-          return;
+        // updateDueDate에서 에러를 throw하지 않고 "fail"을 반환할 경우를 대비
+        if (res === "fail") {
+          throw new Error("미션 완료 예정 날짜 수정 중 오류가 발생했습니다.");
         }
 
+        // 모든 것이 성공적으로 완료되었을 때 실행되는 로직
         refreshMissionData();
         setIsEditModalOpen(false);
         setMissionToEdit(null);
+
+        // 성공 알림을 띄웁니다.
+        showAlert("✅ 수정 완료", "미션 완료 예정 날짜가 성공적으로 변경되었습니다.", () => {});
+
       } catch (error) {
-        navigate("/roadmap/error", {
-          state: {
-            message: error.message,
-          },
-        });
+        // API 함수에서 throw된 에러를 여기서 잡습니다.
+        // 에러 페이지로 이동하는 대신 showAlert로 메시지를 보여줍니다.
+        showAlert(
+            "❌ 수정 실패",
+            error.message,
+            () => {}
+        );
       }
     }
   };
@@ -152,7 +163,11 @@ export const useRoadmap = () => {
       const res = await updateCompleteMission(stageId);
 
       if (res === "fail") {
-        alert("미션을 완료하지 않았습니다.");
+        showAlert(
+            "미션을 완료하지 않았습니다.",
+            "",
+            () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        );
         return;
       }
       

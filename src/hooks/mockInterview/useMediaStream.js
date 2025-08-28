@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-
+import { useModal } from "../../context/ModalContext.jsx";
 /**
  * 웹캠과 마이크를 관리하는 커스텀 훅
  */
@@ -12,7 +12,8 @@ export const useMediaStream = () => {
   const [analyser, setAnalyser] = useState(null);
   const [dataArray, setDataArray] = useState(null);
   const [audioInitialized, setAudioInitialized] = useState(false);
-  
+  const { showAlert } = useModal();
+
   const videoRef = useRef(null);
 
   // 카메라 시작
@@ -39,7 +40,11 @@ export const useMediaStream = () => {
     } catch (error) {
       console.error('❌ 카메라 접근 오류:', error);
       setCameraPermissionGranted(false);
-      alert('카메라와 마이크 접근 권한이 필요합니다.');
+      showAlert(
+          "카메라와 마이크 접근 권한이 필요합니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   };
 
