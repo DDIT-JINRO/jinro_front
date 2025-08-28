@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import commonStyles from '../../styles/mockInterview/Common.module.css';
-
+import { useModal } from "../../context/ModalContext.jsx";
 // 기존 훅들
 import {
   useMediaStream,
@@ -48,6 +48,8 @@ const MockInterviewPage = () => {
   const [faceGuideEnabled, setFaceGuideEnabled] = useState(true);
   const [calibrationCompleted, setCalibrationCompleted] = useState(false);
   const [showStartupGuide, setShowStartupGuide] = useState(true);
+
+  const { showAlert,showConfirm } = useModal();
 
   // 기존 훅들
   const {
@@ -233,17 +235,25 @@ const MockInterviewPage = () => {
       
     } catch (error) {
       console.error('❌ 면접 완료 처리 중 오류:', error);
-      alert('면접 완료 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+      showAlert(
+          "면접 완료 처리 중 오류가 발생했습니다.",
+          " 다시 시도해주세요.",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   };
 
   // 면접 강제 종료
-  const handleEndInterview = async () => {    
-    const confirmEnd = window.confirm('정말로 면접을 종료하시겠습니까? 현재까지의 답변이 저장됩니다.');
-    
-    if (confirmEnd) {
-      await handleCompleteInterview();
-    }
+  const handleEndInterview =  () => {
+      showConfirm(
+          "정말로 면접을 종료하시겠습니까? 현재까지의 답변이 저장됩니다.",
+          "",
+          ()=> {
+            handleCompleteInterview()
+          },
+          ()=>{
+          }
+      );
   };
 
   // 🎯 AI 분석 시작 - useAIAnalysis 훅 사용
@@ -264,7 +274,11 @@ const MockInterviewPage = () => {
       console.error('❌ AI 분석 시작 실패:', error);
       setShowAILoading(false);
       setShowResults(true);
-      alert(`AI 분석을 시작할 수 없습니다: ${error.message}`);
+      showAlert(
+          "AI 분석을 시작할 수 없습니다: ${error.message}",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   };
 
@@ -322,7 +336,11 @@ const MockInterviewPage = () => {
   // 🎯 AI 분석 보고서 다운로드
   const handleDownloadReport = () => {    
     if (!finalAnalysis) {
-      alert('분석 결과가 없습니다.');
+      showAlert(
+          "분석 결과가 없습니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
     
@@ -448,7 +466,11 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
     if (isTimeExpired) {
       stopListening();
       stopAnalysis();
-      alert('시간이 종료되었습니다!');
+      showAlert(
+          "시간이 종료되었습니다!",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   }, [isTimeExpired]);
 

@@ -3,7 +3,7 @@ import { updateCompleteMission } from "../../api/roadmap/roadMapApi";
 import "../../css/roadmap/missionBox.css";
 import { formatDate, getStageGroup } from "../../data/roadmapUtils";
 import { useNavigate } from "react-router-dom";
-
+import { useModal } from "../../context/ModalContext.jsx";
 
 
 /**
@@ -29,6 +29,7 @@ function MissionBox({
   setNewlyAcceptedMissionId
 }) {
   const navigate = useNavigate();
+  const { showAlert } = useModal();
 
   // 미션 박스 열고 닫는 함수
   const toggleMissionBox = () => {
@@ -44,7 +45,11 @@ function MissionBox({
       const res = await updateCompleteMission(stageId);
 
       if (res === "fail") {
-        alert("미션을 완료하지 않았습니다.");
+        showAlert(
+            "미션을 완료하지 않았습니다.",
+            "",
+            () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        );
         return;
       }
       setCharPosition(stageId - 1);

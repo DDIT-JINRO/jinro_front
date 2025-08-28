@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS 파일
-
+import { useModal } from "../../context/ModalContext.jsx";
 /**
  * 미션 수락 또는 잠금 상태를 알려주는 모달 컴포넌트
  * @param {object} mission - 표시할 미션 정보
@@ -11,7 +11,7 @@ import "../../css/roadmap/acceptMissionModal.css"; // 2단계에서 만들 CSS �
 function AcceptMissionModal({ mission, onAccept, onClose, isLocked, setIsMissionBoxOpen }) {
   // 완료 예정 날짜 상태 관리
   const [dueDate, setDueDate] = useState("");
-
+  const { showAlert } = useModal();
   if (!mission && !isLocked) return null;
 
   // 모달 닫히는 것 방지
@@ -22,14 +22,22 @@ function AcceptMissionModal({ mission, onAccept, onClose, isLocked, setIsMission
   // '수락' 버튼 클릭 시 호출되는 함수
   const handleAcceptClick = () => {
     if(!dueDate) {
-      alert("완료 예정 날짜를 입력해주세요.");
+      showAlert(
+          "완료 예정 날짜를 입력해주세요.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (new Date(dueDate) < today) {
-      alert("과거 날짜는 선택할 수 없습니다.");
+      showAlert(
+          "과거 날짜는 선택할 수 없습니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
     
