@@ -82,3 +82,24 @@
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .edit-modal-content {
+    padding: 20px;
+    width: 80vw;
+  }
+
+  .edit-modal-content h2 {
+    font-size: 20px;
+  }
+
+  .edit-modal-actions {
+    gap: 10px;
+  }
+
+  .edit-modal-actions button {
+    width: 100%;
+    padding: 12px 0;
+  }
+}

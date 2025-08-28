@@ -26,3 +26,12 @@
   transform: scale(1.1);
   background-color: white;
 }
+
+@media (max-width: 768px) {
+  .move-result-btn {
+    display: flex;
+    bottom: 60px;
+    right: 10px;
+    font-size: 14px;
+  }
+}

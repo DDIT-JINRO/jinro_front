@@ -103,7 +103,6 @@
   color: #3498db;
 }
 
-
 /* --- 애니메이션 키프레임 --- */
 @keyframes flyFromTopLeft {
   from {
@@ -125,5 +124,33 @@
   to {
     transform: translate(-50vw, -50vh) scale(0);
     opacity: 0;
+  }
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 80vw;
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .modal-body p {
+    font-size: 12px;
+  }
+
+  .modal-body p strong {
+    font-size: 14px;
+  }
+
+  .tutorial-icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
   }
 }

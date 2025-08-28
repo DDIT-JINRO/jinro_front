@@ -70,8 +70,8 @@ function AcceptMissionModal({ mission, onAccept, onClose, isLocked, setIsMission
               <button className="action-btn decline-btn" onClick={onClose}>닫기</button>
             ) : (
             <>
-              <button className="action-btn accept-btn" onClick={handleAcceptClick}>수락</button>
               <button className="action-btn decline-btn" onClick={onClose}>거절</button>
+              <button className="action-btn accept-btn" onClick={handleAcceptClick}>수락</button>
             </>
           )}
         </div>

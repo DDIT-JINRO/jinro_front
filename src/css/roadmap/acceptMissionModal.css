@@ -17,21 +17,17 @@
   padding: 30px 40px;
   border-radius: 15px;
   width: 90%;
-  max-width: 400px;
-  box-shadow: 0 5px B20px rgba(0, 0, 0, 0.2);
+  max-width: 350px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: scaleUp 0.3s ease-in-out forwards;
-}
-
-.accept-mission-title {
-  font-size: 22px;
-  font-weight: bold;
-  margin: 0 0 10px;
 }
 
 .mission-title span {
   background: linear-gradient(to top, #cce0ff 40%, transparent 40%);
   padding: 0 5px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .mission-prompt {
@@ -101,4 +97,30 @@
 @keyframes scaleUp {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .accept-modal-content {
+    padding: 20px;
+    width: 80vw;
+  }
+
+  .mission-title span {
+    font-size: 18px;
+  }
+
+  .mission-prompt {
+    font-size: 14px;
+  }
+
+  .accept-modal-actions {
+    gap: 10px;
+  }
+
+  .action-btn {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 15px;
+  }
 }
