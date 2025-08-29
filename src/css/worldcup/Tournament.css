@@ -179,3 +179,117 @@
     z-index: 1;
     transition: transform 0.2s ease;
 }
+
+/* JSX에는 있지만 CSS에 없어 추가하는 기본 스타일 */
+.tournament-progress {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 8px 15px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tournament-info {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    margin-top: 10px;
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+/* 카드 콘텐츠 영역이 부모(카드)를 벗어나지 않도록 설정 */
+.tournament-card-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* 카드의 남은 공간을 모두 차지 */
+    overflow: hidden; /* 내부 요소가 넘치면 숨김 */
+}
+
+
+/* --- ▼ 반응형 디자인을 위한 미디어 쿼리 추가 --- */
+
+/* 태블릿 및 모바일 가로 모드 ( ~ 860px) */
+@media (max-width: 860px) {
+    .tournament-pair {
+        flex-direction: column; /* 카드를 세로로 쌓음 */
+        align-items: center;    /* 가운데 정렬 */
+        gap: 30px;              /* 카드 사이 세로 간격 */
+        padding: 0 30px;        /* 좌우 여백 줄이기 */
+    }
+
+
+    .tournament-container{
+        padding-top: 0;
+    }
+
+    .tournament-progress,.tournament-progress{
+        margin-bottom: 5px;
+    }
+
+    .tournament-card {
+        width: 100%;
+        max-width: 400px; /* 카드가 너무 커지는 것을 방지 */
+        height: auto;     /* 내용에 따라 높이가 자동으로 조절되도록 변경 */
+        padding: 20px;
+    }
+
+    .tournament-round {
+        font-size: 32px;
+    }
+
+    .tournament-title {
+        font-size: 22px;
+    }
+
+    /* 모바일 화면에서는 캐릭터 이미지를 숨겨서 가독성을 높입니다. */
+    .character-left,
+    .character-right,
+    .card-icon-left,
+    .card-icon-right {
+        display: none;
+    }
+}
+
+/* 일반적인 스마트폰 세로 모드 ( ~ 480px) */
+@media (max-width: 480px) {
+    .tournament-container {
+        padding-top: 20px;
+    }
+
+    .tournament-round {
+        font-size: 28px;
+        margin: 5px;
+    }
+
+    .tournament-container {
+        padding-top: 20px;
+    }
+
+    .tournament-round::before,
+    .tournament-round::after {
+        width: 25px;
+        height: 25px;
+    }
+
+    .tournament-pair {
+        gap: 40px;
+        padding: 0 15px; /* 좌우 여백 더 줄이기 */
+    }
+
+    .tournament-card {
+        padding: 15px;
+    }
+
+    .tournament-title {
+        font-size: 20px;
+    }
+
+    .tournament-info {
+        font-size: 13px;
+    }
+}

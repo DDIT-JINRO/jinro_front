@@ -8,20 +8,19 @@ html, body, #root {
 /* 전체 모달 컨테이너 */
 .category-modal {
     width: 100%;
-    height: 100vh; /* 100% -> 100vh 로 변경 */
+    height: 100vh;
     margin: 0 auto;
-    border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow-y: auto; /* 콘텐츠가 길어질 경우 스크롤 허용 */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     font-family: 'Noto Sans KR', sans-serif;
     background-image: url('/src/assets/worldcup/worldcupBackgound.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    box-sizing: border-box; /* 추가하면 패딩 등으로 인한 크기 문제를 방지할 수 있습니다. */
+    box-sizing: border-box;
 }
 
 /* 헤더 영역 */
@@ -30,18 +29,16 @@ html, body, #root {
     padding: 40px;
     box-sizing: border-box;
 }
+
 /* 각 필터 그룹 */
 .category-modal__filter-group {
-    /* ... 기존 스타일 ... */
-    background-color: rgba(255, 255, 255, 0.9); /* 반투명 흰색 배경 추가 */
-    padding: 20px; /* 내부 여백 추가 */
-    border-radius: 10px; /* 모서리 둥글게 */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
 }
 
 /* 버튼 영역 */
 .category-modal__buttons {
-    /* ... 기존 스타일 ... */
-    /* 버튼 영역은 배경을 없애거나 투명하게 하여 필터 그룹과 통일감 유지 */
     background: transparent;
 }
 
@@ -80,7 +77,7 @@ html, body, #root {
     display: flex;
     flex-direction: column;
     gap: 50px;
-    flex-grow: 1;
+    flex-grow: 1; /* 남은 공간을 채워 버튼을 하단에 위치시킴 */
     box-sizing: border-box;
 }
 
@@ -99,41 +96,35 @@ html, body, #root {
     color: #000000;
 }
 
-/* --- 이 부분을 수정하세요 --- */
 .category-modal__select-box {
-    height: 45px; /* 살짝 높이를 키워 여유 공간 확보 */
+    height: 45px;
     border: 1px solid #D8D8D8;
-    border-radius: 8px; /* 좀 더 부드럽게 */
+    border-radius: 8px;
     background: #ffffff;
-    padding: 0; /* 내부 패딩은 select에서 직접 제어하도록 0으로 초기화 */
+    padding: 0;
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    position: relative; /* 커스텀 화살표를 위한 position 설정 */
-    cursor: pointer; /* 클릭 가능하다는 표시 */
+    position: relative;
+    cursor: pointer;
 }
 
-/* --- 이 부분을 수정하세요 --- */
 .category-modal__select-box select {
     width: 100%;
     height: 100%;
-    padding: 0 14px; /* 텍스트 여백 */
+    padding: 0 14px;
     border: none;
     outline: none;
-    font-size: 16px; /* 폰트 크기 살짝 키움 */
+    font-size: 16px;
     color: #333;
-    background: transparent; /* 배경 투명 */
-
-    /* --- ▼ 핵심: 기본 화살표 제거 --- */
+    background: transparent;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-
-    cursor: pointer; /* select 영역에도 커서 적용 */
+    cursor: pointer;
 }
 
-/* --- ▼ 이 부분을 추가하세요 --- */
-/* 커스텀 화살표 아이콘 추가 */
+/* 커스텀 화살표 아이콘 */
 .category-modal__select-box::after {
     content: '';
     position: absolute;
@@ -145,16 +136,13 @@ html, body, #root {
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
     background-size: contain;
     background-repeat: no-repeat;
-    pointer-events: none; /* 화살표가 클릭 이벤트를 가로채지 않도록 설정 */
+    pointer-events: none;
 }
 
-
-/* --- ▼ 이 부분을 추가하세요 --- */
-/* option 스타일 (브라우저마다 지원 범위가 다름) */
 .category-modal__select-box select option {
-    background: #FFFFFF; /* 배경색 */
-    color: #333333; /* 글자색 */
-    padding: 10px; /* 패딩 (일부 브라우저 미지원) */
+    background: #FFFFFF;
+    color: #333333;
+    padding: 10px;
     font-size: 15px;
 }
 
@@ -167,7 +155,7 @@ html, body, #root {
     padding-bottom: 100px;
     box-sizing: border-box;
     position: relative;
-    z-index: 10; /* 추가: 혹시 겹치는 요소가 가리고 있다면 */
+    z-index: 10;
 }
 
 /* 공통 버튼 스타일 */
@@ -197,3 +185,88 @@ html, body, #root {
     background: #6f7dea;
 }
 
+/* --- ▼ 반응형 디자인 (정리 및 개선) --- */
+
+/* 태블릿 및 일반 모바일 (768px 이하) */
+@media (max-width: 768px) {
+    .category-modal {
+        background-attachment: fixed;
+        justify-content: center; /* 콘텐츠 그룹을 수직 중앙으로 정렬 */
+        padding-top: 0;
+    }
+
+
+    .category-modal__header {
+        padding: 30px 20px 10px;
+        flex-grow: 0; /* 헤더 영역이 불필요하게 늘어나지 않도록 설정 */
+        flex-shrink: 0;
+    }
+
+    .category-modal__image {
+        width: 70px;
+        height: auto; /* 이미지 비율 유지 */
+    }
+
+    .category-modal__filter-section {
+        width: 100%;
+        padding: 0 30px; /* 상하 패딩 제거, 좌우 패딩으로 간격 제어 */
+        gap: 30px;
+        flex-grow: 0; /* flex-grow 제거하여 중앙 정렬이 되도록 함 */
+    }
+
+    .category-modal__filter-group {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .category-modal__label {
+        font-size: 15px;
+    }
+
+    .category-modal__select-box {
+        height: 42px;
+    }
+
+    .category-modal__select-box select {
+        font-size: 15px;
+    }
+
+    .category-modal__buttons {
+        padding-top: 30px; /* 필터 섹션과의 간격 */
+        padding-bottom: 40px; /* 하단 여백 */
+        flex-grow: 0;
+    }
+
+    .category-modal__button {
+        width: 120px; /* 터치 영역 확보 */
+        height: 40px;
+        font-size: 15px;
+    }
+}
+
+/* 작은 스마트폰 (480px 이하) */
+
+@media (max-width: 480px) {
+    .category-modal__header {
+        padding: 20px 15px 5px; /* 헤더 패딩 추가 축소 */
+    }
+
+    .category-modal__filter-section {
+        padding: 0 20px; /* 좌우 패딩 추가 축소 */
+        gap: 25px; /* 그룹 간 간격 추가 축소 */
+    }
+
+    .category-modal__filter-group {
+        width: 85%;
+        padding: 15px;
+    }
+
+    .category-modal__buttons {
+        padding-top: 25px;
+        padding-bottom: 30px;
+    }
+
+    .category-modal__select-box {
+        height: 40px;
+    }
+}
