@@ -1,3 +1,12 @@
+body {
+    background-color: white;
+}
+
+.apti-container {
+    text-align: center;
+    padding: 20px;
+}
+
 .result-btn {
     width: 300px;
     padding: 15px 30px;
@@ -10,8 +19,6 @@
     transition: all 0.2s ease-in-out;
     border: none;
     color: white;
-    position: relative;
-    right: 15%;
 }
 
 .result-btn:hover {
@@ -22,7 +29,4 @@
 
 .moveGif {
     width: 30%;
-    position: relative;
-    left: 100px;
-    bottom: 60px;
 }
