@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, FileText, CheckCircle, Play, Brain, Download, Clock, Eye, Mic, BarChart3, TrendingUp, Database } from 'lucide-react';
 import geminiIcon from '../../assets/gemini-icon.png';
-
+import { useModal } from "../../context/ModalContext.jsx";
 const InterviewResult = ({ 
   questions, 
   answers, 
@@ -21,6 +21,8 @@ const InterviewResult = ({
     const secs = seconds % 60;
     return `${mins}분 ${secs}초`;
   };
+
+  const { showAlert } = useModal();
 
   // 답변 통계 계산
   const calculateAnswerStats = (answer) => {
@@ -352,16 +354,42 @@ const InterviewResult = ({
 
             function copyAllData() {
               navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(developerData)}, null, 2))
-                .then(() => alert('✅ 전체 데이터가 클립보드에 복사되었습니다!'))
-                .catch(err => alert('❌ 복사 실패: ' + err));
+                .then(() => {
+                    showAlert(
+                      "✅ 전체 데이터가 클립보드에 복사되었습니다!",
+                      "",
+                      () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                    );
+                })
+                .catch(err =>{
+                    showAlert(
+                      "❌ 복사 실패 ",
+                      err.toString(),
+                      () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                    );
+                }
             }
 
             function copySection(sectionId) {
               const element = document.getElementById(sectionId);
               if (element) {
                 navigator.clipboard.writeText(element.textContent)
-                  .then(() => alert('✅ ' + sectionId + ' 데이터가 복사되었습니다!'))
-                  .catch(err => alert('❌ 복사 실패: ' + err));
+                  .then(() => 
+                  {
+                      showAlert(
+                        "✅ ",
+                        sectionId+'데이터가 복사되었습니다!',
+                        () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                      );
+                  }
+                  .catch(err => 
+                  {
+                      showAlert(
+                        "❌ 복사 실패: ",
+                        err.toString(),
+                        () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                      );
+                  }
               }
             }
 
@@ -376,7 +404,11 @@ const InterviewResult = ({
               a.click();
               document.body.removeChild(a);
               URL.revokeObjectURL(url);
-              alert('✅ JSON 파일이 다운로드되었습니다!');
+              showAlert(
+                        "✅ JSON 파일이 다운로드되었습니다!'",
+                        "",
+                        () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+                      );
             }
 
             // 키보드 단축키
@@ -402,7 +434,11 @@ const InterviewResult = ({
       // 새 창 포커스
       newWindow.focus();
     } else {
-      alert('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
+      showAlert(
+          "팝업이 차단되었습니다. 팝업 차단을 해제해주세요.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
     }
   };
 

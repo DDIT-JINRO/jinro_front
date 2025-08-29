@@ -1,0 +1,71 @@
+/* ==========================================================================
+   alert
+   ========================================================================== */
+/* 모달 배경 */
+.custom-confirm {
+    display: none;
+    position: fixed;
+    top: 20px;               /* 맨 위에서 살짝 띄움 */
+    left: 50%;               /* 가로 중앙 */
+    transform: translateX(-50%);
+    width: 440px;            /* 창 너비 */
+    z-index: 9999;
+    padding: 12px 20px;
+    animation: slideDown 0.3s ease;
+}
+.custom-confirm h4 {
+    margin: 2px 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+/* 모달 박스 */
+.custom-confirm__content {
+    background: #fff;
+    padding: 20px 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 440px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+.custom-confirm__buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    justify-content: flex-end;
+}
+.custom-confirm__buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.confirmOk {
+    appearance: none;
+    border: none;
+    border-radius: 12px;
+    padding: 11px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #6a82fb;
+    color: #fff;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+#confirmCancel {
+    background: #f3f5f7;
+    color: #202427
+}
+.confirmOk, #confirmCancel :hover{
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.pData{
+    margin: 10px 0;
+    background: #f8fafb;
+    border: 1px dashed #e4e9ee;
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: #47515b;
+}

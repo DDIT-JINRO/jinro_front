@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../../css/roadmap/editDueDateModal.css";
-
+import { useModal } from "../../context/ModalContext.jsx";
 /**
  * 진행 중인 미션의 완료 예정일을 수정하는 모달 컴포넌트
  * @param {boolean} isOpen - 모달이 열려있는지 여부
@@ -11,7 +11,7 @@ import "../../css/roadmap/editDueDateModal.css";
 function EditDueDateModal({ isOpen, onClose, onSave, currentDueDate }) {
   // 완료 예정일 상태 관리
   const [dueDate, setDueDate] = useState(currentDueDate);
-
+  const { showAlert } = useModal();
   useEffect(() => {
     setDueDate(currentDueDate);
   }, [currentDueDate]);
@@ -26,14 +26,22 @@ function EditDueDateModal({ isOpen, onClose, onSave, currentDueDate }) {
   // '저장' 버튼 클릭 시 호출되는 함수
   const handleSaveClick = () => {
     if (!dueDate) {
-      alert("완료 예정 날짜를 입력해주세요.");
+      showAlert(
+          "완료 예정 날짜를 입력해주세요.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (new Date(dueDate) < today) {
-      alert("과거 날짜는 선택할 수 없습니다.");
+      showAlert(
+          "과거 날짜는 선택할 수 없습니다.",
+          "",
+          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+      );
       return;
     }
 
