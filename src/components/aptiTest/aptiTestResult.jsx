@@ -9,16 +9,21 @@ function AptitestResult() {
     const resultData = location.state?.resultData;
 
     const resultBtn = () => {
+        const screenWidth = window.screen.width;
+        const screenHeight = window.screen.height;
 
+        
         window.location.href = resultData;
-
+        window.resizeTo(screenWidth, screenHeight);
     }
 
     return (
         <div className="apti-container">
-            <div className="block"></div>
             <h2>검사가 완료되었습니다!<br /> 당신에게 딱 맞는 결과를 확인해보세요.</h2>
-            <img className="moveGif" src={resultGif} alt="" />
+            <div className="apti-result-img-wrapper">
+                <img className="moveGif" src={resultGif} alt="" />
+                <div className="block"></div>
+            </div>
             <button className="result-btn" onClick={resultBtn}>커리어넷에서 결과 확인하기</button>
         </div>
     );

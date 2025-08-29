@@ -57,8 +57,8 @@ function EditDueDateModal({ isOpen, onClose, onSave, currentDueDate }) {
         <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)}/>
 
         <div className="edit-modal-actions">
-          <button className="save-btn" onClick={handleSaveClick}>저장</button>
           <button className="cancel-btn" onClick={onClose}>취소</button>
+          <button className="save-btn" onClick={handleSaveClick}>저장</button>
         </div>
 
       </div>

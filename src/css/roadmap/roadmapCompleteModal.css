@@ -70,3 +70,25 @@
     from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .complete-modal-content {
+    padding: 40px 20px;
+    width: 80vw;
+  }
+
+  .complete-modal-header h2 {
+    font-size: 24px;
+    margin-bottom: 40px;
+  }
+
+  .complete-modal-body p {
+    font-size: 14px;
+  }
+
+  .results-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+}

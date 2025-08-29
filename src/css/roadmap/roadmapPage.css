@@ -8,7 +8,8 @@ body {
   background-size: cover;
   background-position: center;
   width: 100vw;
-  height: 100vh;
+  height: 100vh; /* Fallback for dvh */
+  height: 100dvh; /* Use dynamic viewport height */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -110,10 +111,12 @@ body {
   position: fixed; /* 화면에 고정 */
   top: 0;
   right: 0;
-  width: 600px; /* 달력을 키우기 위해 너비 확장 */
-  height: 400px;
+  width: min(100%, 600px); /* 달력을 키우기 위해 너비 확장 */
+  height: auto;
+  max-height: 60dvh; /* Use dynamic viewport height */
   background-color: rgba(255, 255, 255, 0.65); /* 반투명 흰색 */
   backdrop-filter: blur(10px); /* 블러 효과 */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
 
   border-radius: 0 0 20px 20px;
   
@@ -228,4 +231,20 @@ body {
   
   /* 45도 회전해서 V 모양 만들기 */
   transform: rotate(45deg);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .character {
+    width: 10%;
+  }
+  .character.moving {
+    width: 12%;
+  }
+  .character.completeMoving {
+    width: 11%;
+  }
+  .cloud {
+    width: 25%;
+  }
 }

@@ -1,8 +1,9 @@
 import Character from './character';
 import Cloud from './cloud';
 import WoodSign from './woodSign';
-import { CLOUD_STATE, STAGE_POSITIONS } from '../../data/roadmapStagedata';
+import { CLOUD_STATE } from '../../data/roadmapStagedata';
 import { getCloudState } from '../../data/roadmapUtils';
+import { useResponsivePositions } from '../../hooks/roadmap/useResponsivePositions';
 
 /**
  * 로드맵의 전체를 렌더링하는 컴포넌트 (배경, 구름, 캐릭터, 나무 표지판)
@@ -15,7 +16,7 @@ import { getCloudState } from '../../data/roadmapUtils';
  * @param {function} handleCloudClick - 구름 클릭 시 실행될 함수
  */
 function RoadmapView ({ roadmap })  {
-
+  const STAGE_POSITIONS = useResponsivePositions();
   const { charPosition, progressMissions, completedMissions, isMoving, isCompleteMoving, setIsCompleteMoving, character, eventHandlers, handleCloudClick } = roadmap;
 
   // 나무 표지판 랜더링

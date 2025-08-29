@@ -4,12 +4,15 @@ import { useModalManager } from './useModalManager';
 import { useRoadmapInteraction } from './useRoadmapInteraction';
 import { useCookie } from './useCookie';
 import { updateDueDate, updateCompleteMission } from '../../api/roadmap/roadMapApi';
-import { CLOUD_STATE, STAGE_POSITIONS } from '../../data/roadmapStagedata';
+import { CLOUD_STATE } from '../../data/roadmapStagedata';
 import { getCloudState } from '../../data/roadmapUtils';
 import { useNavigate } from 'react-router-dom';
+import { useResponsivePositions } from './useResponsivePositions';
 import { useModal } from "../../context/ModalContext.jsx";
+
 export const useRoadmap = () => {
   const navigate = useNavigate();
+  const STAGE_POSITIONS = useResponsivePositions();
 
   /**
    * 로드맵 데이터 이용을 위한 커스텀 훅 사용
@@ -196,11 +199,18 @@ export const useRoadmap = () => {
     const nextPos = pos;
 
     // 캐릭터 방향 변경
-    if (nextPos.cloud.left > currentPos.cloud.left) {
+    // 정확한 비교를 위해 백분율 문자열을 숫자로 파싱
+    const currentLeft = parseFloat(currentPos.char.left);
+    const nextLeft = parseFloat(nextPos.char.left);
+
+    if (nextLeft > currentLeft) {
       character.setChracterDirection("right");
-    } else if (nextPos.cloud.left < currentPos.cloud.left) {
+    } else if (nextLeft < currentLeft) {
       character.setChracterDirection("left");
     }
+    // If nextLeft === currentLeft, character is moving purely vertically or not moving horizontally.
+    // In this case, maintain current direction or default to a specific one if needed.
+    // For now, we'll let the character maintain its last set direction if no horizontal change.
 
     // 구름 상태 조회
     const state = getCloudState(pos.id, progressMissions, completedMissions);

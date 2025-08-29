@@ -55,8 +55,8 @@
 
 .block {
     width: 100px;
-    bottom: 191px;
-    left: 547px;
+    bottom: 146px;
+    left: 559px;
     height: 50px;
     position: absolute;
     background-color: white;
@@ -64,8 +64,5 @@
 }
 
 .apti-source {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     width: 100%;
 }
