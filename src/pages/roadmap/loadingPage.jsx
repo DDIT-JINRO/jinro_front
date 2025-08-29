@@ -257,7 +257,7 @@ function LoadingPage({ isApiCompleted = false, onProgressComplete }) {
         </div>
 
         <div className="progress-text">
-          {progress}% 완료
+          {Math.floor(progress)}% 완료
         </div>
 
         <div className="steps-indicator">
