@@ -20,6 +20,7 @@ body {
 
 /* --- 메인 컨테이너 --- */
 .result-container {
+    background: linear-gradient(to bottom, rgba(190,222,232, 1) 0%, rgba(255,255,255, 1) 100%); /* 위에서 아래로 점점 하얗게 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,17 +43,17 @@ body {
 }
 .gif-container {
     position: absolute;
-    top: 10px;
+    top: 8%;
     right: 6%;
-    width: 13%; /* Adjust size as needed */
-    height: 22%; /* Adjust size as needed */
+    width: 20%; /* Adjust size as needed */
+    height: 23%; /* Adjust size as needed */
     overflow: hidden; /* Clip if the GIF is larger */
     border-radius: 10px; /* Optional: round the corners */
 }
 
 .celebration-gif {
     width: 100%;
-    height: 100%;
+    height: 80%;
     object-fit: cover; /* Ensure the GIF covers the container */
 }
 
@@ -264,4 +265,113 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
     border: 1px solid #c8e6c9;
+}
+
+/* --- ▼ 반응형 디자인을 위한 미디어 쿼리 추가 --- */
+
+/* 태블릿 및 모바일 ( ~ 640px) */
+@media (max-width: 640px) {
+    .winner-card {
+        padding: 1.5rem; /* 카드 내부 여백을 줄입니다. */
+    }
+
+    .gif-container {
+        top: 4%;
+        right: 5%;
+        width: 70px; /* 크기를 더 줄임 */
+        height: 70px; /* 크기를 더 줄임 */
+        /* display: none; 제거 - 이 부분은 480px 미디어 쿼리에서 다시 다룰 것임 */
+    }
+
+    /* 화면 크기에 맞춰 폰트 크기를 조정합니다. */
+    .result-title {
+        font-size: 1.3rem;
+    }
+    .winner-job-name {
+        font-size: 1.8rem;
+    }
+
+    /* 상세 정보 그리드를 2열에서 1열로 변경합니다. */
+    .info-grid {
+        grid-template-columns: 1fr; /* 모든 항목이 한 줄씩 차지하도록 변경 */
+        gap: 1rem; /* 항목 간의 간격을 줄입니다. */
+    }
+
+    .card-body {
+        padding: 1.5rem 0; /* 본문 영역의 상하 여백을 줄입니다. */
+    }
+
+    /* 축하 GIF 이미지 컨테이너 크기 및 위치 조정 */
+    .gif-container {
+        top: 4%;
+        right: 5%;
+        width: 80px;
+        height: 80px;
+    }
+
+    /* 버튼들을 세로로 쌓고 너비를 100%로 만듭니다. */
+    .card-footer {
+        flex-direction: column;
+        align-items: stretch; /* 버튼들이 컨테이너 너비에 꽉 차도록 설정 */
+    }
+
+    .action-button,
+    .restart-button,
+    .exit-button {
+        width: 100%; /* 버튼 너비를 100%로 설정 */
+        justify-content: center; /* 버튼 내부 콘텐츠를 중앙 정렬 */
+    }
+
+    .salary-details strong {
+        font-size: 1rem;
+    }
+}
+
+
+/* 작은 스마트폰 ( ~ 480px) */
+@media (max-width: 480px) {
+    .result-container {
+        padding: 0px; /* 전체 컨테이너의 여백을 더 줄입니다. */
+    }
+
+    .winner-card {
+        padding: 1rem; /* 카드 내부 여백을 더 줄입니다. */
+        border-width: 3px;
+    }
+
+    /* 화면이 매우 작을 때는 공간 확보를 위해 GIF를 숨깁니다. */
+    .gif-container {
+        top: 1%; /* 상단 여백을 더 줄임 */
+        right: 1%; /* 우측 여백을 더 줄임 */
+        width: 100px; /* 매우 작게 줄임 */
+        height: 100px; /* 매우 작게 줄임 */
+        display: block; /* 이전에 none으로 설정되어 있다면 다시 block으로 */
+    }
+
+    /* 폰트 크기를 추가로 조정합니다. */
+    .result-title {
+        font-size: 1.2rem;
+    }
+    .winner-job-name {
+        font-size: 1.6rem;
+    }
+
+    /* 타이틀의 트로피 아이콘 크기를 줄입니다. */
+    .result-title::before,
+    .result-title::after {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* 정보 텍스트와 태그들의 폰트 크기를 조정합니다. */
+    .info-grid p {
+        font-size: 0.85rem;
+    }
+    .job-tag {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+    .salary-tag {
+        font-size: 0.75rem;
+    }
 }

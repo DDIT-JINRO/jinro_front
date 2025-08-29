@@ -1,20 +1,26 @@
-body {
+html, body, #root {
+    margin: 0;
+    padding: 0;
     height: 100%;
+    width: 100%;
 }
 
 /* 전체 모달 컨테이너 */
 .category-modal {
     width: 100%;
-    height: 100%;
-    margin: 0 auto; /* 중앙 정렬 보장 */
-    background: #ffffff;
-    border-radius: 20px;
+    height: 100vh;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow-y: auto; /* 콘텐츠가 길어질 경우 스크롤 허용 */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     font-family: 'Noto Sans KR', sans-serif;
+    background-image: url('/src/assets/worldcup/worldcupBackgound.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
 }
 
 /* 헤더 영역 */
@@ -22,6 +28,18 @@ body {
     width: 100%;
     padding: 40px;
     box-sizing: border-box;
+}
+
+/* 각 필터 그룹 */
+.category-modal__filter-group {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* 버튼 영역 */
+.category-modal__buttons {
+    background: transparent;
 }
 
 .category-modal__title-area {
@@ -48,27 +66,18 @@ body {
 .category-modal__image {
     width: 80px;
     height: 74px;
-    background: url('/src/assets/worldcup/images/worldcup.png') no-repeat center;
     background-size: cover;
 }
 
-/* 제목 텍스트 */
-.category-modal__title {
-    font-family: 'Do Hyeon', sans-serif;
-    font-size: 40px;
-    color: #848EFB;
-    text-align: center;
-}
 
 /* 필터 섹션 */
 .category-modal__filter-section {
-    background: #D3F8FF;
     width: 100%;
-    padding: 70px 60px;
+    padding: 16% 26% 0;
     display: flex;
     flex-direction: column;
     gap: 50px;
-    flex-grow: 1;
+    flex-grow: 1; /* 남은 공간을 채워 버튼을 하단에 위치시킴 */
     box-sizing: border-box;
 }
 
@@ -88,36 +97,65 @@ body {
 }
 
 .category-modal__select-box {
-    height: 40px;
+    height: 45px;
     border: 1px solid #D8D8D8;
-    border-radius: 5px;
+    border-radius: 8px;
     background: #ffffff;
-    padding: 0 14px;
+    padding: 0;
     display: flex;
     align-items: center;
     box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
 }
 
 .category-modal__select-box select {
     width: 100%;
+    height: 100%;
+    padding: 0 14px;
     border: none;
     outline: none;
-    font-size: 14px;
-    color: #000000;
+    font-size: 16px;
+    color: #333;
     background: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* 커스텀 화살표 아이콘 */
+.category-modal__select-box::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.category-modal__select-box select option {
+    background: #FFFFFF;
+    color: #333333;
+    padding: 10px;
+    font-size: 15px;
 }
 
 /* 버튼 영역 */
 .category-modal__buttons {
     width: 100%;
-    background: #D3F8FF;
     display: flex;
     justify-content: center;
     gap: 20px;
-    padding: 30px;
+    padding-bottom: 100px;
     box-sizing: border-box;
     position: relative;
-    z-index: 10; /* 추가: 혹시 겹치는 요소가 가리고 있다면 */
+    z-index: 10;
 }
 
 /* 공통 버튼 스타일 */
@@ -147,3 +185,88 @@ body {
     background: #6f7dea;
 }
 
+/* --- ▼ 반응형 디자인 (정리 및 개선) --- */
+
+/* 태블릿 및 일반 모바일 (768px 이하) */
+@media (max-width: 768px) {
+    .category-modal {
+        background-attachment: fixed;
+        justify-content: center; /* 콘텐츠 그룹을 수직 중앙으로 정렬 */
+        padding-top: 0;
+    }
+
+
+    .category-modal__header {
+        padding: 30px 20px 10px;
+        flex-grow: 0; /* 헤더 영역이 불필요하게 늘어나지 않도록 설정 */
+        flex-shrink: 0;
+    }
+
+    .category-modal__image {
+        width: 70px;
+        height: auto; /* 이미지 비율 유지 */
+    }
+
+    .category-modal__filter-section {
+        width: 100%;
+        padding: 0 30px; /* 상하 패딩 제거, 좌우 패딩으로 간격 제어 */
+        gap: 30px;
+        flex-grow: 0; /* flex-grow 제거하여 중앙 정렬이 되도록 함 */
+    }
+
+    .category-modal__filter-group {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .category-modal__label {
+        font-size: 15px;
+    }
+
+    .category-modal__select-box {
+        height: 42px;
+    }
+
+    .category-modal__select-box select {
+        font-size: 15px;
+    }
+
+    .category-modal__buttons {
+        padding-top: 30px; /* 필터 섹션과의 간격 */
+        padding-bottom: 40px; /* 하단 여백 */
+        flex-grow: 0;
+    }
+
+    .category-modal__button {
+        width: 120px; /* 터치 영역 확보 */
+        height: 40px;
+        font-size: 15px;
+    }
+}
+
+/* 작은 스마트폰 (480px 이하) */
+
+@media (max-width: 480px) {
+    .category-modal__header {
+        padding: 20px 15px 5px; /* 헤더 패딩 추가 축소 */
+    }
+
+    .category-modal__filter-section {
+        padding: 0 20px; /* 좌우 패딩 추가 축소 */
+        gap: 25px; /* 그룹 간 간격 추가 축소 */
+    }
+
+    .category-modal__filter-group {
+        width: 85%;
+        padding: 15px;
+    }
+
+    .category-modal__buttons {
+        padding-top: 25px;
+        padding-bottom: 30px;
+    }
+
+    .category-modal__select-box {
+        height: 40px;
+    }
+}

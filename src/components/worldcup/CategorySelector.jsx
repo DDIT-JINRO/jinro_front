@@ -54,7 +54,6 @@ export default function CategorySelector() {
                         <div className="category-modal__image" >
                         </div>
                     </div>
-                    <div className="category-modal__title">직업 월드컵</div>
                 </div>
             </div>
 
