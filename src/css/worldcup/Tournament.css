@@ -1,8 +1,8 @@
 /* 전체 컨테이너 */
 .tournament-container {
     width: 100%;
-    min-height: 95vh;
-    background: #D3F8FF;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, rgba(190,222,232, 1) 0%, rgba(255,255,255, 1) 100%); /* 위에서 아래로 점점 하얗게 */
     display: flex;
     flex-direction: column;
     align-items: center;

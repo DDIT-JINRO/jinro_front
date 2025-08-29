@@ -31,7 +31,7 @@ const ResultPage = () => {
     <div className="result-container">
       <div className="winner-card">
         <div className="gif-container">
-          <img src="/src/assets/worldcup/images/mococoResult.gif" alt="축하 GIF" className="celebration-gif" />
+          <img src="/src/assets/worldcup/worldmoco.gif" alt="축하 GIF" className="celebration-gif" />
         </div>
         <header className="card-header">
           <h1 className="result-title">최종 우승 직업</h1>
