@@ -28,7 +28,7 @@ const AudioVisualizer = ({
       {/* 음성 인식 상태 헤더 */}
       <div className={styles.audioVisualizerHeader}>
         <h4 className={styles.audioVisualizerTitle}>
-          음성 인식 상태
+          음성 인식 상태 (Web Audio API)
         </h4>
         <div className={`
           ${styles.audioVisualizerStatus} 

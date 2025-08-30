@@ -340,7 +340,7 @@ const EnhancedVideoPlayer = ({
             fontWeight: '600'
           }}>
             {analysisData.video.faceDetected ? 
-              `✅ 얼굴 감지됨 (아이컨택: ${Math.round(analysisData.video.eyeContactPercentage || 0)}%)` : 
+              `✅ 얼굴 감지됨 (아이컨택: ${Math.round(analysisData.video.eyeContactPercentage || 0)}%) - MediaPipe Tasks Vision`  : 
               '❌ 얼굴이 감지되지 않습니다'}
           </div>
         )}
