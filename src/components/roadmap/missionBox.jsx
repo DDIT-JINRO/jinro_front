@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { updateCompleteMission } from "../../api/roadmap/roadMapApi";
 import "../../css/roadmap/missionBox.css";
 import { formatDate, getStageGroup } from "../../data/roadmapUtils";
@@ -30,6 +30,15 @@ function MissionBox({
 }) {
   const navigate = useNavigate();
   const { showAlert } = useModal();
+
+  useEffect(() => {
+    // progressMissions 중에서 complete가 true인 미션이 있는지 확인
+    const hasCompletableMission = progressMissions &&
+      progressMissions.some(mission => mission.complete === true);
+    if (hasCompletableMission) {
+      setIsMissionBoxOpen(true);
+    }
+  }, [progressMissions, setIsMissionBoxOpen]);
 
   // 미션 박스 열고 닫는 함수
   const toggleMissionBox = () => {

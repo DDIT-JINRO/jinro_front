@@ -75,8 +75,10 @@ function Cloud({
     // 그 외 일반 구름은 완료/진행 중 여부에 따라 이미지 변경
     if (state === CLOUD_STATE.COMPLETED || state === CLOUD_STATE.PROGRESS) {
       imgSrc = "cloud1_unlock.png";
-    } else {
+    } else if (state === CLOUD_STATE.LOCKED) {
       imgSrc = "cloud2_lock.png";
+    } else {
+      imgSrc = "cloud1_lock.png";
     }
   }
 
