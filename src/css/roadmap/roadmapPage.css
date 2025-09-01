@@ -84,12 +84,16 @@ body {
   animation: reversePulse 2s infinite; /* 클릭 가능함을 알리는 애니메이션 */
 }
 
+div[class*="cloud locked"]:not([data-stage="11"]) {
+  transform: scale(0.6);
+}
+
 .cloud.completed {
   cursor: pointer;
 }
 
 .cloud.progress.current {
-  cursor: default;
+  cursor: pointer;
   animation: none;
 }
 
@@ -101,9 +105,9 @@ body {
 }
 
 @keyframes reversePulse {
-  0% { transform: scale(1.1); }
+  0% { transform: scale(1.2); }
   50% { transform: scale(1); }
-  100% { transform: scale(1.1); }
+  100% { transform: scale(1.2); }
 }
 
 /* 달력 슬라이더 */
