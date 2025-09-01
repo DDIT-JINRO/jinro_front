@@ -85,15 +85,23 @@ function MissionBox({
       uniqueMissions.set(mission.rsId, { ...mission, status: "completed" });
     });
 
-    return Array.from(uniqueMissions.values()).sort((a, b) => {
-      if (a.status === "progress" && b.status === "completed") {
-        return -1;
-      }
-      if (a.status === "completed" && b.status === "progress") {
+    const getRank = (mission) => {
+      // 1순위: 완료 버튼 활성화된 미션
+      if (mission.status === "progress" && mission.complete) {
         return 1;
       }
-      return 0;
-    });
+      // 2순위: 진행중인 미션
+      if (mission.status === "progress" && !mission.complete) {
+        return 2;
+      }
+      // 3순위: 완료된 미션
+      if (mission.status === "completed") {
+        return 3;
+      }
+      return 4; // 그 외
+    };
+
+    return Array.from(uniqueMissions.values()).sort((a, b) => getRank(a) - getRank(b));
   }, [progressMissions, completedMissions]);
 
   return (
@@ -134,7 +142,7 @@ function MissionBox({
                 <div className="mission-name">
                   <span>{`${currentGroup}단계 : ${stepName}`}</span>
                   {!isCompleted && mission.rsId != 11 && (
-                    <div className={`short-cut-btn ${mission.rsId === newlyAcceptedMissionId ? 'newly-accepted' : ''}`}
+                    <div className={`short-cut-btn ${mission.rsId === newlyAcceptedMissionId && !mission.complete ? 'newly-accepted' : ''}`}
                      onClick={() => {
                       handleShortCutClick(mission.rsId);
                       setNewlyAcceptedMissionId(null);

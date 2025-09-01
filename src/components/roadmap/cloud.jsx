@@ -95,6 +95,7 @@ function Cloud({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      {state === CLOUD_STATE.UNLOCKED && <div className="unlocked-arrow"></div>}
       <img src={`${prefix}${imgSrc}`} alt={`Cloud ${stageId}`} />
     </div>
   );
