@@ -44,7 +44,7 @@ const QuestionCard = ({
       {currentAnswer && (
         <div className={styles.questionCardAnswer}>
           <div className={styles.questionCardAnswerLabel}>
-            💬 현재 인식된 답변 ({currentAnswer.length}자)
+            💬 현재 인식된 답변 ({currentAnswer.length}자) - Web Speech API
           </div>
           <p className={styles.questionCardAnswerText}>
             {currentAnswer}
