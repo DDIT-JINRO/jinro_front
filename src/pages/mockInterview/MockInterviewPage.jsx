@@ -37,19 +37,19 @@ const MockInterviewPage = () => {
   const [showResults, setShowResults] = useState(false);
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [showAILoading, setShowAILoading] = useState(false);
-  
+
   // 🎯 최종 분석 결과 상태 추가
   const [finalAnalysis, setFinalAnalysis] = useState(null);
 
   const [forceGuideComplete, setForceGuideComplete] = useState(false);
   const [isInterviewStarted, setIsInterviewStarted] = useState(false);
-  
+
   // 🎯 얼굴 감지 가이드 관련 상태 추가
   const [faceGuideEnabled, setFaceGuideEnabled] = useState(true);
   const [calibrationCompleted, setCalibrationCompleted] = useState(false);
   const [showStartupGuide, setShowStartupGuide] = useState(true);
 
-  const { showAlert,showConfirm } = useModal();
+  const { showAlert, showConfirm } = useModal();
 
   // 기존 훅들
   const {
@@ -105,12 +105,12 @@ const MockInterviewPage = () => {
 
   // 🎯 실시간 분석 훅
   const {
-    isAnalyzing,        
-    analysisData,       
-    startAnalysis,      
-    stopAnalysis,       
-    finishAnalysis,     
-    isMediaPipeReady    
+    isAnalyzing,
+    analysisData,
+    startAnalysis,
+    stopAnalysis,
+    finishAnalysis,
+    isMediaPipeReady
   } = useRealTimeAnalysis(mediaStream, videoRef);
 
   // 녹화 기능
@@ -127,13 +127,13 @@ const MockInterviewPage = () => {
   } = useMediaRecorder();
 
   // 🎯 AI 분석 훅 사용
-  const { 
+  const {
     isAnalyzing: isAIAnalyzing,
-    analysisResult, 
-    analysisError, 
-    analysisProgress, 
-    analyzeInterview, 
-    clearAnalysis 
+    analysisResult,
+    analysisError,
+    analysisProgress,
+    analyzeInterview,
+    clearAnalysis
   } = useAIAnalysis();
 
   // 🎯 면접 시작 전 안내 메시지 처리
@@ -142,7 +142,7 @@ const MockInterviewPage = () => {
       const timer = setTimeout(() => {
         setShowStartupGuide(false);
       }, 8000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [questionsLoaded, cameraPermissionGranted, calibrationCompleted, showStartupGuide]);
@@ -151,7 +151,7 @@ const MockInterviewPage = () => {
   const handleCalibrationComplete = (success) => {
     setCalibrationCompleted(success);
     setShowStartupGuide(false);
-    
+
     if (success) {
       if (!isAnalyzing && mediaStream) {
         startAnalysis();
@@ -160,7 +160,7 @@ const MockInterviewPage = () => {
   };
 
   // 타이머와 실시간 분석 연동
-  const startTimer = async () => {    
+  const startTimer = async () => {
     setIsInterviewStarted(true);
     setForceGuideComplete(true);
     setCalibrationCompleted(true);
@@ -170,13 +170,13 @@ const MockInterviewPage = () => {
     if (speechSupported && isMicOn) {
       startListening(isMicOn);
     }
-    
+
     if (mediaStream && cameraPermissionGranted && !isAnalyzing) {
       await startAnalysis();
     }
 
     startTimerOriginal();
-    
+
     if (mediaStream && !isRecording) {
       await startRecording(mediaStream);
     }
@@ -184,21 +184,21 @@ const MockInterviewPage = () => {
 
   const pauseTimer = () => {
     pauseTimerOriginal();
-    
+
     if (speechSupported) {
       stopListening();
     }
   };
 
   // 다음 질문 처리
-  const handleNextQuestion = () => {    
+  const handleNextQuestion = () => {
     const answerToSave = getCurrentAnswerAndClear();
     saveAnswer(currentQuestion, answerToSave);
-    
+
     stopListening();
-    
+
     const isInterviewComplete = moveToNextQuestion();
-    
+
     if (isInterviewComplete) {
       handleCompleteInterview();
     } else {
@@ -207,53 +207,53 @@ const MockInterviewPage = () => {
   };
 
   const handleCompleteInterview = async () => {
-    
+
     try {
       const answerToSave = getCurrentAnswerAndClear();
       saveAnswer(currentQuestion, answerToSave);
-            
+
       if (isListening) {
         stopListening();
       }
-      
+
       if (isTimerRunning) {
         pauseTimerOriginal();
       }
-      
+
       if (isAnalyzing) {
         await stopAnalysis();
       }
-      
+
       if (isRecording) {
         await stopRecording();
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      
+
       await finishAnalysis();
-      
+
       setShowResults(true);
-      
+
     } catch (error) {
       console.error('❌ 면접 완료 처리 중 오류:', error);
       showAlert(
-          "면접 완료 처리 중 오류가 발생했습니다.",
-          " 다시 시도해주세요.",
-          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        "면접 완료 처리 중 오류가 발생했습니다.",
+        " 다시 시도해주세요.",
+        () => { } // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
       );
     }
   };
 
   // 면접 강제 종료
-  const handleEndInterview =  () => {
-      showConfirm(
-          "정말로 면접을 종료하시겠습니까? 현재까지의 답변이 저장됩니다.",
-          "",
-          ()=> {
-            handleCompleteInterview()
-          },
-          ()=>{
-          }
-      );
+  const handleEndInterview = () => {
+    showConfirm(
+      "정말로 면접을 종료하시겠습니까? 현재까지의 답변이 저장됩니다.",
+      "",
+      () => {
+        handleCompleteInterview()
+      },
+      () => {
+      }
+    );
   };
 
   // 🎯 AI 분석 시작 - useAIAnalysis 훅 사용
@@ -262,33 +262,33 @@ const MockInterviewPage = () => {
       // 화면 상태 설정
       setShowAILoading(true);
       setShowResults(false);
-      
+
       // 기존 분석 결과 초기화
       clearAnalysis();
       setFinalAnalysis(null);
 
       // 🎯 useAIAnalysis 훅의 analyzeInterview 함수 사용
       await analyzeInterview(questions, answers, analysisData, recordingDuration);
-            
+
     } catch (error) {
       console.error('❌ AI 분석 시작 실패:', error);
       setShowAILoading(false);
       setShowResults(true);
       showAlert(
-          "AI 분석을 시작할 수 없습니다: ${error.message}",
-          "",
-          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        `${error.message}`,
+        "",
+        () => { } // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
       );
     }
   };
 
   // 🎯 AI 분석 완료 처리 함수
-  const handleAIAnalysisComplete = () => {    
+  const handleAIAnalysisComplete = () => {
     if (analysisResult) {
       setFinalAnalysis(analysisResult);
       setShowAILoading(false);
       setShowAIAnalysis(true);
-    } else {      
+    } else {
       // 1초 후 다시 확인
       setTimeout(() => {
         if (analysisResult) {
@@ -334,16 +334,16 @@ const MockInterviewPage = () => {
   };
 
   // 🎯 AI 분석 보고서 다운로드
-  const handleDownloadReport = () => {    
+  const handleDownloadReport = () => {
     if (!finalAnalysis) {
       showAlert(
-          "분석 결과가 없습니다.",
-          "",
-          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        "분석 결과가 없습니다.",
+        "",
+        () => { } // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
       );
       return;
     }
-    
+
     const reportContent = generateDetailedReport(finalAnalysis, analysisData, answers, questions);
     const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -359,9 +359,9 @@ const MockInterviewPage = () => {
   // 🎯 상세한 텍스트 보고서 생성 함수
   const generateDetailedReport = (analysis, realTimeData, interviewAnswers, interviewQuestions) => {
     if (!analysis) return '분석 데이터가 없습니다.';
-    
+
     const reportDate = new Date().toLocaleString('ko-KR');
-    
+
     return `
 === AI 모의면접 분석 보고서 ===
 
@@ -396,10 +396,10 @@ const MockInterviewPage = () => {
 
 === 📝 질문별 답변 ===
 ${interviewQuestions.map((question, index) => {
-  const answer = interviewAnswers[index] || '답변 없음';
-  const wordCount = answer ? answer.split(/\s+/).filter(word => word.length > 0).length : 0;
-  
-  return `
+      const answer = interviewAnswers[index] || '답변 없음';
+      const wordCount = answer ? answer.split(/\s+/).filter(word => word.length > 0).length : 0;
+
+      return `
 [질문 ${index + 1}]
 Q: ${question}
 A: ${answer}
@@ -407,7 +407,7 @@ A: ${answer}
 • 단어 수: ${wordCount}개
 • 완성도: ${answer && answer.trim() ? '완료' : '미완료'}
 `;
-}).join('')}
+    }).join('')}
 
 === 💪 강점 분석 ===
 ${analysis.summary?.strengths?.map(s => `• ${s}`).join('\n') || '• 분석 완료'}
@@ -431,14 +431,14 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
   };
 
   // 면접 재시작
-  const handleRestartInterview = () => {    
+  const handleRestartInterview = () => {
     resetInterview();
     resetTimer();
     clearCurrentAnswer();
     clearRecording();
     stopAnalysis();
     clearAnalysis();
-    
+
     setShowResults(false);
     setShowAIAnalysis(false);
     setShowAILoading(false);
@@ -453,7 +453,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
   // 마이크 토글 시 분석도 연동
   const handleToggleMic = async () => {
     await toggleMic();
-    
+
     if (!isMicOn && isTimerRunning && speechSupported && !isListening) {
       startListening(true);
     } else if (isMicOn && isListening) {
@@ -467,9 +467,9 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
       stopListening();
       stopAnalysis();
       showAlert(
-          "시간이 종료되었습니다!",
-          "",
-          () => {} // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
+        "시간이 종료되었습니다!",
+        "",
+        () => { } // 확인 버튼 클릭 시 실행할 동작 (없으면 빈 함수)
       );
     }
   }, [isTimeExpired]);
@@ -502,7 +502,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
         return event.returnValue;
       }
     };
-    
+
     const handleUnload = () => {
       if (isRecording) {
         stopRecording();
@@ -511,10 +511,10 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
         stopAnalysis();
       }
     };
-    
+
     window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('unload', handleUnload);
-    
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
@@ -529,7 +529,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
   // 결과 화면
   if (showResults) {
     return (
-      <InterviewResult 
+      <InterviewResult
         questions={questions}
         answers={answers}
         onClose={handleCloseResults}
@@ -546,7 +546,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
   // AI 분석 로딩 화면 (onComplete 콜백 추가)
   if (showAILoading) {
     return (
-      <AIAnalysisLoading 
+      <AIAnalysisLoading
         progress={analysisProgress}
         onCancel={() => {
           setShowAILoading(false);
@@ -560,7 +560,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
   // AI 분석 결과 화면
   if (showAIAnalysis) {
     return (
-      <AIAnalysisResult 
+      <AIAnalysisResult
         analysisResult={finalAnalysis}
         recordedVideoURL={getRecordedVideoURL()}
         onBack={handleBackFromAI}
@@ -606,10 +606,10 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
           ${commonStyles.mainGrid} 
           ${window.innerWidth >= 1024 ? commonStyles.mainGridDesktop : commonStyles.mainGridMobile}
         `}>
-          
+
           {/* 왼쪽: 타이머 및 질문 */}
           <div className={commonStyles.leftColumn}>
-            
+
             {/* 원형 타이머 */}
             <CircularTimer
               timeLeft={timeLeft}
@@ -641,7 +641,7 @@ ${analysis.summary?.recommendation || '계속해서 연습하며 발전해나가
 
           {/* 오른쪽: 웹캠 화면 */}
           <div className={commonStyles.rightColumn}>
-            
+
             {/* Enhanced VideoPlayer */}
             <div style={{ position: 'relative' }}>
               <EnhancedVideoPlayer

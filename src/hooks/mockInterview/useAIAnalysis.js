@@ -9,7 +9,8 @@ export const useAIAnalysis = () => {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [analysisError, setAnalysisError] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  
+
+
   // 🎯 진행률 업데이트 및 취소를 위한 ref
   const progressTimeoutRef = useRef(null);
   const currentSessionIdRef = useRef(null);
@@ -19,12 +20,12 @@ export const useAIAnalysis = () => {
     setIsAnalyzing(true);
     setAnalysisError(null);
     setAnalysisProgress(0);
-    
+
     // 세션 ID 생성
     const sessionId = `interview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     currentSessionIdRef.current = sessionId;
-    
-    try {      
+
+    try {
       // 🎯 백엔드 API 요청 데이터 구성 (sessionId를 최상위로)
       const requestData = {
         sessionId: sessionId, // 🎯 최상위 레벨에 sessionId 배치
@@ -74,11 +75,11 @@ export const useAIAnalysis = () => {
         for (const step of progressSteps) {
           // 🎯 분석이 중단된 경우 루프 중단
           if (!isAnalyzing || currentSessionIdRef.current !== sessionId) break;
-          
+
           await new Promise(resolve => {
             progressTimeoutRef.current = setTimeout(resolve, step.delay);
           });
-          
+
           setAnalysisProgress(step.progress);
         }
       };
@@ -88,7 +89,7 @@ export const useAIAnalysis = () => {
 
       // 🎯 백엔드 API 호출
       const analysisResponse = await interviewAnalysisApi.requestDetailedAnalysis(requestData);
-      
+
       ('📥 백엔드 응답 받음:', {
         success: analysisResponse.success,
         overallScore: analysisResponse.overallScore,
@@ -106,7 +107,7 @@ export const useAIAnalysis = () => {
         timestamp: analysisResponse.timestamp || new Date().toISOString(),
         duration: recordingDuration,
         analysisMethod: analysisResponse.analysisMethod || 'AI Expert Analysis',
-        
+
         detailed: {
           audio: {
             speechClarity: analysisResponse.detailed?.audio?.speechClarity || 75,
@@ -127,13 +128,13 @@ export const useAIAnalysis = () => {
             feedback: analysisResponse.detailed?.text?.feedback || '답변 내용 분석이 완료되었습니다.'
           }
         },
-        
+
         summary: {
           strengths: analysisResponse.summary?.strengths || ['성실한 태도', '기본적인 소통 능력'],
           improvements: analysisResponse.summary?.improvements || ['답변 구체화 필요', '자신감 향상 권장'],
           recommendation: analysisResponse.summary?.recommendation || '지속적인 연습을 통해 더욱 발전하실 수 있습니다!'
         },
-        
+
         scores: {
           communication: analysisResponse.scores?.communication || 75,
           appearance: analysisResponse.scores?.appearance || 75,
@@ -145,58 +146,7 @@ export const useAIAnalysis = () => {
       setAnalysisResult(transformedResult);
 
     } catch (error) {
-      console.error('❌ AI 분석 실패:', error);
-      setAnalysisError(error.message);
-      
-      // 🎯 에러 시 기본 결과 제공 (사용자 경험 개선)
-      const fallbackResult = {
-        sessionId,
-        overallScore: 70,
-        grade: 'B',
-        timestamp: new Date().toISOString(),
-        duration: recordingDuration,
-        analysisMethod: '기본 분석 (오류로 인한 대체 결과)',
-        
-        detailed: {
-          audio: {
-            speechClarity: 70,
-            paceAppropriate: 70,
-            volumeConsistency: 70,
-            feedback: '음성 분석 중 오류가 발생했습니다. 네트워크 연결을 확인 후 다시 시도해주세요.'
-          },
-          video: {
-            eyeContact: realTimeData?.video?.eyeContactPercentage || 70,
-            facialExpression: 70,
-            posture: realTimeData?.video?.postureScore || 70,
-            feedback: '영상 분석 중 오류가 발생했습니다. 카메라 설정을 확인해주세요.'
-          },
-          text: {
-            contentQuality: 70,
-            structureLogic: 70,
-            relevance: 70,
-            feedback: '답변 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-          }
-        },
-        
-        summary: {
-          strengths: ['면접 참여에 감사드립니다', '기본적인 준비가 되어있습니다'],
-          improvements: ['서버 연결 상태 확인', '다시 시도해보세요'],
-          recommendation: '기술적 문제가 지속되면 관리자에게 문의해주세요. 면접 연습은 계속하시길 권장합니다!'
-        },
-        
-        scores: {
-          communication: 70,
-          appearance: 70,
-          content: 70,
-          overall: 70
-        },
-        
-        isErrorResult: true,
-        errorDetails: error.message
-      };
-      
-      setAnalysisResult(fallbackResult);
-      
+      throw new Error(error.message);
     } finally {
       setIsAnalyzing(false);
       // 정리 작업
@@ -216,10 +166,10 @@ export const useAIAnalysis = () => {
         console.warn('⚠️ 분석 취소 실패:', error.message);
       }
     }
-    
+
     setIsAnalyzing(false);
     setAnalysisProgress(0);
-    
+
     if (progressTimeoutRef.current) {
       clearTimeout(progressTimeoutRef.current);
     }
