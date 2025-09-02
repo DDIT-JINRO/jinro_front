@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "../../css/roadmap/roadmapPage.css";
 import { CLOUD_STATE, SHORT_CUT_URL } from "../../data/roadmapStagedata";
 
@@ -24,6 +25,8 @@ function Cloud({
 }) {
   // 이미지 링크
   let imgSrc;
+
+  const navigate = useNavigate();
 
   const handleClick = () => {
     if (isCurrent) {
